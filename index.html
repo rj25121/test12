@@ -1065,7 +1065,7 @@ let roomLocationInHouse = null; // Default
         let actionFooter, footerStepWrappers, stepIndicatorWrapper;
 
         // --- NEW: STEP 4 CHECKLIST DOM ELEMENTS ---
-        let step4Checklist, checklistRoom, checklistLocation, checklistFloor;
+        let checklistRoom, checklistLocation, checklistFloor;
 
         // --- NEW: SCAN AGAIN BUTTON ---
         let scanAgainButton;
@@ -1143,6 +1143,42 @@ formattedText = formattedText.replace(/\n\n/g, '\n\n');
              formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, (match, p1) => `\n\n--- ${p1.toUpperCase()} ---\n`);
              return formattedText;
 }
+
+        // --- NEW: Function to generate combined report content (text only) ---
+        function getCombinedReportText(isExport = false) {
+             const activeReportMarkdown = fullReportTab.classList.contains('active') ? fullReportMarkdown : expertReportMarkdown;
+
+            if (!activeReportMarkdown) {
+                // If no report is generated, return null or empty string
+                return null;
+            }
+
+            // Create Context Header
+            const header = `
+*** Vastu Pro Analyzer Report ***
+Scan Area: ${currentRoomTag} 
+Location in House (C-Point): ${roomLocationInHouse || 'N/A'}
+Floor: ${floorNumber || 'N/A'}
+----------------------------------------------------------------------------------------------------------------------
+\n`;
+            
+            // Format the main body
+            const formattedBody = isExport 
+                ? formatAITextForTxtExport(activeReportMarkdown) 
+                : activeReportMarkdown;
+
+            // Create Footer for Captured Segments
+            const footer = `
+\n----------------------------------------------------------------------------------------------------------------------
+*** Captured Visual Data Segments (Images are NOT included in this text file) ***
+${capturedFrames.map((f, i) => `#${i + 1}: ${f.heading.toFixed(1)} degrees (${f.zone})`).join(' | ')}
+----------------------------------------------------------------------------------------------------------------------
+This file contains the full Vastu analysis.
+\n`;
+
+            return header + formattedBody + footer;
+        }
+
 
         // REMOVED updateStatus function
 
@@ -1245,10 +1281,11 @@ formattedText = formattedText.replace(/\n\n/g, '\n\n');
 
         // --- *** NEW: Step 4 Grid Logic *** ---
         function initializeStep4Grids() {
+            // *** MODIFIED: Added Garden and Utility Room ***
             const ROOM_TYPES = [
                 'Living Room', 'Kitchen', 'Master Bed',
                 'Bedroom', 'Pooja Room', 'Toilet/Bath',
-                'Main Entrance', 'Staircase', 'Study Room'
+                'Main Entrance', 'Study Room', 'Garden/Lawn', 'Utility Room' 
             ];
 
             const LOCATIONS = [
@@ -1289,12 +1326,19 @@ formattedText = formattedText.replace(/\n\n/g, '\n\n');
 
             if (type === 'room') {
                 currentRoomTag = cell.dataset.value;
-                // --- NEW: Update tutorial ---
+                
+                // --- NEW: Update tutorial based on specific room ---
                 if (isTutorialActive) {
-                    showTutorialTip(step4CompassNeedle, "Great. Now use this live compass to find North...", 'right');
+                    let nextTip = "Now tap the <strong>Room's Location</strong> in your house.";
+                    if (currentRoomTag === 'Main Entrance') {
+                        nextTip = "Since this is the **Main Entrance**, stand at the center of the doorway for the most accurate reading. Then select the location below.";
+                    } else if (currentRoomTag === 'Garden/Lawn') {
+                        nextTip = "For the **Garden**, stand at the center-most part of the open area. Then select the location below.";
+                    }
+                    showTutorialTip(step4CompassNeedle, `1. Use the compass to find North. 2. ${nextTip}`, 'right');
                     clearTimeout(tutorialTimeout);
                     tutorialTimeout = setTimeout(() => {
-                        showTutorialTip(roomLocationGrid, "...then tap the <strong>Room's Location</strong> in your house.", 'bottom');
+                        showTutorialTip(roomLocationGrid, `2. Now tap the <strong>Room's Location</strong> in your house.`, 'bottom');
                     }, 3500); // Show next tip after 3.5s
                 }
 
@@ -1952,8 +1996,9 @@ return;
             deepAnalysisButton.disabled = true; // Disable new button
             saveReportButton.classList.add('hidden');
             printReportButton.classList.add('hidden'); // Hide print button
-            chatInput.disabled = true; // Chat is disabled during generation
-            sendChatButton.disabled = true;
+            if (chatInput) chatInput.disabled = true; // Chat is disabled during generation
+            if (sendChatButton) sendChatButton.disabled = true;
+
             // scanAgainButton.disabled = true; // <-- MODIFIED: This is now REMOVED to keep "New Scan" active
 
             // Format holistic context for the prompt
@@ -2042,11 +2087,11 @@ if (!response.ok) {
 
                 saveReportButton.classList.remove('hidden');
                 printReportButton.classList.remove('hidden'); // Show print button
-chatInput.disabled = false; // Re-enable chat
-                sendChatButton.disabled = false;
+                if (chatInput) chatInput.disabled = false; // Re-enable chat
+                if (sendChatButton) sendChatButton.disabled = false;
 } catch (error) {
                 clearTimeout(timeoutId); // <-- Clear timeout if fetch fails
-                console.error('Report Generation Error:', error);
+                console.error('Chatbot Error:', error);
 
                 let specificErrorMessage = error.message;
                 if (error.name === 'AbortError') {
@@ -2084,7 +2129,10 @@ reportLoader.classList.add('hidden');
                 reportToExport = expertReportMarkdown;
             }
 
-            if (!reportToExport) {
+            // *** FIX: Use a more reliable check for content ***
+            const reportText = getCombinedReportText(true);
+
+            if (!reportText) {
                 alert("Please generate a report first.");
                 return;
             }
@@ -2092,23 +2140,7 @@ reportLoader.classList.add('hidden');
             // --- MODIFICATION: Bypassing Sandbox ---
             
             // 1. Generate the text content
-            const header = `
-*** Vastu Pro Analyzer Formal AI Report ***
-Scan Area: ${currentRoomTag} 
-Location in House (C-Point): ${roomLocationInHouse ||
-'N/A'}
-Floor: ${floorNumber || 'N/A'}
-----------------------------------------------------------------------------------------------------------------------
-\n`;
-            const formattedBody = formatAITextForTxtExport(reportToExport);
-            const footer = `
-\n----------------------------------------------------------------------------------------------------------------------
-*** Captured Visual Data Segments (Images are NOT included in this text file) ***
-${capturedFrames.map((f, i) => `#${i + 1}: ${f.heading.toFixed(1)} degrees (${f.zone})`).join(' | ')}
-----------------------------------------------------------------------------------------------------------------------
-This file contains the full Vastu analysis.
-\n`;
-            const fullTextContent = header + formattedBody + footer;
+            const fullTextContent = reportText; // Already formatted by getCombinedReportText(true)
 
             // 2. Put text in the new modal's textarea
             document.getElementById('exportTextArea').value = fullTextContent;
@@ -2428,6 +2460,8 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
             captureButton.addEventListener('click', startCapture);
             analyzeButton.addEventListener('click', () => generateReport(false)); // Standard report
             deepAnalysisButton.addEventListener('click', () => generateReport(true)); // Deep analysis report
+            
+            // *** FIX: Export TXT Logic ***
             saveReportButton.addEventListener('click', exportReportAsTxt);
             
             // --- *** (REVERTED) Print Button Logic (Formal Report Only) *** ---
