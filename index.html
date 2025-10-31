@@ -2343,11 +2343,15 @@ chatInput.disabled = false;
                 // Add print-this class to the active view
                 activeReportView.classList.add('print-this');
                 
-                window.print();
+                // --- FIX: Use setTimeout to allow browser to re-render ---
+                // This fixes the blank page/race condition bug
+                setTimeout(() => {
+                    window.print();
            
-                // --- FIX: REVERTED to original logic per user ---
-                activeReportView.classList.remove('print-this');
-                document.title = originalTitle; // Restore original title
+                    // Clean up immediately after print dialog is called
+                    activeReportView.classList.remove('print-this');
+                    document.title = originalTitle; // Restore original title
+                }, 100); // 100ms delay is enough for render
             });
 
             // ====================================================================
@@ -2511,4 +2515,5 @@ chatInput.disabled = false;
 </script>
 </body>
 </html>
+
 
