@@ -52,6 +52,10 @@ box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
         /* Step Indicator Styles */
         .step-indicator {
             transition: all 0.3s ease;
+            /* UPDATED: Made smaller for icons */
+            min-width: 50px; 
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
 }
         .step-active {
             color: var(--color-primary);
@@ -134,7 +138,7 @@ margin-top: 1.5rem;
         /* Image Grid Styling for Captured Frames */
         .image-gallery {
             display: grid;
-grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
             gap: 0.5rem;
             padding-bottom: 0.5rem;
             margin-bottom: 0.5rem;
@@ -313,284 +317,388 @@ align-self: flex-start;
         ======================================================================
         */
 
+        /* ======================================================================
+        START: NEW UI/UX ENHANCEMENT STYLES
+        ======================================================================
+        */
+        /* --- 5. Gallery Slot --- */
+        .gallery-slot {
+            border: 2px dashed var(--color-secondary);
+            border-radius: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.4);
+            width: 80px; /* Corresponds to grid-template-columns */
+            height: 80px; /* Corresponds to grid-template-columns */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-secondary);
+            font-size: 0.75rem;
+            aspect-ratio: 1/1;
+        }
+
+        /* --- 1. Sticky Footer --- */
+        #mainContentArea {
+            /* This will be the only scrolling part */
+            overflow-y: auto;
+            flex-grow: 1;
+            /* Add padding to content area */
+            padding: 0.25rem;
+        }
+        #actionFooter {
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            padding-top: 1rem;
+            padding-bottom: 0.5rem; /* Reduced bottom padding */
+            flex-shrink: 0;
+        }
+        .footer-step-wrapper {
+            display: none; /* Hidden by default, JS will show */
+        }
+
+        /* --- 4. Step 4 Checklist --- */
+        #step4Checklist {
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 1px solid var(--color-secondary);
+        }
+        .checklist-item.complete {
+            color: var(--color-text-dark);
+            font-weight: 600;
+        }
+        .checklist-item.pending {
+            color: var(--color-text-light);
+        }
+
+        /* --- 6. Step Animation --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .step-content {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* ====================================================================
+        END: NEW UI/UX ENHANCEMENT STYLES
+        ======================================================================
+        */
     </style>
 </head>
 <body class="p-4 sm:p-8">
-    <!-- *** FIX: Added max-h-[90vh] and overflow-y-auto to main container *** -->
-    <div id="appContainer" class="glass-card w-full max-w-sm sm:max-w-xl md:max-w-2xl p-6 space-y-6 overflow-y-auto max-h-[90vh]">
+    <!-- *** MODIFIED: Structural change for sticky footer *** -->
+    <div id="appContainer" class="glass-card w-full max-w-sm sm:max-w-xl md:max-w-2xl p-6 flex flex-col max-h-[90vh]">
 
-        <h1 class="text-xl sm:text-2xl font-extrabold text-center no-print">Vastu Pro Analyzer |
-AI Edition</h1>
-        <p class="text-xs text-center text-gray-500 no-print">Generate a Vastu Shastra report using your device's sensors.</p>
+        <!-- === HEADER (Non-scrolling) === -->
+        <div class="flex-shrink-0">
+            <h1 class="text-xl sm:text-2xl font-extrabold text-center no-print">Vastu Pro Analyzer |
+    AI Edition</h1>
+            <p class="text-xs text-center text-gray-500 no-print">Generate a Vastu Shastra report using your device's sensors.</p>
 
-        <!-- STEP INDICATORS: Renamed Step 4 -->
-        <div class="flex flex-wrap justify-center text-center text-sm border-b pb-2 border-gray-200 no-print">
-            <div id="step1" class="step-indicator m-1 min-w-[60px]">1. FAQ</div>
-            <div id="step2" class="step-indicator m-1 min-w-[60px]">2.
-Sensors</div>
-            <div id="step3" class="step-indicator m-1 min-w-[60px]">3. Context</div>
-            <div id="step4" class="step-indicator m-1 min-w-[60px]">4.
-Floor Plan</div>
-            <div id="step5" class="step-indicator m-1 min-w-[60px]">5.
-Scan</div>
-            <div id="step6" class="step-indicator m-1 min-w-[60px]">6.
-Report & Chat</div>
+            <!-- *** SUGGESTION 2: Icon-Based Step Indicators *** -->
+            <div class="flex flex-wrap justify-center text-center text-sm border-b pb-2 border-gray-200 no-print mt-6">
+                <div id="step1" class="step-indicator m-1" title="FAQ"><i class="fas fa-question-circle text-xl"></i></div>
+                <div id="step2" class="step-indicator m-1" title="Sensors"><i class="fas fa-compass text-xl"></i></div>
+                <div id="step3" class="step-indicator m-1" title="Context"><i class="fas fa-tasks text-xl"></i></div>
+                <div id="step4" class="step-indicator m-1" title="Floor Plan"><i class="fas fa-th-large text-xl"></i></div>
+                <div id="step5" class="step-indicator m-1" title="Scan"><i class="fas fa-camera text-xl"></i></div>
+                <div id="step6" class="step-indicator m-1" title="Report"><i class="fas fa-file-alt text-xl"></i></div>
+            </div>
         </div>
 
-        <div id="stepContent1" class="step-content no-print">
-            <div class="glass-card p-4 rounded-lg border-2 border-blue-100 h-96 overflow-y-auto">
-                <h3 class="font-bold text-lg text-blue-800 mb-3"><i class="fas fa-question-circle mr-2"></i>User FAQ & How-To</h3>
-                <div class="text-sm text-gray-700 space-y-4">
-                    <div>
-                        <p class="font-bold text-blue-700">Q: How do I get the most accurate scan?</p>
-                        <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> Stand in the center of the room and turn in a slow, 360-degree circle. Make sure the room is well-lit so the AI can see everything clearly. The scan takes about 16 seconds.</p>
-                    </div>
-                    <div>
-                        <p class="font-bold text-blue-700">Q: What is the "Holistic Context" in Step 3?</p>
-                        <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This is an optional but powerful step. By telling the AI your concerns (e.g., "Financial", "Health"), it can tailor the Vastu remedies specifically to help you with those problems.</p>
-                    </div>
-                    <!-- UPDATED FAQ for Step 4 -->
-                    <div>
-                        <p class="font-bold text-blue-700">Q: What is the "Floor Plan" in Step 4?</p>
-                        <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This is the most critical step.
-                        <br>1. First, select the <strong>type of room</strong> you are in (e.g., "Kitchen").
-                        <br>2. Second, select <strong>where that room is located</strong> in your house (e.g., "South-East").
-                        <br>This two-part selection is required for an accurate analysis.</p>
-                    </div>
-                    <div>
-                        <p class="font-bold text-blue-700">Q: What's the difference between the two report buttons?</p>
-                        <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A: "Formal Report"</strong> gives a full, 5-section analysis with simple, practical remedies. <strong>"Expert Analysis"</strong> gives a short, bulleted list of high-stakes, structural remedies (like moving a wall) that a human expert might suggest.</p>
-                    </div>
-                     <div>
-                        <p class="font-bold text-blue-700">Q: My report failed or was empty. What do I do?</p>
-                        <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This can happen if the images are too dark or blurry, triggering the AI's safety filters. Please try scanning again in a room with better lighting.</p>
-                    </div>
-                    <div>
-                        <p class="font-bold text-blue-700">Q: Can I scan just one wall?</p>
-                        <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> No. The app is designed to capture all 8 directions in a full 360-degree scan to analyze every Vastu zone, not just one.</p>
+        <!-- === MAIN CONTENT (Scrolling) === -->
+        <div id="mainContentArea" class="my-4">
+            <div id="stepContent1" class="step-content no-print">
+                <div class="glass-card p-4 rounded-lg border-2 border-blue-100 h-96 overflow-y-auto">
+                    <h3 class="font-bold text-lg text-blue-800 mb-3"><i class="fas fa-question-circle mr-2"></i>User FAQ & How-To</h3>
+                    <div class="text-sm text-gray-700 space-y-4">
+                        <div>
+                            <p class="font-bold text-blue-700">Q: How do I get the most accurate scan?</p>
+                            <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> Stand in the center of the room and turn in a slow, 360-degree circle. Make sure the room is well-lit so the AI can see everything clearly. The scan takes about 16 seconds.</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-blue-700">Q: What is the "Holistic Context" in Step 3?</p>
+                            <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This is an optional but powerful step. By telling the AI your concerns (e.g., "Financial", "Health"), it can tailor the Vastu remedies specifically to help you with those problems.</p>
+                        </div>
+                        <!-- UPDATED FAQ for Step 4 -->
+                        <div>
+                            <p class="font-bold text-blue-700">Q: What is the "Floor Plan" in Step 4?</p>
+                            <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This is the most critical step.
+                            <br>1. First, select the <strong>type of room</strong> you are in (e.g., "Kitchen").
+                            <br>2. Second, select <strong>where that room is located</strong> in your house (e.g., "South-East").
+                            <br>This two-part selection is required for an accurate analysis.</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-blue-700">Q: What's the difference between the two report buttons?</p>
+                            <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A: "Formal Report"</strong> gives a full, 5-section analysis with simple, practical remedies. <strong>"Expert Analysis"</strong> gives a short, bulleted list of high-stakes, structural remedies (like moving a wall) that a human expert might suggest.</p>
+                        </div>
+                         <div>
+                            <p class="font-bold text-blue-700">Q: My report failed or was empty. What do I do?</p>
+                            <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This can happen if the images are too dark or blurry, triggering the AI's safety filters. Please try scanning again in a room with better lighting.</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-blue-700">Q: Can I scan just one wall?</p>
+                            <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> No. The app is designed to capture all 8 directions in a full 360-degree scan to analyze every Vastu zone, not just one.</p>
+                        </div>
                     </div>
                 </div>
+                <!-- Button moved to footer -->
             </div>
-            <button id="tipsNextButton" class="primary-btn w-full p-3 rounded-lg font-bold mt-6">
-                Next: Activate Sensors <i class="fas fa-arrow-right ml-2"></i>
-            </button>
-        </div>
-        <div id="stepContent2" class="step-content hidden no-print">
-            <p class="text-sm text-center text-gray-600 mb-4">Please grant permission to access your device's sensors.</p>
-            <div class="flex justify-center items-center p-4">
-                <div class="relative w-24 h-24 sm:w-32 sm:h-32 bg-white rounded-full border-4 border-gray-300 flex items-center justify-center">
-                    <i class="fas fa-compass text-6xl text-gray-400"></i>
-                    <i id="compassNeedle" 
-class="fas fa-arrow-up absolute text-red-500 text-3xl transition-transform" style="transform: rotate(0deg);"></i>
+            <div id="stepContent2" class="step-content hidden no-print">
+                <p class="text-sm text-center text-gray-600 mb-4">Please grant permission to access your device's sensors.</p>
+                <div class="flex justify-center items-center p-4">
+                    <div class="relative w-24 h-24 sm:w-32 sm:h-32 bg-white rounded-full border-4 border-gray-300 flex items-center justify-center">
+                        <i class="fas fa-compass text-6xl text-gray-400"></i>
+                        <i id="compassNeedle" 
+    class="fas fa-arrow-up absolute text-red-500 text-3xl transition-transform" style="transform: rotate(0deg);"></i>
+                    </div>
                 </div>
-            </div>
-            <p class="text-center font-bold text-lg" id="headingDisplay">Heading: N/A</p>
-            <p class="text-center text-xs text-gray-500 mb-4" id="sensorStatus">Sensors: Inactive</p>
-            <button id="compassButton" class="primary-btn w-full p-3 rounded-lg font-bold">
-           
-      <i class="fas fa-magic mr-2"></i>Activate Sensors
-            </button>
-        </div>
-
-        <div id="stepContent3" class="step-content hidden no-print">
-            <p class="text-sm text-center text-gray-600 mb-4">This step is optional, but helps the AI personalize your report.</p>
-            <div class="glass-card p-4 mb-4">
-                <label class="block text-sm font-bold text-gray-700 mb-3">
-                    Step 3a: What are your primary concerns? (Optional)
-                </label>
-                <div id="userConcernsContainer" class="grid grid-cols-2 gap-2 text-sm">
-                    <label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg">
-                        <input type="checkbox" class="concern-checkbox" value="Financial">
-                        <span><i class="fas fa-wallet mr-1"></i> Financial</span>
-                    </label>
-                    <label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg">
-                        <input type="checkbox" class="concern-checkbox" value="Health">
-                        <span><i class="fas fa-heartbeat mr-1"></i> Health</span>
-                    </label>
-                    <label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg">
-                        <input type="checkbox" class="concern-checkbox" value="Relationships">
-                        <span><i class="fas fa-users mr-1"></i> Relationships</span>
-                    </label>
-                    <label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg">
-                        <input type="checkbox" class="concern-checkbox" value="Career">
-                        <span><i class="fas fa-briefcase mr-1"></i> Career</span>
-                    </label>
-                </div>
+                <p class="text-center font-bold text-lg" id="headingDisplay">Heading: N/A</p>
+                <p class="text-center text-xs text-gray-500 mb-4" id="sensorStatus">Sensors: Inactive</p>
+                <!-- Button moved to footer -->
             </div>
 
-            <div class="glass-card p-4">
-                <label class="block text-sm font-bold text-gray-700 mb-2">
-                    Step 3b: What is surrounding the property? (Optional)
-                </label>
-                <div class="space-y-2">
-                    <input type="text" id="surroundingsWater" placeholder="E.g., River in North, Lake in East"
-                           class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500" data-key="Water Body">
-                    <p class="text-xs text-gray-500 mt-1">Water body (lake, river, etc.) and its direction?</p>
-                    
-                    <input type="text" id="surroundingsHills" placeholder="E.g., Mountain in South-West"
-                           class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500" data-key="Hills">
-                    <p class="text-xs text-gray-500 mt-1">Hills or large structures and their direction?</p>
+            <div id="stepContent3" class="step-content hidden no-print">
+                <p class="text-sm text-center text-gray-600 mb-4">This step is optional, but helps the AI personalize your report.</p>
+                <div class="glass-card p-4 mb-4">
+                    <label class="block text-sm font-bold text-gray-700 mb-3">
+                        Step 3a: What are your primary concerns? (Optional)
+                    </label>
+                    <div id="userConcernsContainer" class="grid grid-cols-2 gap-2 text-sm">
+                        <label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg">
+                            <input type="checkbox" class="concern-checkbox" value="Financial">
+                            <span><i class="fas fa-wallet mr-1"></i> Financial</span>
+                        </label>
+                        <label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg">
+                            <input type="checkbox" class="concern-checkbox" value="Health">
+                            <span><i class="fas fa-heartbeat mr-1"></i> Health</span>
+                        </label>
+                        <label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg">
+                            <input type="checkbox" class="concern-checkbox" value="Relationships">
+                            <span><i class="fas fa-users mr-1"></i> Relationships</span>
+                        </label>
+                        <label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg">
+                            <input type="checkbox" class="concern-checkbox" value="Career">
+                            <span><i class="fas fa-briefcase mr-1"></i> Career</span>
+                        </label>
+                    </div>
                 </div>
-            </div>
 
-            <button id="holisticNextButton" class="primary-btn w-full p-3 rounded-lg font-bold mt-6">
-                Next: Floor Plan <i class="fas fa-arrow-right ml-2"></i>
-            </button>
-        </div>
-        
-        <!-- ======================================================================
-        START: STEP 4 (NEW GRID-BASED PLANNER)
-        ======================================================================
-        -->
-        <div id="stepContent4" class="step-content hidden no-print space-y-4">
-            
-            <!-- Part 1: Select Room Type -->
-            <div>
-                <label class="block text-sm font-bold text-gray-700 mb-2">
-                    Step 4a: What room are you scanning?
-                </label>
-                <div id="roomTypeGrid" class="location-grid">
-                    <!-- JS will populate this -->
+                <div class="glass-card p-4">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">
+                        Step 3b: What is surrounding the property? (Optional)
+                    </label>
+                    <div class="space-y-2">
+                        <input type="text" id="surroundingsWater" placeholder="E.g., River in North, Lake in East"
+                               class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500" data-key="Water Body">
+                        <p class="text-xs text-gray-500 mt-1">Water body (lake, river, etc.) and its direction?</p>
+                        
+                        <input type="text" id="surroundingsHills" placeholder="E.g., Mountain in South-West"
+                               class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500" data-key="Hills">
+                        <p class="text-xs text-gray-500 mt-1">Hills or large structures and their direction?</p>
+                    </div>
                 </div>
-            </div>
-
-            <!-- Part 2: Select Location in House -->
-            <div>
-                <label class="block text-sm font-bold text-gray-700 mb-2">
-                    Step 4b: Where is this room in your house?
-                </label>
-                <div id="roomLocationGrid" class="location-grid">
-                    <!-- JS will populate this -->
-                </div>
+                <!-- Button moved to footer -->
             </div>
             
-            <p class="text-center text-xs text-gray-500 my-2 p-2 glass-card" id="currentRoomDisplay">
-                Selected for Scan: <strong>...</strong> (in <strong>...</strong>)
-            </p>
-
-            <!-- Part 3: Floor Number -->
-            <div class="p-4 glass-card">
-                <label for="floorNumberInput" class="block text-sm font-bold text-gray-700 mb-2">
-                    Step 4c: Which floor is this on?
-                </label>
-                <input type="text" id="floorNumberInput" placeholder="E.g., 1st Floor, Ground Floor (Required)" 
-                       class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500">
-            </div>
-
-            <!-- Next Button -->
-            <button id="cameraButton" class="primary-btn w-full p-3 rounded-lg font-bold mt-4" disabled>
-                <i class="fas fa-arrow-right mr-2"></i>Next: Activate Camera
-            </button>
-        </div>
-        <!-- ====================================================================
-        END: STEP 4
-        ======================================================================
-        -->
-
-
-        <div id="stepContent5" class="step-content hidden no-print">
-            
-<p class="text-sm text-center text-gray-600 mb-4">Hold your device steady and turn in a slow 360° circle to capture all zones.</p>
-            <div id="cameraContainer" class="glass-card overflow-hidden mb-4 relative">
-                <video id="cameraVideo" autoplay playsinline class="bg-gray-200 hidden"></video>
+            <!-- ======================================================================
+            START: STEP 4 (NEW GRID-BASED PLANNER)
+            ======================================================================
+            -->
+            <div id="stepContent4" class="step-content hidden no-print space-y-4">
                 
-                <div id="compassOverlay" class="absolute w-full h-full flex flex-col justify-between p-4 pointer-events-none z-50">
+                <!-- Part 1: Select Room Type -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">
+                        Step 4a: What room are you scanning?
+                    </label>
+                    <div id="roomTypeGrid" class="location-grid">
+                        <!-- JS will populate this -->
+                    </div>
+                </div>
+
+                <!-- Part 2: Select Location in House -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">
+                        Step 4b: Where is this room in your house?
+                    </label>
+                    <div id="roomLocationGrid" class="location-grid">
+                        <!-- JS will populate this -->
+                    </div>
+                </div>
+                
+                <p class="text-center text-xs text-gray-500 my-2 p-2 glass-card" id="currentRoomDisplay">
+                    Selected for Scan: <strong>...</strong> (in <strong>...</strong>)
+                </p>
+
+                <!-- Part 3: Floor Number -->
+                <div class="p-4 glass-card">
+                    <label for="floorNumberInput" class="block text-sm font-bold text-gray-700 mb-2">
+                        Step 4c: Which floor is this on?
+                    </label>
+                    <input type="text" id="floorNumberInput" placeholder="E.g., 1st Floor, Ground Floor (Required)" 
+                           class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <!-- *** SUGGESTION 4: Step 4 Checklist *** -->
+                <div id="step4Checklist" class="glass-card p-4 space-y-2 text-sm rounded-lg">
+                    <div id="checklistRoom" class="checklist-item pending"><i class="far fa-square mr-2"></i>Select Room Type</div>
+                    <div id="checklistLocation" class="checklist-item pending"><i class="far fa-square mr-2"></i>Select Room Location</div>
+                    <div id="checklistFloor" class="checklist-item pending"><i class="far fa-square mr-2"></i>Enter Floor</div>
+                </div>
+                <!-- Button moved to footer -->
+            </div>
+            <!-- ====================================================================
+            END: STEP 4
+            ======================================================================
+            -->
+
+
+            <div id="stepContent5" class="step-content hidden no-print">
+                
+    <p class="text-sm text-center text-gray-600 mb-4">Hold your device steady and turn in a slow 360° circle to capture all zones.</p>
+                <div id="cameraContainer" class="glass-card overflow-hidden mb-4 relative">
+                    <video id="cameraVideo" autoplay playsinline class="bg-gray-200 hidden"></video>
                     
-<div class="text-center">
-                        <span class="inline-block p-1 px-3 bg-black bg-opacity-70 text-white text-3xl font-extrabold rounded-lg shadow-xl" id="overlayHeading">N/A</span>
+                    <div id="compassOverlay" class="absolute w-full h-full flex flex-col justify-between p-4 pointer-events-none z-50">
+                        
+    <div class="text-center">
+                            <span class="inline-block p-1 px-3 bg-black bg-opacity-70 text-white text-3xl font-extrabold rounded-lg shadow-xl" id="overlayHeading">N/A</span>
+                        </div>
+                        <div class="text-center self-center mb-4">
+                         
+       <span class="inline-block p-1 px-3 bg-black bg-opacity-70 text-white text-base rounded-lg font-semibold" id="overlayZone">Zone: Unknown</span>
+                        </div>
                     </div>
-                    <div class="text-center self-center mb-4">
-                     
-   <span class="inline-block p-1 px-3 bg-black bg-opacity-70 text-white text-base rounded-lg font-semibold" id="overlayZone">Zone: Unknown</span>
+
+                    <div id="cameraFallback" class="w-full h-full bg-gray-200 flex flex-col items-center justify-center text-center p-4 absolute top-0 left-0">
+                        <i 
+    class="fas fa-video camera-icon"></i>
+                        <p class="mt-2 text-sm text-gray-500">Camera access is required for Vastu analysis.</p>
                     </div>
                 </div>
-
-                <div id="cameraFallback" class="w-full h-full bg-gray-200 flex flex-col items-center justify-center text-center p-4 absolute top-0 left-0">
-                    <i 
-class="fas fa-video camera-icon"></i>
-                    <p class="mt-2 text-sm text-gray-500">Camera access is required for Vastu analysis.</p>
+             
+                <p class="text-center text-sm mb-4">
+                    <span 
+    id="captureCount">0/8</span> Segments Captured. Scan takes ~16 seconds.
+                </p>
+     
+       
+                <div id="captureProgressContainer" class="h-2 bg-gray-200 rounded-full mt-2 mb-4 hidden">
+                    <div id="captureProgress" class="h-2 bg-green-500 rounded-full transition-all duration-100"></div>
                 </div>
-            </div>
-         
-            <p class="text-center text-sm mb-4">
-                <span 
-id="captureCount">0/8</span> Segments Captured. Scan takes ~16 seconds.
-            </p>
 
-            <button id="captureButton" class="primary-btn w-full p-3 rounded-lg font-bold mb-4" disabled>
-                <i class="fas fa-location-arrow mr-2"></i>Start 16-Second Vastu Scan
-            </button>
- 
-   
-            <div id="captureProgressContainer" class="h-2 bg-gray-200 rounded-full mt-2 mb-4 hidden">
-                <div id="captureProgress" class="h-2 bg-green-500 rounded-full transition-all duration-100"></div>
-            </div>
-            <div id="gallery" class="flex flex-wrap gap-2 justify-center p-2 border-dashed border-2 border-gray-300 rounded-lg bg-white overflow-y-auto max-h-40">
-            </div>
-        </div>
-
-        <div id="stepContent6" class="step-content hidden">
-            
-            <div id="reportLoader" 
-class="text-center py-8 hidden no-print">
-                <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
-                <p class="mt-4 font-semibold text-gray-600">Generating Formal Report...</p>
-                <p class="text-xs text-gray-500 mt-2">The process may take a few seconds.</p>
-            </div>
-
-           
- <div class="flex border-b border-gray-200 mb-4 no-print">
-                <button id="reportTab" class="py-2 px-4 text-sm font-bold text-gray-600 border-b-2 border-transparent transition-colors hover:bg-gray-50 active-tab-style">
-                    <i class="fas fa-file-alt mr-1"></i> Full Report
-                </button>
-                <button id="chatTab" class="py-2 px-4 text-sm font-bold text-gray-600 border-b-2 border-transparent transition-colors 
-hover:bg-gray-50">
-                    <i class="fas fa-comment-dots mr-1"></i> Vastu Chatbot
-                </button>
-            </div>
-
-
-            <div id="reportView" class="tab-content">
-                <div id="reportContent" class="glass-card p-4 h-96 overflow-y-auto text-sm report-section">
-          Awaiting Scan Data.
-</div>
-            </div>
-            
-            <div id="chatView" class="tab-content hidden no-print">
-                <div id="chatMessages" class="glass-card p-4 h-96 overflow-y-auto text-sm flex flex-col space-y-2">
-                    <div class="ai-message chat-message text-gray-700">
-           <i class="fas fa-robot mr-1 text-blue-500"></i>
-                        Hello!
-I am your Vastu AI Assistant. Ask me a general question about Vastu, or ask me for details about the report you just generated (e.g., "Tell me more about the North-East zone in my report").
-</div>
+                <!-- *** SUGGESTION 5: Gallery now populates with slots *** -->
+                <div id="gallery" class="flex flex-wrap gap-2 justify-center p-2 border-dashed border-2 border-gray-300 rounded-lg bg-white overflow-y-auto max-h-40">
+                    <!-- JS will populate this with slots -->
                 </div>
-                <div class="flex mt-4">
-                    <input type="text" id="chatInput" placeholder="Ask your Vastu question..." class="flex-1 p-3 border border-gray-300 rounded-l-lg focus:ring-blue-500 focus:border-blue-500 text-gray-800" disabled>
-                    <button id="sendChatButton" class="primary-btn p-3 rounded-r-lg font-bold" disabled>
-                   <i class="fas fa-paper-plane"></i>
+                <!-- Button moved to footer -->
+            </div>
+
+            <div id="stepContent6" class="step-content hidden">
+                
+                <div id="reportLoader" 
+    class="text-center py-8 hidden no-print">
+                    <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
+                    <p class="mt-4 font-semibold text-gray-600">Generating Formal Report...</p>
+                    <p class="text-xs text-gray-500 mt-2">The process may take a few seconds.</p>
+                </div>
+
+               
+     <div class="flex border-b border-gray-200 mb-4 no-print">
+                    <button id="reportTab" class="py-2 px-4 text-sm font-bold text-gray-600 border-b-2 border-transparent transition-colors hover:bg-gray-50 active-tab-style">
+                        <i class="fas fa-file-alt mr-1"></i> Full Report
+                    </button>
+                    <button id="chatTab" class="py-2 px-4 text-sm font-bold text-gray-600 border-b-2 border-transparent transition-colors 
+    hover:bg-gray-50">
+                        <i class="fas fa-comment-dots mr-1"></i> Vastu Chatbot
+                    </button>
+                </div>
+
+
+                <div id="reportView" class="tab-content">
+                    <div id="reportContent" class="glass-card p-4 h-96 overflow-y-auto text-sm report-section">
+              Awaiting Scan Data.
+    </div>
+                </div>
+                
+                <div id="chatView" class="tab-content hidden no-print">
+                    <div id="chatMessages" class="glass-card p-4 h-96 overflow-y-auto text-sm flex flex-col space-y-2">
+                        <div class="ai-message chat-message text-gray-700">
+               <i class="fas fa-robot mr-1 text-blue-500"></i>
+                            Hello!
+    I am your Vastu AI Assistant. Ask me a general question about Vastu, or ask me for details about the report you just generated (e.g., "Tell me more about the North-East zone in my report").
+    </div>
+                    </div>
+                    <div class="flex mt-4">
+                        <input type="text" id="chatInput" placeholder="Ask your Vastu question..." class="flex-1 p-3 border border-gray-300 rounded-l-lg focus:ring-blue-500 focus:border-blue-500 text-gray-800" disabled>
+                        <button id="sendChatButton" class="primary-btn p-3 rounded-r-lg font-bold" disabled>
+                       <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Buttons moved to footer -->
+            </div>
+        </div> <!-- === END MAIN CONTENT === -->
+
+
+        <!-- === STICKY FOOTER (Suggestion 1) === -->
+        <div id="actionFooter" class="flex-shrink-0">
+            <!-- Step 1 Button -->
+            <div id="footerStep1" class="footer-step-wrapper">
+                <button id="tipsNextButton" class="primary-btn w-full p-3 rounded-lg font-bold">
+                    Next: Activate Sensors <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+            <!-- Step 2 Button -->
+            <div id="footerStep2" class="footer-step-wrapper">
+                <button id="compassButton" class="primary-btn w-full p-3 rounded-lg font-bold">
+                    <i class="fas fa-magic mr-2"></i>Activate Sensors
+                </button>
+            </div>
+            <!-- Step 3 Button -->
+            <div id="footerStep3" class="footer-step-wrapper">
+                <button id="holisticNextButton" class="primary-btn w-full p-3 rounded-lg font-bold">
+                    Next: Floor Plan <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+            <!-- Step 4 Button -->
+            <div id="footerStep4" class="footer-step-wrapper">
+                 <button id="cameraButton" class="primary-btn w-full p-3 rounded-lg font-bold" disabled>
+                    <i class="fas fa-arrow-right mr-2"></i>Next: Activate Camera
+                </button>
+            </div>
+            <!-- Step 5 Button -->
+            <div id="footerStep5" class="footer-step-wrapper">
+                <button id="captureButton" class="primary-btn w-full p-3 rounded-lg font-bold" disabled>
+                    <i class="fas fa-location-arrow mr-2"></i>Start 16-Second Vastu Scan
+                </button>
+            </div>
+            <!-- Step 6 Buttons -->
+            <div id="footerStep6" class="footer-step-wrapper">
+                <div class="flex flex-wrap -mx-1 no-print">
+                    <button id="deepAnalysisButton" class="primary-btn p-3 rounded-lg font-bold bg-blue-500 hover:bg-blue-600 w-full sm:w-auto sm:flex-1 m-1" style="box-shadow: 0 4px #1d4ed8;" disabled>
+                        <i class="fas fa-exclamation-triangle mr-2"></i>Expert Analysis
+                    </button>
+                   
+                     <button id="analyzeButton" class="primary-btn p-3 rounded-lg font-bold w-full sm:w-auto sm:flex-1 m-1" disabled>
+                        <i class="fas fa-chart-area mr-2"></i>Formal Report
+                     </button>
+                </div>
+                <div class="flex flex-wrap -mx-1 no-print mt-2">
+                    <!-- *** SUGGESTION 3: Scan Again Button *** -->
+                    <button id="scanAgainButton" class="secondary-btn p-3 rounded-lg font-bold w-[calc(50%-0.5rem)] sm:w-auto sm:flex-1 m-1">
+                        <i class="fas fa-redo mr-2"></i>New Scan
+                    </button>
+                    <button id="saveReportButton" class="primary-btn p-3 rounded-lg font-bold bg-green-500 hover:bg-green-600 w-[calc(50%-0.5rem)] sm:w-auto sm:flex-1 m-1 hidden" style="box-shadow: 0 4px #047857;">
+                        <i class="fas 
+        fa-file-export mr-2"></i>Export .txt
+                    </button>
+                    <button id="printReportButton" class="primary-btn p-3 rounded-lg font-bold bg-gray-500 hover:bg-gray-600 w-full sm:w-auto sm:flex-1 m-1 mt-2 sm:mt-0 hidden" style="box-shadow: 0 4px #4b5563;">
+                        <i class="fas fa-print mr-2"></i>Print/Save PDF
                     </button>
                 </div>
             </div>
-
-
-            <div class="mt-4 flex flex-wrap -mx-1 no-print">
-                <button id="deepAnalysisButton" class="primary-btn p-3 rounded-lg font-bold bg-blue-500 hover:bg-blue-600 w-full sm:w-auto sm:flex-1 m-1" style="box-shadow: 0 4px #1d4ed8;" disabled>
-                    <i class="fas fa-exclamation-triangle mr-2"></i>Expert Analysis
-                </button>
-               
- <button id="analyzeButton" class="primary-btn p-3 rounded-lg font-bold w-full sm:w-auto sm:flex-1 m-1" disabled>
-                    <i class="fas fa-chart-area mr-2"></i>Formal Report
-                 </button>
-                <button id="saveReportButton" class="primary-btn p-3 rounded-lg font-bold bg-green-500 hover:bg-green-600 w-[calc(50%-0.5rem)] sm:w-auto m-1 hidden" style="box-shadow: 0 4px #047857;">
-                    <i class="fas 
-fa-file-export mr-2"></i>Export .txt
-                </button>
-                <button id="printReportButton" class="primary-btn p-3 rounded-lg font-bold bg-gray-500 hover:bg-gray-600 w-[calc(50%-0.5rem)] sm:w-auto m-1 hidden" style="box-shadow: 0 4px #4b5563;">
-                    <i class="fas fa-print mr-2"></i>Print/Save PDF
-                </button>
-            </div>
-            
         </div>
+        <!-- === END STICKY FOOTER === -->
+
 
         <!-- 
         ======================================================================
@@ -665,7 +773,6 @@ let roomLocationInHouse = null; // Default
         let floorNumber = "";
 
         // --- REMOVED: FLOOR PLANNER GLOBALS ---
-        // let fabricCanvas = null;
         
         const VASTU_ZONES_16 = [
             "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
@@ -691,6 +798,15 @@ let roomLocationInHouse = null; // Default
 
         // --- NEW: STEP 4 GRID DOM ELEMENTS ---
         let roomTypeGrid, roomLocationGrid;
+        
+        // --- NEW: STICKY FOOTER DOM ELEMENTS ---
+        let actionFooter, footerStepWrappers;
+
+        // --- NEW: STEP 4 CHECKLIST DOM ELEMENTS ---
+        let step4Checklist, checklistRoom, checklistLocation, checklistFloor;
+
+        // --- NEW: SCAN AGAIN BUTTON ---
+        let scanAgainButton;
 
 
         // --- TUTORIAL MODAL ELEMENTS (Add these lines) ---
@@ -776,11 +892,25 @@ formattedText = formattedText.replace(/\n\n/g, '\n\n');
                 }
             });
 
+            // --- NEW: Sticky Footer Logic ---
+            footerStepWrappers.forEach((wrapper, index) => {
+                const stepNum = index + 1;
+                if (stepNum === currentStep) {
+                    wrapper.style.display = 'block';
+                } else {
+                    wrapper.style.display = 'none';
+                }
+            });
+
             if (currentStep === 4) { // Location Step
                 checkStep4Completion(); // Check if next button should be enabled
             
             } else if (currentStep === 5) { // Scan Step
+                if (capturedFrames.length === 0) {
+                    initializeGallerySlots(); // *** NEW (Suggestion 5) ***
+                }
                 captureButton.disabled = isCapturing || capturedFrames.length >= totalCaptures;
+
             } else if (currentStep === 6) { // Report Step
                 analyzeButton.disabled = isReportGenerating || capturedFrames.length < totalCaptures;
                 deepAnalysisButton.disabled = isReportGenerating || capturedFrames.length < totalCaptures; 
@@ -828,6 +958,7 @@ formattedText = formattedText.replace(/\n\n/g, '\n\n');
             });
 
             updateRoomDisplay(); // Set initial text
+            updateChecklist(); // Set initial checklist
         }
 
         function selectGridCell(grid, cell, type) {
@@ -858,6 +989,34 @@ formattedText = formattedText.replace(/\n\n/g, '\n\n');
                 cameraButton.disabled = false;
             } else {
                 cameraButton.disabled = true;
+            }
+            updateChecklist(); // *** NEW (Suggestion 4) ***
+        }
+
+        // --- *** NEW: Step 4 Checklist UI Function (Suggestion 4) *** ---
+        function updateChecklist() {
+            if (currentRoomTag) {
+                checklistRoom.innerHTML = `<i class="far fa-check-square mr-2 text-green-500"></i>Room: <strong>${currentRoomTag}</strong>`;
+                checklistRoom.className = 'checklist-item complete';
+            } else {
+                checklistRoom.innerHTML = `<i class="far fa-square mr-2"></i>Select Room Type`;
+                checklistRoom.className = 'checklist-item pending';
+            }
+
+            if (roomLocationInHouse) {
+                checklistLocation.innerHTML = `<i class="far fa-check-square mr-2 text-green-500"></i>Location: <strong>${roomLocationInHouse}</strong>`;
+                checklistLocation.className = 'checklist-item complete';
+            } else {
+                checklistLocation.innerHTML = `<i class="far fa-square mr-2"></i>Select Room Location`;
+                checklistLocation.className = 'checklist-item pending';
+            }
+
+            if (floorNumber.trim().length > 0) {
+                checklistFloor.innerHTML = `<i class="far fa-check-square mr-2 text-green-500"></i>Floor: <strong>${floorNumber}</strong>`;
+                checklistFloor.className = 'checklist-item complete';
+            } else {
+                checklistFloor.innerHTML = `<i class="far fa-square mr-2"></i>Enter Floor`;
+                checklistFloor.className = 'checklist-item pending';
             }
         }
         // --- *** END: Step 4 Grid Logic *** ---
@@ -1235,7 +1394,7 @@ capturedFrames = [];
             captureCountDisplay.textContent = `0/${totalCaptures}`;
             captureButton.disabled = true;
             captureButton.textContent = 'Scanning... (Hold Steady)';
-            gallery.innerHTML = '';
+            // gallery.innerHTML = ''; // --- MODIFIED: Don't clear, just let it be overwritten
             captureProgressContainer.classList.remove('hidden');
 captureProgress.style.width = '0%';
             analyzeButton.disabled = true;
@@ -1249,7 +1408,8 @@ let capturesTaken = 0;
 if (frameData) {
                     capturedFrames.push(frameData);
 capturesTaken++;
-                    displayCapturedFramesInGallery();
+                    // *** NEW: Call new display function ***
+                    displayCapturedFrame(frameData, capturesTaken - 1);
                     captureCountDisplay.textContent = `${capturesTaken}/${totalCaptures}`;
                     captureProgress.style.width = `${(capturesTaken / totalCaptures) * 100}%`;
 if (capturesTaken >= totalCaptures) {
@@ -1290,28 +1450,39 @@ analyzeButton.disabled = true;
             }
         }
 
-        function displayCapturedFramesInGallery() {
-            gallery.innerHTML = '';
-capturedFrames.forEach((frame, index) => {
-                const img = document.createElement('img');
-                img.src = `data:image/jpeg;base64,${frame.image}`;
-                img.className = 'w-16 h-16 object-cover rounded-md border border-gray-300';
-                img.title = `Segment ${index + 1}: ${frame.zone} (${frame.heading}°)`;
-              
+        // --- *** NEW: Function to fill one gallery slot (Suggestion 5) *** ---
+        function displayCapturedFrame(frame, index) {
+            const allSlots = gallery.querySelectorAll('.gallery-slot');
+            if (index >= allSlots.length) return; // Safety check
 
-                const container = document.createElement('div');
-                container.className = 'relative flex flex-col items-center justify-center p-1';
-                const label = document.createElement('span');
-                label.className = 'text-xxs text-center text-gray-500 mt-1 truncate w-16';
-                
+            const slot = allSlots[index];
+            slot.innerHTML = ''; // Clear the slot number
+            slot.classList.remove('gallery-slot');
+            slot.classList.add('frame-item');
 
-                label.textContent = `${getVastuZone(frame.heading).split(' ')[0]} (${index + 1})`;
-        
-                container.appendChild(img);
-                container.appendChild(label);
-                gallery.appendChild(container);
-            });
-}
+            const img = document.createElement('img');
+            img.src = `data:image/jpeg;base64,${frame.image}`;
+            img.alt = `Segment ${index + 1}: ${frame.zone}`;
+            img.title = `Segment ${index + 1}: ${frame.zone} (${frame.heading}°)`;
+            
+            const labelContainer = document.createElement('div');
+            labelContainer.className = 'frame-data';
+            labelContainer.innerHTML = `<span class="text-xs font-bold text-blue-500">#${index + 1}</span> | ${frame.heading.toFixed(1)}°`;
+
+            slot.appendChild(img);
+            slot.appendChild(labelContainer);
+        }
+
+        // --- *** NEW: Function to create empty gallery slots (Suggestion 5) *** ---
+        function initializeGallerySlots() {
+            gallery.innerHTML = ''; // Clear previous images
+            for (let i = 0; i < totalCaptures; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'gallery-slot';
+                slot.innerHTML = `<i class="far fa-image"></i>`;
+                gallery.appendChild(slot);
+            }
+        }
         
         // --- STEP 6: REPORT GENERATION (SYNCHRONOUS) ---
 
@@ -1339,6 +1510,7 @@ reportContent.innerHTML = displayCapturedFrames();
             printReportButton.classList.add('hidden'); // Hide print button
             chatInput.disabled = true;
             sendChatButton.disabled = true;
+            scanAgainButton.disabled = true; // Disable during generation
 
             // Format holistic context for the prompt
             let holisticIssues = "None specified";
@@ -1419,6 +1591,7 @@ reportContent.innerHTML = errorHtml + displayCapturedFrames();
 reportLoader.classList.add('hidden');
                 analyzeButton.disabled = false;
                 deepAnalysisButton.disabled = false; // Re-enable
+                scanAgainButton.disabled = false; // Re-enable
             }
         }
 
@@ -1550,26 +1723,43 @@ chatInput.disabled = false;
             // --- IMPROVEMENT: ALL DOM ELEMENT GRABBERS MOVED HERE ---
             stepContents = [1, 2, 3, 4, 5, 6].map(i => document.getElementById(`stepContent${i}`));
             stepIndicators = [1, 2, 3, 4, 5, 6].map(i => document.getElementById(`step${i}`));
+            
+            // --- Buttons are now in the footer ---
             tipsNextButton = document.getElementById('tipsNextButton');
+            compassButton = document.getElementById('compassButton');
+            holisticNextButton = document.getElementById('holisticNextButton');
+            cameraButton = document.getElementById('cameraButton');
+            captureButton = document.getElementById('captureButton');
+            analyzeButton = document.getElementById('analyzeButton');
+            deepAnalysisButton = document.getElementById('deepAnalysisButton');
+            saveReportButton = document.getElementById('saveReportButton');
+            printReportButton = document.getElementById('printReportButton');
+            scanAgainButton = document.getElementById('scanAgainButton'); // *** NEW ***
+
+            // --- Sticky Footer Wrappers ---
+            actionFooter = document.getElementById('actionFooter');
+            footerStepWrappers = [
+                document.getElementById('footerStep1'),
+                document.getElementById('footerStep2'),
+                document.getElementById('footerStep3'),
+                document.getElementById('footerStep4'),
+                document.getElementById('footerStep5'),
+                document.getElementById('footerStep6')
+            ];
+
+            // --- Other UI Elements ---
             headingDisplay = document.getElementById('headingDisplay');
             sensorStatus = document.getElementById('sensorStatus');
             compassNeedle = document.getElementById('compassNeedle');
-            compassButton = document.getElementById('compassButton');
-            cameraButton = document.getElementById('cameraButton');
             captureCanvas = document.getElementById('captureCanvas');
             cameraVideo = document.getElementById('cameraVideo');
             cameraFallback = document.getElementById('cameraFallback');
             overlayHeading = document.getElementById('overlayHeading');
             overlayZone = document.getElementById('overlayZone');
             gallery = document.getElementById('gallery');
-            captureButton = document.getElementById('captureButton');
             captureCountDisplay = document.getElementById('captureCount');
             captureProgressContainer = document.getElementById('captureProgressContainer');
             captureProgress = document.getElementById('captureProgress');
-            analyzeButton = document.getElementById('analyzeButton');
-            deepAnalysisButton = document.getElementById('deepAnalysisButton');
-            saveReportButton = document.getElementById('saveReportButton');
-            printReportButton = document.getElementById('printReportButton');
             reportContent = document.getElementById('reportContent');
             reportLoader = document.getElementById('reportLoader');
             reportTab = document.getElementById('reportTab');
@@ -1585,6 +1775,10 @@ chatInput.disabled = false;
             floorNumberInput = document.getElementById('floorNumberInput'); 
             roomTypeGrid = document.getElementById('roomTypeGrid');
             roomLocationGrid = document.getElementById('roomLocationGrid');
+            step4Checklist = document.getElementById('step4Checklist');
+            checklistRoom = document.getElementById('checklistRoom');
+            checklistLocation = document.getElementById('checklistLocation');
+            checklistFloor = document.getElementById('checklistFloor');
 
 
             holisticNextButton = document.getElementById('holisticNextButton');
@@ -1649,6 +1843,32 @@ chatInput.disabled = false;
             });
 
             // --- 2. Free Step Navigation (REMOVED) ---
+
+            // --- 3. Scan Again Button (Suggestion 3) ---
+            scanAgainButton.addEventListener('click', () => {
+                // Reset all state variables
+                currentRoomTag = null;
+                roomLocationInHouse = null;
+                floorNumber = "";
+                capturedFrames = [];
+                fullReportMarkdown = "";
+                chatContextSummary = "";
+                chatHistory = [];
+                userIssues = [];
+                propertySurroundings = {};
+
+                // Reset UI elements
+                floorNumberInput.value = "";
+                initializeStep4Grids(); // Resets grids and checklist
+                initializeGallerySlots(); // Resets gallery to empty slots
+                reportContent.innerHTML = "Awaiting Scan Data.";
+                document.querySelectorAll('.concern-checkbox').forEach(cb => cb.checked = false);
+                surroundingsWater.value = "";
+                surroundingsHills.value = "";
+
+                // Go back to Step 1
+                updateNextStepHighlight(1);
+            });
 
             // ====================================================================
             // END: NEW TUTORIAL & NAVIGATION LISTENERS
