@@ -7,8 +7,7 @@
 AI Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- NEW: Fabric.js library for 2D drawing -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+    <!-- REMOVED: Fabric.js library -->
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
@@ -269,72 +268,56 @@ align-self: flex-start;
         */
 
         /* ======================================================================
-        START: FLOOR PLANNER STYLES (NEW)
+        START: NEW STEP 4 GRID STYLES
         ======================================================================
         */
-        #plannerContainer {
-            position: relative;
-            width: 100%;
-            /* 1:1 Aspect Ratio */
-            padding-top: 100%; 
-            background-color: #fff;
-            border-radius: 0.5rem;
-            overflow: hidden;
-        }
-
-        #directionGrid {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+        .location-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            grid-template-rows: 1fr 1fr 1fr;
-            pointer-events: none;
-            z-index: 1;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 0.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--color-secondary);
         }
-
-        .grid-cell {
+        .location-cell {
             display: flex;
             align-items: center;
             justify-content: center;
+            text-align: center;
             font-size: 0.75rem;
             font-weight: 600;
-            color: var(--color-secondary);
-            border: 1px dashed var(--color-secondary);
-            opacity: 0.7;
+            color: var(--color-text-dark);
+            background-color: #fff;
+            border: 1px solid var(--color-secondary);
+            border-radius: 0.5rem;
+            padding: 0.75rem 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            line-height: 1.2;
+            min-height: 50px;
         }
-
-        /* Place text in the correct cells */
-        .grid-cell:nth-child(1) { align-items: flex-start; justify-content: flex-start; padding: 4px; } /* NW */
-        .grid-cell:nth-child(2) { align-items: flex-start; } /* N */
-        .grid-cell:nth-child(3) { align-items: flex-start; justify-content: flex-end; padding: 4px; } /* NE */
-        .grid-cell:nth-child(4) { justify-content: flex-start; } /* W */
-        .grid-cell:nth-child(5) { 
-            font-size: 1rem;
-            color: var(--color-primary);
-        } /* Center */
-        .grid-cell:nth-child(6) { justify-content: flex-end; } /* E */
-        .grid-cell:nth-child(7) { align-items: flex-end; justify-content: flex-start; padding: 4px; } /* SW */
-        .grid-cell:nth-child(8) { align-items: flex-end; } /* S */
-        .grid-cell:nth-child(9) { align-items: flex-end; justify-content: flex-end; padding: 4px; } /* SE */
-
-        #floorPlanCanvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 2;
+        .location-cell:hover {
+            background-color: #eff6ff; /* Blue 50 */
+            border-color: var(--color-primary);
+        }
+        .location-cell.selected {
+            background-color: var(--color-primary);
+            color: white;
+            border-color: var(--color-text-dark);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transform: scale(1.05);
         }
         /* ====================================================================
-        END: FLOOR PLANNER STYLES
+        END: NEW STEP 4 GRID STYLES
         ======================================================================
         */
 
     </style>
 </head>
 <body class="p-4 sm:p-8">
-    <div id="appContainer" class="glass-card w-full max-w-sm sm:max-w-xl md:max-w-2xl p-6 space-y-6">
+    <!-- *** FIX: Added max-h-[90vh] and overflow-y-auto to main container *** -->
+    <div id="appContainer" class="glass-card w-full max-w-sm sm:max-w-xl md:max-w-2xl p-6 space-y-6 overflow-y-auto max-h-[90vh]">
 
         <h1 class="text-xl sm:text-2xl font-extrabold text-center no-print">Vastu Pro Analyzer |
 AI Edition</h1>
@@ -369,11 +352,10 @@ Report & Chat</div>
                     <!-- UPDATED FAQ for Step 4 -->
                     <div>
                         <p class="font-bold text-blue-700">Q: What is the "Floor Plan" in Step 4?</p>
-                        <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This is the most critical step. Use the tools to draw a simple block plan of your house.<br>
-                        1. Add blocks and arrange them to match your layout.<br>
-                        2. Select the *outer wall* blocks and click "Set Outer Wall". This finds the center (Brahmasthan).<br>
-                        3. Add blocks for your rooms. Click a room, label it, and the app will auto-find its Vastu zone.<br>
-                        4. This selection is used as the context for your scan in Step 5.</p>
+                        <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This is the most critical step.
+                        <br>1. First, select the <strong>type of room</strong> you are in (e.g., "Kitchen").
+                        <br>2. Second, select <strong>where that room is located</strong> in your house (e.g., "South-East").
+                        <br>This two-part selection is required for an accurate analysis.</p>
                     </div>
                     <div>
                         <p class="font-bold text-blue-700">Q: What's the difference between the two report buttons?</p>
@@ -457,53 +439,46 @@ class="fas fa-arrow-up absolute text-red-500 text-3xl transition-transform" styl
         </div>
         
         <!-- ======================================================================
-        START: STEP 4 (NEW FLOOR PLANNER)
+        START: STEP 4 (NEW GRID-BASED PLANNER)
         ======================================================================
         -->
-        <div id="stepContent4" class="step-content hidden no-print">
-            <p class="text-sm text-center text-gray-600 mb-2">Draw your floor plan to find the center and auto-select zones.</p>
+        <div id="stepContent4" class="step-content hidden no-print space-y-4">
             
-            <!-- Planner Toolbar -->
-            <div class="flex flex-wrap gap-2 mb-2">
-                <button id="addRoomButton" class="secondary-btn text-xs py-2 px-3 rounded-lg font-semibold flex-1"><i class="fas fa-plus mr-1"></i> Add Room</button>
-                <button id="setOuterWallButton" class="secondary-btn text-xs py-2 px-3 rounded-lg font-semibold flex-1 bg-blue-100"><i class="fas fa-vector-square mr-1"></i> Set Outer Wall</button>
-                <button id="labelRoomButton" class="secondary-btn text-xs py-2 px-3 rounded-lg font-semibold flex-1"><i class="fas fa-tag mr-1"></i> Label Selected</button>
-                <button id="deleteRoomButton" class="secondary-btn text-xs py-2 px-3 rounded-lg font-semibold flex-1 bg-red-100 text-red-700 border-red-300"><i class="fas fa-trash mr-1"></i> Delete</button>
+            <!-- Part 1: Select Room Type -->
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">
+                    Step 4a: What room are you scanning?
+                </label>
+                <div id="roomTypeGrid" class="location-grid">
+                    <!-- JS will populate this -->
+                </div>
             </div>
 
-            <!-- Planner Canvas Container -->
-            <div id="plannerContainer" class="glass-card">
-                <!-- Directional Grid (CSS Background) -->
-                <div id="directionGrid">
-                    <div class="grid-cell">NW</div>
-                    <div class="grid-cell">N</div>
-                    <div class="grid-cell">NE</div>
-                    <div class="grid-cell">W</div>
-                    <div class="grid-cell"><i class="fas fa-dot-circle"></i></div>
-                    <div class="grid-cell">E</div>
-                    <div class="grid-cell">SW</div>
-                    <div class="grid-cell">S</div>
-                    <div class="grid-cell">SE</div>
+            <!-- Part 2: Select Location in House -->
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">
+                    Step 4b: Where is this room in your house?
+                </label>
+                <div id="roomLocationGrid" class="location-grid">
+                    <!-- JS will populate this -->
                 </div>
-                <!-- Fabric.js Canvas -->
-                <canvas id="floorPlanCanvas"></canvas>
             </div>
             
             <p class="text-center text-xs text-gray-500 my-2 p-2 glass-card" id="currentRoomDisplay">
-                Selected for Scan: <strong>General Property Scan</strong> (in <strong>Center</strong>)
+                Selected for Scan: <strong>...</strong> (in <strong>...</strong>)
             </p>
 
-            <!-- Re-purposed floorNumberInput -->
-            <div class="mt-4 p-4 glass-card">
+            <!-- Part 3: Floor Number -->
+            <div class="p-4 glass-card">
                 <label for="floorNumberInput" class="block text-sm font-bold text-gray-700 mb-2">
-                    Which floor is this plan for?
+                    Step 4c: Which floor is this on?
                 </label>
-                <input type="text" id="floorNumberInput" placeholder="E.g., 1st Floor, 2nd Floor, Ground Floor (Required)" 
+                <input type="text" id="floorNumberInput" placeholder="E.g., 1st Floor, Ground Floor (Required)" 
                        class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500">
             </div>
 
-            <!-- Re-purposed cameraButton -->
-            <button id="cameraButton" class="primary-btn w-full p-3 rounded-lg font-bold mt-4">
+            <!-- Next Button -->
+            <button id="cameraButton" class="primary-btn w-full p-3 rounded-lg font-bold mt-4" disabled>
                 <i class="fas fa-arrow-right mr-2"></i>Next: Activate Camera
             </button>
         </div>
@@ -685,14 +660,13 @@ const captureIntervalTime = 2000; // 2 seconds
 // 16 seconds
 
         // --- GLOBAL STATE FOR ROOM CONTEXT ---
-        let currentRoomTag = "General Property Scan"; // Default
-let roomLocationInHouse = "Center"; // Default
+        let currentRoomTag = null; // Default
+let roomLocationInHouse = null; // Default
         let floorNumber = "";
 
-        // --- NEW: FLOOR PLANNER GLOBALS ---
-        let fabricCanvas = null;
-        let brahmaCenter = null; // Will store { x, y }
-        let brahmaDot = null; // The visual circle
+        // --- REMOVED: FLOOR PLANNER GLOBALS ---
+        // let fabricCanvas = null;
+        
         const VASTU_ZONES_16 = [
             "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
             "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"
@@ -711,12 +685,12 @@ let roomLocationInHouse = "Center"; // Default
             captureCountDisplay, captureProgressContainer, captureProgress, analyzeButton,
             deepAnalysisButton, saveReportButton, printReportButton, reportContent,
             reportLoader, reportTab, chatTab, reportView, chatView, chatMessages,
-            chatInput, sendChatButton, roomSelectionContainer, currentRoomDisplay,
-            roomLocationInput, floorNumberInput, holisticNextButton,
+            chatInput, sendChatButton, currentRoomDisplay,
+            floorNumberInput, holisticNextButton,
             userConcernsContainer, surroundingsWater, surroundingsHills;
 
-        // --- NEW: FLOOR PLANNER DOM ELEMENTS ---
-        let plannerContainer, addRoomButton, setOuterWallButton, labelRoomButton, deleteRoomButton;
+        // --- NEW: STEP 4 GRID DOM ELEMENTS ---
+        let roomTypeGrid, roomLocationGrid;
 
 
         // --- TUTORIAL MODAL ELEMENTS (Add these lines) ---
@@ -731,19 +705,8 @@ let roomLocationInHouse = "Center"; // Default
             return VASTU_ZONES_16[index % 16];
 }
 
-        // --- NEW: Planner Zone Calculation ---
-        function getVastuZoneFromAngle(angle) {
-            // This function is for the CANVAS (0 = East)
-            // 1. Convert Fabric.js angle (0=East) to Compass angle (0=North)
-            // Fabric: 0=E, 90=S, 180=W, 270=N
-            // Compass: 0=N, 90=E, 180=S, 270=W
-            let compassAngle = (360 - angle + 90) % 360;
-            
-            // 2. Use the same logic as getVastuZone
-            const offset = 11.25; // 22.5 / 2
-            let index = Math.floor(((compassAngle + offset) % 360) / 22.5);
-            return VASTU_ZONES_16[index % 16];
-        }
+        // --- REMOVED: Planner Zone Calculation ---
+        // function getVastuZoneFromAngle(angle) { ... }
 
 
         // IMPROVEMENT: RE-ENABLED asterisk-to-strong conversion
@@ -799,20 +762,7 @@ formattedText = formattedText.replace(/\n\n/g, '\n\n');
         // IMPROVEMENT: Updated for 6 steps
         function updateNextStepHighlight(currentStep = 1) {
             
-            // --- NEW NAVIGATION/TOGGLE LOGIC ---
-            // Stop sensors/camera IF we are navigating AWAY from the steps that use them.
-            if (isCapturing) {
-                // Don't allow navigation while actively capturing
-                return; 
-            }
-            if (currentStep !== 5 && isCameraActive) {
-                stopVideoStream();
-            }
-            // Stop compass if not on step 2 (activate) or 5 (scan)
-            if (currentStep !== 2 && currentStep !== 5 && isCompassActive) {
-                stopCompassLogic();
-            }
-            // --- END NEW LOGIC ---
+            // --- REMOVED: Free navigation sensor logic ---
 
             stepContents.forEach((content, index) => {
                 const stepNum = index + 1;
@@ -827,22 +777,8 @@ formattedText = formattedText.replace(/\n\n/g, '\n\n');
             });
 
             if (currentStep === 4) { // Location Step
-                // This button now just goes to the next step
-                cameraButton.disabled = false;
-                cameraButton.innerHTML = `<i class="fas fa-arrow-right mr-2"></i>Next: Activate Camera`;
-                
-                // --- *** CANVAS RESPONSIVENESS FIX *** ---
-                if (!fabricCanvas) {
-                    initializePlanner();
-                } else {
-                    // This is the fix: Recalculate size and offsets EVERY time tab is shown
-                    const containerWidth = plannerContainer.clientWidth;
-                    fabricCanvas.setDimensions({ width: containerWidth, height: containerWidth });
-                    fabricCanvas.calcOffset();
-                    fabricCanvas.renderAll();
-                }
-                // --- END FIX ---
-
+                checkStep4Completion(); // Check if next button should be enabled
+            
             } else if (currentStep === 5) { // Scan Step
                 captureButton.disabled = isCapturing || capturedFrames.length >= totalCaptures;
             } else if (currentStep === 6) { // Report Step
@@ -857,11 +793,74 @@ formattedText = formattedText.replace(/\n\n/g, '\n\n');
             showTutorial(currentStep);
         }
 
-        // --- REMOVED initializeRoomSelection() ---
-        // This is now handled by the new Floor Planner
+        // --- *** NEW: Step 4 Grid Logic *** ---
+        function initializeStep4Grids() {
+            const ROOM_TYPES = [
+                'Living Room', 'Kitchen', 'Master Bed',
+                'Bedroom', 'Pooja Room', 'Toilet/Bath',
+                'Main Entrance', 'Staircase', 'Study Room'
+            ];
 
-        // --- REMOVED selectRoom() ---
-        // This is now handled by the new Floor Planner
+            const LOCATIONS = [
+                'NW', 'N', 'NE',
+                'W', 'Center', 'E',
+                'SW', 'S', 'SE'
+            ];
+
+            roomTypeGrid.innerHTML = '';
+            ROOM_TYPES.forEach(type => {
+                const cell = document.createElement('div');
+                cell.className = 'location-cell';
+                cell.textContent = type;
+                cell.dataset.value = type;
+                cell.addEventListener('click', () => selectGridCell(roomTypeGrid, cell, 'room'));
+                roomTypeGrid.appendChild(cell);
+            });
+
+            roomLocationGrid.innerHTML = '';
+            LOCATIONS.forEach(loc => {
+                const cell = document.createElement('div');
+                cell.className = 'location-cell';
+                cell.textContent = loc;
+                cell.dataset.value = loc;
+                cell.addEventListener('click', () => selectGridCell(roomLocationGrid, cell, 'location'));
+                roomLocationGrid.appendChild(cell);
+            });
+
+            updateRoomDisplay(); // Set initial text
+        }
+
+        function selectGridCell(grid, cell, type) {
+            // Remove 'selected' from all siblings
+            Array.from(grid.children).forEach(c => c.classList.remove('selected'));
+            // Add 'selected' to the clicked cell
+            cell.classList.add('selected');
+
+            if (type === 'room') {
+                currentRoomTag = cell.dataset.value;
+            } else if (type === 'location') {
+                roomLocationInHouse = cell.dataset.value;
+            }
+
+            updateRoomDisplay();
+            checkStep4Completion();
+        }
+
+        function updateRoomDisplay() {
+            const room = currentRoomTag || '...';
+            const loc = roomLocationInHouse || '...';
+            currentRoomDisplay.innerHTML = `Selected for Scan: <strong>${room}</strong> (in <strong>${loc}</strong> zone)`;
+        }
+
+        function checkStep4Completion() {
+            // Check if all 3 parts of Step 4 are complete
+            if (currentRoomTag && roomLocationInHouse && floorNumber.trim().length > 0) {
+                cameraButton.disabled = false;
+            } else {
+                cameraButton.disabled = true;
+            }
+        }
+        // --- *** END: Step 4 Grid Logic *** ---
 
         
         // IMPROVEMENT: RE-ADDED switchReportTab function
@@ -918,14 +917,12 @@ chatView.classList.remove('hidden');
                     break;
                 case 4:
                     // --- *** NEW: DEEPER TUTORIAL FOR STEP 4 *** ---
-                    if (localStorage.getItem('vastuPlannerTutorialSkipped') === 'true') return;
-                    title = "Step 4: Floor Plan (Required)";
-                    body = `This is the <strong>most critical step</strong> for accuracy. Follow this guide:
-                        <br><br><strong>1. Add Rooms:</strong> Click 'Add Room' to create blocks. Drag them to match your layout. You can drag the corners to resize and the handle at the top to rotate.
-                        <br><br><strong>2. Find Center:</strong> Select all the blocks that make up your <strong>outer walls</strong> (hold Shift to select multiple, or drag a selection box).
-                        <br><br><strong>3. Set Center:</strong> Click 'Set Outer Wall'. This finds the center (Brahmasthan) and marks it with a blue dot.
-                        <br><br><strong>4. Label Rooms:</strong> Add new blocks for your inner rooms. Select one and click 'Label Selected' (e.g., "Kitchen").
-                        <br><br><strong>5. Select for Scan:</strong> After labeling, just <strong>tap any room</strong>. The app will auto-calculate its Vastu Zone and select it for the scan.`;
+                    title = "Step 4: Location (Required)";
+                    body = `This is the <strong>most critical step</strong> for accuracy. Please complete all 3 parts:
+                        <br><br><strong>1. Room Type:</strong> Tap the button for the room you are currently in.
+                        <br><br><strong>2. Room Location:</strong> Tap the button for where this room is located within your *entire* house plan.
+                        <br><br><strong>3. Floor:</strong> Type the floor number.
+                        <br><br>The 'Next' button will activate once all three are complete.`;
                     break;
                 case 5:
                     title = "Step 5: The 360° Scan";
@@ -982,7 +979,7 @@ headingDisplay.textContent = `Heading: ${currentHeading}°`;
 }
 
         // Handles permission request on iOS
-        function requestIOSSensorPermission() {
+        function requestIOSSensorPermission(navigateToStep) {
              if (typeof DeviceOrientationEvent.requestPermission === 'function') {
                 DeviceOrientationEvent.requestPermission()
                     .then(permissionState => {
@@ -991,26 +988,26 @@ headingDisplay.textContent = `Heading: ${currentHeading}°`;
                             // Add listeners *after* permission is granted
                             window.addEventListener('deviceorientation', handleOrientation);
                             window.addEventListener('deviceorientationabsolute', handleOrientation);
-                            startCompassLogic(); // Now start the logic
+                            startCompassLogic(navigateToStep); // Now start the logic
      
                    } else {
                             // Permission denied
                             console.warn("Sensor permission denied by user.");
-                            startCompassSimulation();
+                            startCompassSimulation(navigateToStep);
         }
                     })
                     .catch(e => {
     console.error('Sensor permission error:', e);
-                        startCompassSimulation(); // Fallback on error
+                        startCompassSimulation(navigateToStep); // Fallback on error
                     });
 } else {
                 // Not iOS 13+, or not a function
-                startCompassLogic();
+                startCompassLogic(navigateToStep);
 }
         }
 
         // Start logic with original, complex listener attachment check
-        function startCompassLogic() {
+        function startCompassLogic(navigateToStep = null) {
             if (isCompassActive) return;
             
             if (window.DeviceOrientationEvent) {
@@ -1021,7 +1018,7 @@ headingDisplay.textContent = `Heading: ${currentHeading}°`;
                      window.addEventListener('deviceorientationabsolute', handleOrientation);
                 }
             } else {
-                 startCompassSimulation(); // No sensors found
+                 startCompassSimulation(navigateToStep); // No sensors found
 return;
             }
 
@@ -1030,25 +1027,27 @@ return;
                     // No sensor data received after 1s
                     console.warn("No sensor data. Falling back to simulation.");
                     stopCompassLogic(); // Stop listeners
-                    startCompassSimulation();
+                    startCompassSimulation(navigateToStep);
                 } 
             }, 1000); // 1 second timeout
 
 
             isCompassActive = true;
 sensorStatus.textContent = 'Sensors: Active';
-            // --- BUTTON TOGGLE (NOW RED) ---
+            // --- BUTTON REVERTED TO SEQUENTIAL ---
             compassButton.classList.remove('primary-btn');
-            compassButton.classList.add('bg-red-500', 'hover:bg-red-600', 'primary-btn'); // Make it a red toggle
-            compassButton.innerHTML = '<i class="fas fa-times mr-2"></i>Deactivate Sensors';
-            compassButton.style.boxShadow = '0 4px #b91c1c';
-            compassButton.disabled = false; // It's a toggle
+            compassButton.classList.add('bg-gray-400');
+            compassButton.innerHTML = '<i class="fas fa-check mr-2"></i>Sensors Active';
+            compassButton.style.boxShadow = 'none';
+            compassButton.disabled = true; // Not a toggle
             
-            // IMPROVEMENT: Go to new Step 3 (Holistic Context)
-            updateNextStepHighlight(3);
-}
+            // *** NEW CONDITIONAL NAVIGATION ***
+            if (navigateToStep) {
+                updateNextStepHighlight(navigateToStep);
+            }
+        }
 
-        function startCompassSimulation() {
+        function startCompassSimulation(navigateToStep = null) {
             if (isCompassActive) return;
 isCompassActive = true;
             let simHeading = 0;
@@ -1064,37 +1063,38 @@ simulationInterval = setInterval(() => {
                 overlayZone.textContent = `Zone: ${getVastuZone(currentHeading)}`;
             }, 100);
             
-            // --- BUTTON TOGGLE (NOW RED) ---
+            // --- BUTTON REVERTED TO SEQUENTIAL ---
             compassButton.classList.remove('primary-btn');
-            compassButton.classList.add('bg-red-500', 'hover:bg-red-600', 'primary-btn'); // Make it a red toggle
-            compassButton.innerHTML = '<i class="fas fa-times mr-2"></i>Deactivate Sensors (SIM)';
-            compassButton.style.boxShadow = '0 4px #b91c1c';
-            compassButton.disabled = false; // It's a toggle
+            compassButton.classList.add('bg-gray-400');
+            compassButton.innerHTML = '<i class="fas fa-check mr-2"></i>Simulation Active';
+            compassButton.style.boxShadow = 'none';
+            compassButton.disabled = true; // Not a toggle
             
-            // IMPROVEMENT: Go to new Step 3 (Holistic Context)
-            updateNextStepHighlight(3);
-}
+            // *** NEW CONDITIONAL NAVIGATION ***
+            if (navigateToStep) {
+                updateNextStepHighlight(navigateToStep);
+            }
+        }
         
         // --- REFACTORED activateCompass ---
-        function activateCompass() {
-            // --- NEW TOGGLE LOGIC ---
+        function activateCompass(navigateToStep = null) {
+            // --- REVERTED: No longer a toggle ---
             if (isCompassActive) {
-                stopCompassLogic(); // This will stop sensors and reset the button
                 return;
             }
             
             // --- NEW PERMISSION-FIRST LOGIC ---
             if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
                 // This is iOS 13+. Must request permission.
-                requestIOSSensorPermission();
+                requestIOSSensorPermission(navigateToStep);
             } 
             else if (window.DeviceOrientationEvent) {
                 // This is Android or other non-iOS. No permission needed.
-                startCompassLogic();
+                startCompassLogic(navigateToStep);
             } 
             else {
                 // No sensors detected.
-                startCompassSimulation();
+                startCompassSimulation(navigateToStep);
             }
         }
 
@@ -1114,7 +1114,7 @@ videoStream = null;
             cameraButton.classList.add('primary-btn');
             cameraButton.innerHTML = `<i class="fas fa-arrow-right mr-2"></i>Next: Activate Camera`;
             cameraButton.style.boxShadow = '0 4px var(--color-text-dark)';
-            cameraButton.disabled = false;
+            checkStep4Completion(); // Re-check if button should be enabled
         }
 
         function stopCompassLogic() {
@@ -1148,19 +1148,14 @@ sensorCheckTimeout = null;
 
 
         async function activateCamera() {
-            // --- NEW TOGGLE LOGIC ---
-            // This button now has two roles:
-            // 1. On Step 4: It's a "Next" button.
-            // 2. On Step 5: It will be a "Deactivate" toggle (in future)
-            // For now, it just moves to Step 5
-            
+            // This button is now ONLY a "Next" button on Step 4
             const currentStep = Array.from(stepIndicators).findIndex(s => s.classList.contains('step-active')) + 1;
 
             if (currentStep === 4) {
                 // We are on the floor plan step. Move to camera step.
                 // We also need to activate the compass FOR the camera step
                 if (!isCompassActive) {
-                    activateCompass();
+                    activateCompass(null); // *** FIX: Pass null to prevent navigation ***
                 }
                 updateNextStepHighlight(5); // Go to Step 5
                 
@@ -1544,177 +1539,9 @@ chatInput.disabled = false;
         }
 
         // ----------------------------------------------------------------------------------
-        // --- NEW: FLOOR PLANNER FUNCTIONS ---
+        // --- REMOVED: FLOOR PLANNER FUNCTIONS ---
         // ----------------------------------------------------------------------------------
-
-        function initializePlanner() {
-            if (fabricCanvas) return; // Already initialized
-
-            plannerContainer = document.getElementById('plannerContainer');
-            const canvasEl = document.getElementById('floorPlanCanvas');
-
-            // Resize canvas to fit the container
-            const containerWidth = plannerContainer.clientWidth;
-            // --- *** FIX IS HERE *** ---
-            // The container's height is set by padding-top: 100%, so clientHeight will be 0.
-            // We must use clientWidth for both dimensions to respect the 1:1 ratio.
-            const containerHeight = containerWidth; 
-            canvasEl.width = containerWidth;
-            canvasEl.height = containerHeight;
-
-            fabricCanvas = new fabric.Canvas('floorPlanCanvas', {
-                width: containerWidth,
-                height: containerHeight,
-                backgroundColor: 'rgba(0,0,0,0)', // Transparent
-            });
-
-            // --- *** NEW: ENABLE CONTROLS *** ---
-            fabric.Object.prototype.transparentCorners = false;
-            fabric.Object.prototype.cornerColor = 'var(--color-primary)';
-            fabric.Object.prototype.cornerStyle = 'circle';
-            fabric.Object.prototype.borderColor = 'var(--color-primary)';
-            fabric.Object.prototype.borderScaleFactor = 2;
-            fabric.Object.prototype.cornerSize = 10;
-            // --- END NEW ---
-
-            // Add tool listeners
-            addRoomButton.addEventListener('click', () => {
-                const room = new fabric.Rect({
-                    left: fabricCanvas.width / 2 - 25,
-                    top: fabricCanvas.height / 2 - 25,
-                    fill: 'rgba(255, 255, 255, 0.7)',
-                    width: 50,
-                    height: 50,
-                    stroke: 'var(--color-primary)',
-                    strokeWidth: 2,
-                    data: { type: 'room', label: 'Unlabeled' } // Custom data
-                });
-                fabricCanvas.add(room);
-            });
-
-            deleteRoomButton.addEventListener('click', () => {
-                fabricCanvas.getActiveObjects().forEach(obj => {
-                    fabricCanvas.remove(obj);
-                });
-                fabricCanvas.discardActiveObject().renderAll();
-            });
-
-            labelRoomButton.addEventListener('click', () => {
-                const activeObj = fabricCanvas.getActiveObject();
-                if (!activeObj) {
-                    alert("Please select a room block first."); // Simple feedback
-                    return;
-                }
-                const label = prompt("Enter a label for this room (e.g., Kitchen):", activeObj.data.label);
-                if (label) {
-                    activeObj.set('data', { ...activeObj.data, label: label });
-                    // Update selection if this is the currently selected room
-                    if (activeObj.data.type === 'room') {
-                        selectRoomForScan(activeObj);
-                    }
-                }
-            });
-
-            setOuterWallButton.addEventListener('click', () => {
-                const activeObjects = fabricCanvas.getActiveObjects();
-                if (activeObjects.length === 0) {
-                     alert("Please select one or more blocks that make up your outer wall.");
-                    return;
-                }
-                
-                // Reset old walls
-                fabricCanvas.forEachObject(obj => {
-                    if (obj.data.type === 'wall') {
-                        obj.set('data', { ...obj.data, type: 'room' });
-                        obj.set('fill', 'rgba(255, 255, 255, 0.7)');
-                    }
-                });
-
-                // Create a group from selection to find its center
-                const wallGroup = new fabric.Group(activeObjects, {
-                    // We don't add this to canvas, just use it for calculation
-                });
-
-                brahmaCenter = wallGroup.getCenterPoint();
-
-                // Set new walls
-                activeObjects.forEach(obj => {
-                    obj.set('data', { ...obj.data, type: 'wall' });
-                    obj.set('fill', 'rgba(191, 219, 254, 0.7)'); // Blue-200
-                });
-
-                // Remove old dot
-                if (brahmaDot) {
-                    fabricCanvas.remove(brahmaDot);
-                }
-
-                // Add new dot
-                brahmaDot = new fabric.Circle({
-                    left: brahmaCenter.x - 5,
-                    top: brahmaCenter.y - 5,
-                    radius: 5,
-                    fill: 'var(--color-primary)',
-                    stroke: 'white',
-                    strokeWidth: 2,
-                    selectable: false,
-                    evented: false,
-                });
-                fabricCanvas.add(brahmaDot);
-                fabricCanvas.renderAll();
-                
-                // Set default scan context
-                currentRoomTag = "Central Bhramsthan";
-                roomLocationInHouse = "Center";
-                currentRoomDisplay.innerHTML = `Selected for Scan: <strong>${currentRoomTag}</strong> (in <strong>${roomLocationInHouse}</strong> zone)`;
-            });
-
-            // Canvas event: Handle room selection
-            fabricCanvas.on('mouse:down', (options) => {
-                if (options.target) {
-                    const obj = options.target;
-                    // Only select rooms, not walls or the dot
-                    if (obj.data && obj.data.type === 'room') {
-                        selectRoomForScan(obj);
-                    }
-                }
-            });
-        }
-
-        function selectRoomForScan(roomObject) {
-            if (!brahmaCenter) {
-                alert("Please set your outer wall first to find the Brahmasthan (center).");
-                return;
-            }
-
-            const roomCenter = roomObject.getCenterPoint();
-            
-            // Calculate angle from Brahmasthan to room center
-            // 0 degrees is East in this calculation
-            const angleDeg = Math.atan2(
-                roomCenter.y - brahmaCenter.y, 
-                roomCenter.x - brahmaCenter.x
-            ) * 180 / Math.PI;
-
-            const zone = getVastuZoneFromAngle(angleDeg);
-            const label = roomObject.data.label;
-
-            // Set global state
-            currentRoomTag = label;
-            roomLocationInHouse = zone;
-
-            // Update UI
-            currentRoomDisplay.innerHTML = `Selected for Scan: <strong>${label}</strong> (in <strong>${zone}</strong> zone)`;
-            
-            // Visual feedback
-            fabricCanvas.forEachObject(obj => {
-                 if (obj.data && obj.data.type === 'room') {
-                     obj.set('stroke', 'var(--color-primary)'); // Reset others
-                 }
-            });
-            roomObject.set('stroke', '#f97316'); // Highlight selected in orange
-            fabricCanvas.renderAll();
-        }
-
+        
 
         // --- Event Listeners and Initialization ---
         // IMPROVEMENT: All listeners are now wrapped in DOMContentLoaded
@@ -1753,18 +1580,11 @@ chatInput.disabled = false;
             chatInput = document.getElementById('chatInput');
             sendChatButton = document.getElementById('sendChatButton');
             
-            // --- OLD STEP 4 (REMOVED/RE-PURPOSED) ---
-            // roomSelectionContainer = document.getElementById('roomSelectionContainer'); // REMOVED
-            currentRoomDisplay = document.getElementById('currentRoomDisplay'); // RE-PURPOSED
-            // roomLocationInput = document.getElementById('roomLocationInput'); // REMOVED
-            floorNumberInput = document.getElementById('floorNumberInput'); // RE-PURPOSED
-            
-            // --- NEW STEP 4 GRABBERS ---
-            plannerContainer = document.getElementById('plannerContainer'); // Grab container
-            addRoomButton = document.getElementById('addRoomButton');
-            setOuterWallButton = document.getElementById('setOuterWallButton');
-            labelRoomButton = document.getElementById('labelRoomButton');
-            deleteRoomButton = document.getElementById('deleteRoomButton');
+            // --- UPDATED STEP 4 GRABBERS ---
+            currentRoomDisplay = document.getElementById('currentRoomDisplay'); 
+            floorNumberInput = document.getElementById('floorNumberInput'); 
+            roomTypeGrid = document.getElementById('roomTypeGrid');
+            roomLocationGrid = document.getElementById('roomLocationGrid');
 
 
             holisticNextButton = document.getElementById('holisticNextButton');
@@ -1781,8 +1601,7 @@ chatInput.disabled = false;
             // --- END OF DOM ELEMENT GRABBERS ---
 
             // Initial setup
-            // initializeRoomSelection(); // REMOVED
-            currentRoomDisplay.innerHTML = `Selected for Scan: <strong>${currentRoomTag}</strong> (in <strong>${roomLocationInHouse}</strong> zone)`;
+            initializeStep4Grids(); // *** NEW ***
             updateNextStepHighlight(); // Defaults to step 1 (Tips)
             switchReportTab('report'); // Default to report tab
         
@@ -1792,7 +1611,8 @@ chatInput.disabled = false;
             // Listener for the new Step 3 button
             holisticNextButton.addEventListener('click', () => updateNextStepHighlight(4));
             
-            compassButton.addEventListener('click', activateCompass);
+            // *** FIX: Pass navigation step to compass ***
+            compassButton.addEventListener('click', () => activateCompass(3));
             
             // cameraButton now serves 2 purposes
             cameraButton.addEventListener('click', activateCamera);
@@ -1822,26 +1642,13 @@ chatInput.disabled = false;
 
                 if (userIsSure) {
                     localStorage.setItem('vastuAppTutorialsSkipped', 'true');
-                    // --- NEW: Also skip planner tutorial ---
-                    localStorage.setItem('vastuPlannerTutorialSkipped', 'true'); 
                     tutorialOverlay.classList.add('hidden');
                 } else if (!userIsSure) {
                     tutorialOverlay.classList.add('hidden');
                 }
             });
 
-            // --- 2. Free Step Navigation (Your Request) ---
-            stepIndicators.forEach((indicator, index) => {
-                const stepToOpen = index + 1;
-                indicator.addEventListener('click', () => {
-                    // This allows clicking on any step (1-6) to navigate
-                    if (!isCapturing) { // Block navigation while scan is in progress
-                        updateNextStepHighlight(stepToOpen);
-                    }
-                });
-                // Add cursor-pointer to show they are clickable
-                indicator.classList.add('cursor-pointer'); 
-            });
+            // --- 2. Free Step Navigation (REMOVED) ---
 
             // ====================================================================
             // END: NEW TUTORIAL & NAVIGATION LISTENERS
@@ -1861,12 +1668,9 @@ chatInput.disabled = false;
             });
 
             // Listeners for Step 4 inputs
-            // roomLocationInput.addEventListener('input', () => { // REMOVED
-            //      roomLocationInHouse = roomLocationInHouse.value.trim();
-            // });
-    // Update floorNumber on input change
             floorNumberInput.addEventListener('input', () => {
                  floorNumber = floorNumberInput.value.trim();
+                 checkStep4Completion(); // Check if next button should be enabled
             });
 
             // Listeners for Step 6
