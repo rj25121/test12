@@ -124,6 +124,9 @@ box-shadow: 0 2px var(--color-text-dark);
         /* *** NEW: Step 4 Compass *** */
         #step4CompassNeedle {
             transition: transform 0.1s linear;
+            /* NEW: Proper needle origin */
+            transform-origin: bottom; 
+            bottom: 50%;
         }
 
         /* --- Report Formatting --- */
@@ -229,10 +232,15 @@ align-self: flex-start;
 
         /* --- PRINT-FRIENDLY STYLES --- */
         @media print {
+            /* --- *** PRINT FIX *** --- */
+            html, body {
+                overflow: visible !important;
+                height: auto !important;
+                background-color: #fff;
+            }
             body {
                 padding: 0;
                 margin: 0;
-                background-color: #fff;
             }
             /* Hide all .no-print elements */
             .no-print {
@@ -242,17 +250,12 @@ align-self: flex-start;
             /* Expand all containers */
             #appContainer, #analyzerWrapper {
                 max-height: none;
-                overflow: visible;
-                display: block;
+                overflow: visible !important;
+                display: block !important;
                 box-shadow: none;
                 border: none;
             }
             
-            /* --- *** PRINT FIX *** --- */
-            html, body {
-                overflow: visible !important;
-                height: auto !important;
-            }
             #mainContentArea, #stepContent6 {
                 overflow: visible !important;
                 height: auto !important;
@@ -705,7 +708,7 @@ align-self: flex-start;
                                     <span class="absolute right-2.5 text-sm font-bold text-gray-500">E</span>
                                     <div class="w-1 h-1 bg-gray-400 rounded-full"></div>
                                     <!-- The existing needle -->
-                                    <i id="step4CompassNeedle" class="fas fa-arrow-up absolute text-red-500 text-3xl transition-transform" style="transform: rotate(0deg); transform-origin: bottom; bottom: 50%;"></i>
+                                    <i id="step4CompassNeedle" class="fas fa-arrow-up absolute text-red-500 text-3xl transition-transform" style="transform: rotate(0deg);"></i>
                                 </div>
                             </div>
                              <!-- *** END: Compass Dial *** -->
@@ -1822,6 +1825,7 @@ captureProgressContainer.classList.add('hidden');
 if (capturedFrames.length === totalCaptures) {
                 // IMPROVEMENT: Go to new Step 6 (Report)
                 updateNextStepHighlight(6);
+                if(isTutorialActive) showTutorialTip(analyzeButton, "Scan complete! Tap here for your <strong>Formal Report</strong>.", 'bottom');
 analyzeButton.disabled = false;
                 deepAnalysisButton.disabled = false; // Enable new button
             } else {
@@ -2403,8 +2407,18 @@ chatInput.disabled = false;
                 if (saveReportButton) saveReportButton.classList.add('hidden');
                 if (printReportButton) printReportButton.classList.add('hidden');
                 switchReportTab('full'); // Default to full report tab
+                
+                // --- 7. RESET UI - CHAT ---
+                if (chatMessages) {
+                    // Remove all but the first (intro) message
+                    while (chatMessages.children.length > 1) {
+                        chatMessages.removeChild(chatMessages.lastChild);
+                    }
+                }
+                if (chatInput) chatInput.value = "";
 
-                // --- 7. NAVIGATE TO START ---
+
+                // --- 8. NAVIGATE TO START ---
                 isTutorialActive = true; // RESTART TUTORIAL FLOW
                 switchMainTab('analyzer'); // Ensure we are on the analyzer tab
                 updateNextStepHighlight(1); // Go back to Step 1
@@ -2500,5 +2514,4 @@ chatInput.disabled = false;
 </script>
 </body>
 </html>
-
 
