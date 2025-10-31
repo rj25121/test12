@@ -830,10 +830,19 @@ formattedText = formattedText.replace(/\n\n/g, '\n\n');
                 // This button now just goes to the next step
                 cameraButton.disabled = false;
                 cameraButton.innerHTML = `<i class="fas fa-arrow-right mr-2"></i>Next: Activate Camera`;
-                // Initialize planner if it hasn't been
+                
+                // --- *** CANVAS RESPONSIVENESS FIX *** ---
                 if (!fabricCanvas) {
                     initializePlanner();
+                } else {
+                    // This is the fix: Recalculate size and offsets EVERY time tab is shown
+                    const containerWidth = plannerContainer.clientWidth;
+                    fabricCanvas.setDimensions({ width: containerWidth, height: containerWidth });
+                    fabricCanvas.calcOffset();
+                    fabricCanvas.renderAll();
                 }
+                // --- END FIX ---
+
             } else if (currentStep === 5) { // Scan Step
                 captureButton.disabled = isCapturing || capturedFrames.length >= totalCaptures;
             } else if (currentStep === 6) { // Report Step
@@ -908,8 +917,15 @@ chatView.classList.remove('hidden');
                     body = "This step is optional but highly recommended.<br><br>Telling the AI your personal concerns (like 'Financial' or 'Health') helps it create remedies that are specifically tailored to your goals.";
                     break;
                 case 4:
+                    // --- *** NEW: DEEPER TUTORIAL FOR STEP 4 *** ---
+                    if (localStorage.getItem('vastuPlannerTutorialSkipped') === 'true') return;
                     title = "Step 4: Floor Plan (Required)";
-                    body = "This is the <strong>most critical step</strong>.<br><br>1. Use 'Add Room' to draw your layout.<br>2. Select the *outer* blocks and press 'Set Outer Wall' to find the center (Brahmasthan).<br>3. Add more blocks for rooms, select one, and press 'Label Selected'.<br>4. Tapping a room will now select it for the scan.";
+                    body = `This is the <strong>most critical step</strong> for accuracy. Follow this guide:
+                        <br><br><strong>1. Add Rooms:</strong> Click 'Add Room' to create blocks. Drag them to match your layout. You can drag the corners to resize and the handle at the top to rotate.
+                        <br><br><strong>2. Find Center:</strong> Select all the blocks that make up your <strong>outer walls</strong> (hold Shift to select multiple, or drag a selection box).
+                        <br><br><strong>3. Set Center:</strong> Click 'Set Outer Wall'. This finds the center (Brahmasthan) and marks it with a blue dot.
+                        <br><br><strong>4. Label Rooms:</strong> Add new blocks for your inner rooms. Select one and click 'Label Selected' (e.g., "Kitchen").
+                        <br><br><strong>5. Select for Scan:</strong> After labeling, just <strong>tap any room</strong>. The app will auto-calculate its Vastu Zone and select it for the scan.`;
                     break;
                 case 5:
                     title = "Step 5: The 360° Scan";
@@ -1552,6 +1568,15 @@ chatInput.disabled = false;
                 backgroundColor: 'rgba(0,0,0,0)', // Transparent
             });
 
+            // --- *** NEW: ENABLE CONTROLS *** ---
+            fabric.Object.prototype.transparentCorners = false;
+            fabric.Object.prototype.cornerColor = 'var(--color-primary)';
+            fabric.Object.prototype.cornerStyle = 'circle';
+            fabric.Object.prototype.borderColor = 'var(--color-primary)';
+            fabric.Object.prototype.borderScaleFactor = 2;
+            fabric.Object.prototype.cornerSize = 10;
+            // --- END NEW ---
+
             // Add tool listeners
             addRoomButton.addEventListener('click', () => {
                 const room = new fabric.Rect({
@@ -1735,6 +1760,7 @@ chatInput.disabled = false;
             floorNumberInput = document.getElementById('floorNumberInput'); // RE-PURPOSED
             
             // --- NEW STEP 4 GRABBERS ---
+            plannerContainer = document.getElementById('plannerContainer'); // Grab container
             addRoomButton = document.getElementById('addRoomButton');
             setOuterWallButton = document.getElementById('setOuterWallButton');
             labelRoomButton = document.getElementById('labelRoomButton');
@@ -1796,6 +1822,8 @@ chatInput.disabled = false;
 
                 if (userIsSure) {
                     localStorage.setItem('vastuAppTutorialsSkipped', 'true');
+                    // --- NEW: Also skip planner tutorial ---
+                    localStorage.setItem('vastuPlannerTutorialSkipped', 'true'); 
                     tutorialOverlay.classList.add('hidden');
                 } else if (!userIsSure) {
                     tutorialOverlay.classList.add('hidden');
