@@ -249,6 +249,10 @@ align-self: flex-start;
             }
             
             /* --- *** PRINT FIX *** --- */
+            html, body {
+                overflow: visible !important;
+                height: auto !important;
+            }
             #mainContentArea, #stepContent6 {
                 overflow: visible !important;
                 height: auto !important;
@@ -781,6 +785,11 @@ align-self: flex-start;
         class="fas fa-video camera-icon"></i>
                             <p class="mt-2 text-sm text-gray-500">Camera access is required for Vastu analysis.</p>
                         </div>
+                        
+                        <!-- *** FIX: Moved Gallery INSIDE camera container *** -->
+                        <div id="gallery" class="absolute bottom-2 left-2 right-2 flex flex-wrap gap-2 justify-center p-2 rounded-lg bg-black/30 backdrop-blur-sm z-30 overflow-y-auto max-h-24">
+                            <!-- JS will populate this with slots -->
+                        </div>
                     </div>
                  
                     <p class="text-center text-sm mb-4">
@@ -790,10 +799,10 @@ align-self: flex-start;
          
                     <!-- *** BUG FIX: Removed duplicate progress bar *** -->
 
-                    <!-- *** SUGGESTION 5: Gallery now populates with slots *** -->
-                    <div id="gallery" class="flex flex-wrap gap-2 justify-center p-2 border-dashed border-2 border-gray-300 rounded-lg bg-white overflow-y-auto max-h-40">
-                        <!-- JS will populate this with slots -->
-                    </div>
+                    <!-- *** SUGGESTION 5: Gallery is now inside camera container *** -->
+                    <!-- <div id="gallery" class="flex flex-wrap gap-2 justify-center p-2 border-dashed border-2 border-gray-300 rounded-lg bg-white overflow-y-auto max-h-40"> -->
+                        <!-- MOVED -->
+                    <!-- </div> -->
                     <!-- Button moved to footer -->
                 </div>
 
@@ -2491,4 +2500,5 @@ chatInput.disabled = false;
 </script>
 </body>
 </html>
+
 
