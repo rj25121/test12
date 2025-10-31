@@ -210,19 +210,25 @@ align-self: flex-start;
                 backdrop-filter: none;
                 padding: 0.5in; /* Reduced padding */
                 font-size: 11pt;
-                color: #000;
+                color: var(--color-text-dark); /* Use theme dark color */
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
             }
             
             /* Ensure report titles print well */
             #reportContent strong {
-                color: #000; /* Black text, not orange */
+                /* REMOVED color: #000; to allow orange to print */
                 border-bottom: 2px solid #ccc;
                 page-break-after: avoid;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
             }
             
             /* Ensure images in the gallery print */
             .image-gallery img {
                 visibility: visible;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
             }
         }
 
@@ -659,6 +665,21 @@ formattedText = formattedText.replace(/\n\n/g, '\n\n');
 
         // IMPROVEMENT: Updated for 6 steps
         function updateNextStepHighlight(currentStep = 1) {
+            
+            // --- NEW NAVIGATION/TOGGLE LOGIC ---
+            // Stop sensors/camera IF we are navigating AWAY from the steps that use them.
+            if (isCapturing) {
+                // Don't allow navigation while actively capturing
+                return; 
+            }
+            if (currentStep !== 5 && isCameraActive) {
+                stopVideoStream();
+            }
+            if (currentStep !== 2 && currentStep !== 4 && currentStep !== 5 && isCompassActive) {
+                stopCompassLogic();
+            }
+            // --- END NEW LOGIC ---
+
             stepContents.forEach((content, index) => {
                 const stepNum = index + 1;
                 stepIndicators[index].classList.remove('step-active');
@@ -716,7 +737,13 @@ floorNumberInput.value = floorNumber;
         function selectRoom(roomName, shouldActivateCamera = true) {
             currentRoomTag = roomName;
 currentRoomDisplay.textContent = `Current Area: ${roomName}`;
-            cameraButton.textContent = `Activate Camera for: ${roomName}`;
+            
+            // Update camera button text *even if not activating*
+            // This ensures the button text is correct if the user just changes the room
+            if (!isCameraActive) {
+                 cameraButton.innerHTML = `<i class="fas fa-camera mr-2"></i>Activate Camera for: ${roomName.replace(/\s*\(.*\)/, "")}`;
+            }
+
             cameraButton.disabled = false;
 document.querySelectorAll('.room-select-btn').forEach(btn => {
                 btn.classList.remove('selected');
@@ -886,10 +913,12 @@ return;
 
             isCompassActive = true;
 sensorStatus.textContent = 'Sensors: Active';
+            // --- BUTTON TOGGLE (NOW RED) ---
             compassButton.classList.remove('primary-btn');
-            compassButton.classList.add('bg-gray-400');
-            compassButton.textContent = 'Sensors Active';
-            compassButton.disabled = true;
+            compassButton.classList.add('bg-red-500', 'hover:bg-red-600', 'primary-btn'); // Make it a red toggle
+            compassButton.innerHTML = '<i class="fas fa-times mr-2"></i>Deactivate Sensors';
+            compassButton.style.boxShadow = '0 4px #b91c1c';
+            compassButton.disabled = false; // It's a toggle
             
             // IMPROVEMENT: Go to new Step 3 (Holistic Context)
             updateNextStepHighlight(3);
@@ -910,18 +939,27 @@ simulationInterval = setInterval(() => {
                 compassNeedle.style.transform = `rotate(-${currentHeading}deg)`;
                 overlayZone.textContent = `Zone: ${getVastuZone(currentHeading)}`;
             }, 100);
-compassButton.classList.remove('primary-btn');
-            compassButton.classList.add('bg-gray-400');
-            compassButton.textContent = 'Simulation Active';
-            compassButton.disabled = true;
+            
+            // --- BUTTON TOGGLE (NOW RED) ---
+            compassButton.classList.remove('primary-btn');
+            compassButton.classList.add('bg-red-500', 'hover:bg-red-600', 'primary-btn'); // Make it a red toggle
+            compassButton.innerHTML = '<i class="fas fa-times mr-2"></i>Deactivate Sensors (SIM)';
+            compassButton.style.boxShadow = '0 4px #b91c1c';
+            compassButton.disabled = false; // It's a toggle
             
             // IMPROVEMENT: Go to new Step 3 (Holistic Context)
             updateNextStepHighlight(3);
 }
         
         function activateCompass() {
-            if (isCompassActive) return;
-if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
+            // --- NEW TOGGLE LOGIC ---
+            if (isCompassActive) {
+                stopCompassLogic(); // This will stop sensors and reset the button
+                return;
+            }
+            // --- END TOGGLE LOGIC ---
+
+            if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
                 requestIOSSensorPermission();
 } 
             else if (window.DeviceOrientationEvent) {
@@ -934,24 +972,36 @@ if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermis
 
 
         function stopVideoStream() {
+            if (!isCameraActive) return; // Already stopped
             if (videoStream) {
                 videoStream.getTracks().forEach(track => track.stop());
 videoStream = null;
-                isCameraActive = false;
-                cameraVideo.classList.add('hidden');
-                cameraFallback.classList.remove('hidden');
             }
+            isCameraActive = false;
+            cameraVideo.classList.add('hidden');
+            cameraFallback.classList.remove('hidden');
+
+            // Reset button state
+            cameraButton.classList.remove('bg-red-500', 'hover:bg-red-600', 'bg-gray-400');
+            cameraButton.classList.add('primary-btn');
+            cameraButton.innerHTML = `<i class="fas fa-camera mr-2"></i>Activate Camera for: ${currentRoomTag.replace(/\s*\(.*\)/, "")}`;
+            cameraButton.style.boxShadow = '0 4px var(--color-text-dark)';
+            cameraButton.disabled = false;
         }
 
         function stopCompassLogic() {
-            if (!isCompassActive) return;
-isCompassActive = false;
+            if (!isCompassActive) return; // Already stopped
+            isCompassActive = false;
             sensorStatus.textContent = 'Sensors: Inactive';
-            compassButton.classList.remove('bg-gray-400');
+            
+            // Reset button state
+            compassButton.classList.remove('bg-red-500', 'hover:bg-red-600', 'bg-gray-400');
             compassButton.classList.add('primary-btn');
-            compassButton.textContent = 'Activate Sensors';
+            compassButton.innerHTML = '<i class="fas fa-magic mr-2"></i>Activate Sensors';
+            compassButton.style.boxShadow = '0 4px var(--color-text-dark)';
             compassButton.disabled = false;
-headingDisplay.textContent = 'Heading: N/A';
+
+            headingDisplay.textContent = 'Heading: N/A';
             overlayHeading.textContent = 'N/A';
             compassNeedle.style.transform = `rotate(0deg)`;
             overlayZone.textContent = 'Zone: Unknown';
@@ -970,8 +1020,15 @@ sensorCheckTimeout = null;
 
 
         async function activateCamera() {
-            if (isCameraActive) return;
-if (!currentRoomTag) {
+            // --- NEW TOGGLE LOGIC ---
+            if (isCameraActive) {
+                stopVideoStream(); // This will stop video and reset the button
+                updateNextStepHighlight(4); // Stay on step 4
+                return;
+            }
+            // --- END TOGGLE LOGIC ---
+
+            if (!currentRoomTag) {
 return;
             }
 
@@ -993,10 +1050,12 @@ cameraVideo.srcObject = videoStream;
                 await cameraVideo.play();
 
                 isCameraActive = true;
-                cameraButton.textContent = `Camera Active for: ${currentRoomTag}`;
-                cameraButton.disabled = true;
+                // --- BUTTON TOGGLE (NOW RED) ---
                 cameraButton.classList.remove('primary-btn');
-cameraButton.classList.add('bg-gray-400');
+                cameraButton.classList.add('bg-red-500', 'hover:bg-red-600', 'primary-btn'); // Red toggle
+                cameraButton.innerHTML = `<i class="fas fa-times mr-2"></i>Deactivate Camera`;
+                cameraButton.style.boxShadow = '0 4px #b91c1c';
+                cameraButton.disabled = false; // It's a toggle
                 
                 // IMPROVEMENT: Go to new Step 5 (Scan)
                 updateNextStepHighlight(5);
@@ -1429,7 +1488,8 @@ chatInput.disabled = false;
             
             compassButton.addEventListener('click', activateCompass);
     cameraButton.addEventListener('click', () => {
-                 if (document.getElementById('stepContent4').classList.contains('hidden')) return; // Check for new step 4
+                 // OLD: if (document.getElementById('stepContent4').classList.contains('hidden')) return; 
+                 // NEW: No check needed, activateCamera is now a self-contained toggle.
                  selectRoom(currentRoomTag, true);
             });
     captureButton.addEventListener('click', startCapture);
@@ -1472,7 +1532,9 @@ chatInput.disabled = false;
                 const stepToOpen = index + 1;
                 indicator.addEventListener('click', () => {
                     // This allows clicking on any step (1-6) to navigate
-                    updateNextStepHighlight(stepToOpen);
+                    if (!isCapturing) { // Block navigation while scan is in progress
+                        updateNextStepHighlight(stepToOpen);
+                    }
                 });
                 // Add cursor-pointer to show they are clickable
                 indicator.classList.add('cursor-pointer'); 
