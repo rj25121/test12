@@ -7,6 +7,7 @@
 AI Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
 :root {
@@ -50,9 +51,9 @@ box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
         /* Step Indicator Styles */
         .step-indicator {
             transition: all 0.3s ease;
-/* UPDATED: Made smaller for icons */
-            min-width: 50px;
-padding-left: 0.5rem;
+            /* UPDATED: Made smaller for icons */
+            min-width: 50px; 
+            padding-left: 0.5rem;
             padding-right: 0.5rem;
 }
         .step-active {
@@ -64,11 +65,11 @@ border-bottom: 2px solid var(--color-primary);
         /* --- NEW: Main App Tab Styles --- */
         .main-tab {
             transition: all 0.2s ease;
-border-bottom: 3px solid transparent;
+            border-bottom: 3px solid transparent;
         }
         .main-tab.active {
             color: var(--color-primary);
-border-bottom-color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
         }
 
         /* Button Styles */
@@ -95,25 +96,25 @@ box-shadow: 0 2px var(--color-text-dark);
         /* NEW: Secondary button style for planner tools */
         .secondary-btn {
             background-color: #fff;
-color: var(--color-text-dark);
+            color: var(--color-text-dark);
             border: 1px solid var(--color-primary);
             transition: all 0.2s;
             box-shadow: 0 2px var(--color-secondary);
-}
+        }
         .secondary-btn:hover:not(:disabled) {
             background-color: #eff6ff;
 /* Blue 50 */
             box-shadow: 0 2px var(--color-primary);
-}
+        }
         .secondary-btn:active:not(:disabled) {
             transform: translateY(1px);
-box-shadow: 0 1px var(--color-primary);
+            box-shadow: 0 1px var(--color-primary);
         }
         
         /* Checkbox Styles for new step */
         .concern-checkbox:checked {
             background-color: var(--color-primary);
-border-color: var(--color-text-dark);
+            border-color: var(--color-text-dark);
         }
 
         /* Compass Visual */
@@ -141,7 +142,7 @@ margin-top: 1.5rem;
 }
         #reportContent, #expertReportContent {
             line-height: 1.6;
-}
+        }
         .report-section p {
             margin-bottom: 1em;
 /* Ensures clear paragraph separation */
@@ -150,7 +151,7 @@ margin-top: 1.5rem;
         /* Image Grid Styling for Captured Frames */
         .image-gallery {
             display: grid;
-grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
             gap: 0.5rem;
             padding-bottom: 0.5rem;
             margin-bottom: 0.5rem;
@@ -210,38 +211,38 @@ align-self: flex-start;
         /* --- NEW: Feedback Icons --- */
         .feedback-icons {
             margin-top: 8px;
-opacity: 0.5;
+            opacity: 0.5;
         }
         .feedback-icons i {
             cursor: pointer;
-margin-right: 8px;
+            margin-right: 8px;
             transition: all 0.2s;
         }
         .feedback-icons i:hover {
             opacity: 1;
-transform: scale(1.1);
+            transform: scale(1.1);
         }
         .feedback-icons i.selected {
              opacity: 1;
-color: var(--color-primary);
+             color: var(--color-primary);
         }
 
         /* --- PRINT-FRIENDLY STYLES --- */
         @media print {
             body {
                 padding: 0;
-margin: 0;
+                margin: 0;
                 background-color: #fff;
             }
             /* Hide all .no-print elements */
             .no-print {
                 display: none !important;
-}
+            }
 
             /* Expand all containers */
             #appContainer, #mainContentArea, #analyzerWrapper {
                 max-height: none;
-overflow: visible;
+                overflow: visible;
                 display: block;
                 box-shadow: none;
                 border: none;
@@ -250,45 +251,42 @@ overflow: visible;
             /* --- *** NEW PRINT FIX *** --- */
             /* Hide ALL tab content by default */
             .tab-content {
-                display: none !important;
-}
+                display: none !important; 
+            }
             /* ONLY show the one we tag with .print-this */
             .print-this {
                 display: block !important;
-visibility: visible;
+                visibility: visible;
             }
             #chatView {
-                display: none !important;
-/* Hide chat */
+                display: none !important; /* Hide chat */
             }
 
             /* Make the report content visible and printable */
             .print-this #reportContent, 
             .print-this #expertReportContent {
                 visibility: visible;
-display: block;
+                display: block;
                 width: 100%;
                 height: auto; /* Let content determine height */
-                overflow-y: visible;
-/* Show all content */
+                overflow-y: visible; /* Show all content */
                 background: #fff;
-border: none;
+                border: none;
                 box-shadow: none;
                 backdrop-filter: none;
                 padding: 0.5in; /* Reduced padding */
                 font-size: 11pt;
-color: var(--color-text-dark); /* Use theme dark color */
+                color: var(--color-text-dark); /* Use theme dark color */
                 -webkit-print-color-adjust: exact;
-color-adjust: exact;
+                color-adjust: exact;
             }
             
             /* Ensure report titles print well */
             .print-this #reportContent strong, 
             .print-this #expertReportContent strong {
-                /* REMOVED color: #000;
-to allow orange to print */
+                /* REMOVED color: #000; to allow orange to print */
                 border-bottom: 2px solid #ccc;
-page-break-after: avoid;
+                page-break-after: avoid;
                 -webkit-print-color-adjust: exact;
                 color-adjust: exact;
             }
@@ -296,42 +294,92 @@ page-break-after: avoid;
             /* Ensure images in the gallery print */
             .print-this .image-gallery img {
                 visibility: visible;
--webkit-print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
                 color-adjust: exact;
             }
             /* --- *** END PRINT FIX *** --- */
         }
-
+        
         /* ======================================================================
-        START: (MODIFIED) TUTORIAL MODAL STYLES
+        START: NEW "BALLOON TIP" TUTORIAL STYLES
         ======================================================================
         */
-        #tutorialOverlay {
-            /* This is handled by Tailwind classes (fixed, 
-inset-0, etc.) */
-            /* We add 'hidden' by default */
+        #tutorialTooltip {
+            position: absolute; /* Changed from fixed to absolute */
+            /* NEW: "Glass-like" translucent style */
+            background-color: rgba(255, 255, 255, 0.7); /* Light glass */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--color-text-dark); /* Dark text for readability */
+            padding: 1rem 1.25rem; /* Made larger */
+            border-radius: 1.25rem; /* More rounded */
+            font-size: 0.875rem;
+            font-weight: 600;
+            line-height: 1.4;
+            max-width: 250px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 100;
+            opacity: 0;
+            transform: scale(0.95) translateY(5px);
+            transition: all 0.2s ease-out;
+            visibility: hidden;
+            pointer-events: none; /* So it doesn't block clicks */
         }
-        
-        #tutorialOverlay.hidden {
-            display: none;
-}
-        /* ====================================================================
-        END: TUTORIAL MODAL STYLES
-        ======================================================================
-        */
-        
-        /* --- NEW: Helper Icon Style --- */
-        .info-icon {
-            cursor: pointer;
-            color: var(--color-primary);
-            opacity: 0.7;
-            transition: all 0.2s;
-            margin-left: 8px;
-        }
-        .info-icon:hover {
+
+        #tutorialTooltip.visible {
             opacity: 1;
-            transform: scale(1.1);
+            transform: scale(1) translateY(0);
+            visibility: visible;
         }
+
+        /* The little pointer arrow */
+        #tutorialTooltip::after {
+            content: '';
+            position: absolute;
+            border: 10px solid transparent; /* Made pointer larger */
+        }
+
+        /* Pointing DOWN (when tip is ABOVE element) */
+        #tutorialTooltip.pos-top::after {
+            top: 100%; /* At the bottom of the balloon */
+            left: 50%;
+            transform: translateX(-50%);
+            border-top-color: rgba(255, 255, 255, 0.7);
+            border-bottom-width: 0;
+        }
+
+        /* Pointing UP (when tip is BELOW element) */
+        #tutorialTooltip.pos-bottom::after {
+            bottom: 100%; /* At the top of the balloon */
+            left: 50%;
+            transform: translateX(-50%);
+            border-bottom-color: rgba(255, 255, 255, 0.7);
+            border-top-width: 0;
+        }
+
+        /* Pointing RIGHT (when tip is to the LEFT of element) */
+        #tutorialTooltip.pos-left::after {
+            top: 50%;
+            left: 100%; /* At the right of the balloon */
+            transform: translateY(-50%);
+            border-left-color: rgba(255, 255, 255, 0.7);
+            border-right-width: 0;
+        }
+
+        /* Pointing LEFT (when tip is to the RIGHT of element) */
+        #tutorialTooltip.pos-right::after {
+            top: 50%;
+            right: 100%; /* At the left of the balloon */
+            transform: translateY(-50%);
+            border-right-color: rgba(255, 255, 255, 0.7);
+            border-left-width: 0;
+        }
+        /* ====================================================================
+        END: "BALLOON TIP" STYLES
+        ======================================================================
+        */
+        
 
         /* ======================================================================
         START: NEW STEP 4 GRID STYLES
@@ -339,16 +387,16 @@ inset-0, etc.) */
         */
         .location-grid {
             display: grid;
-grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 0.5rem;
             background-color: rgba(255, 255, 255, 0.7);
             padding: 0.5rem;
             border-radius: 0.75rem;
             border: 1px solid var(--color-secondary);
-}
+        }
         .location-cell {
             display: flex;
-align-items: center;
+            align-items: center;
             justify-content: center;
             text-align: center;
             font-size: 0.75rem;
@@ -357,24 +405,23 @@ align-items: center;
             background-color: #fff;
             border: 1px solid var(--color-secondary);
             border-radius: 0.5rem;
-padding: 0.75rem 0.25rem;
+            padding: 0.75rem 0.25rem;
             cursor: pointer;
             transition: all 0.2s ease;
             line-height: 1.2;
             min-height: 50px;
-}
+        }
         .location-cell:hover {
-            background-color: #eff6ff;
-/* Blue 50 */
+            background-color: #eff6ff; /* Blue 50 */
             border-color: var(--color-primary);
-}
+        }
         .location-cell.selected {
             background-color: var(--color-primary);
-color: white;
+            color: white;
             border-color: var(--color-text-dark);
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             transform: scale(1.05);
-}
+        }
         /* ====================================================================
         END: NEW STEP 4 GRID STYLES
         ======================================================================
@@ -384,18 +431,20 @@ color: white;
         START: NEW UI/UX ENHANCEMENT STYLES
         ======================================================================
         */
+
+        /* --- REMOVED: Tutorial Instruction Box --- */
+
+
         /* --- 5. Gallery Slot --- */
         .gallery-slot {
-  
-          border: 2px dashed var(--color-secondary);
+            border: 2px dashed var(--color-secondary);
             border-radius: 0.5rem;
-background-color: rgba(255, 255, 255, 0.4);
+            background-color: rgba(255, 255, 255, 0.4);
             width: 80px; /* Corresponds to grid-template-columns */
-            height: 80px;
-/* Corresponds to grid-template-columns */
+            height: 80px; /* Corresponds to grid-template-columns */
             display: flex;
             align-items: center;
-justify-content: center;
+            justify-content: center;
             color: var(--color-secondary);
             font-size: 0.75rem;
             aspect-ratio: 1/1;
@@ -405,70 +454,67 @@ justify-content: center;
         #mainContentArea {
             /* This will be the only scrolling part */
             overflow-y: auto;
-flex-grow: 1;
+            flex-grow: 1;
             /* Add padding to content area */
             padding: 0.25rem;
-/* *** FIX: Ensure it can shrink on small screens *** */
+            /* *** FIX: Ensure it can shrink on small screens *** */
             min-height: 200px;
-}
+            /* NEW: For smooth scrolling */
+            scroll-behavior: smooth;
+        }
         #actionFooter {
             border-top: 1px solid rgba(255, 255, 255, 0.3);
-padding-top: 1rem;
+            padding-top: 1rem;
             padding-bottom: 0.5rem; /* Reduced bottom padding */
             flex-shrink: 0;
-}
+        }
         .footer-step-wrapper {
-            display: none;
-/* Hidden by default, JS will show */
+            display: none; /* Hidden by default, JS will show */
         }
 
         /* --- 4. Step 4 Checklist --- */
         #step4Checklist {
             background-color: rgba(255, 255, 255, 0.7);
-border: 1px solid var(--color-secondary);
+            border: 1px solid var(--color-secondary);
         }
         .checklist-item.complete {
             color: var(--color-text-dark);
-font-weight: 600;
+            font-weight: 600;
         }
         .checklist-item.pending {
             color: var(--color-text-light);
-}
+        }
 
         /* --- 6. Step Animation --- */
         @keyframes fadeIn {
-            from { opacity: 0;
-transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0);
-}
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .step-content {
             animation: fadeIn 0.3s ease-out;
-}
+        }
 
         /* --- 1. Larger Reading Area (Step 6) --- */
         #reportContent, #expertReportContent {
             /* REMOVED h-96 */
             /* NEW: Let flex-grow handle the height */
             flex-grow: 1;
-overflow-y: auto;
+            overflow-y: auto;
             /* Give it a min-height to push footer down */
-            min-height: 400px;
-}
+            min-height: 400px; 
+        }
         /* --- NEW: Chat View Structure --- */
         #chatView {
             /* This is now a top-level view */
-            /* REMOVED: display: flex;
-This was the bug. */
+            /* REMOVED: display: flex; This was the bug. */
             flex-direction: column;
-/* Use a fixed height for the chat view based on viewport */
-            height: 65vh;
-}
+            /* Use a fixed height for the chat view based on viewport */
+            height: 65vh; 
+        }
         #chatMessages {
             min-height: 100px;
-flex-grow: 1; /* Make messages area grow */
-            overflow-y: auto;
-/* Make messages scrollable */
+            flex-grow: 1; /* Make messages area grow */
+            overflow-y: auto; /* Make messages scrollable */
         }
         /* --- End Larger Reading Area --- */
 
@@ -479,413 +525,408 @@ flex-grow: 1; /* Make messages area grow */
     </style>
 </head>
 <body class="p-4 sm:p-8">
-    <div id="appContainer" class="glass-card w-full max-w-sm sm:max-w-xl md:max-w-2xl p-6 flex flex-col max-h-[90vh]">
+    <!-- *** MODIFIED: Structural change for sticky footer *** -->
+    <div id="appContainer" class="glass-card w-full max-w-sm sm:max-w-xl md:max-w-2xl p-6 flex flex-col max-h-[90vh] relative"> <!-- NEW: Added relative -->
 
-   
-     <div class="flex-shrink-0">
+        <!-- === HEADER (Non-scrolling) === -->
+        <div class="flex-shrink-0">
             <h1 class="text-xl sm:text-2xl font-extrabold text-center no-print">Vastu Pro Analyzer |
-AI Edition</h1>
+    AI Edition</h1>
             
+            <!-- *** NEW: Main App Tabs *** -->
             <div class="flex justify-center gap-6 border-b border-gray-200 mt-4 no-print">
                 <button id="analyzerTab" class="main-tab active py-2 px-4 font-bold text-lg">
                     <i class="fas fa-camera-retro mr-2"></i>Analyzer
-   
-             </button>
+                </button>
                 <button id="chatbotTab" class="main-tab py-2 px-4 font-bold text-lg">
                     <i class="fas fa-comment-dots mr-2"></i>Vastu Chatbot
                 </button>
             </div>
         </div>
 
-     
-   <div id="analyzerWrapper" class="flex flex-col flex-grow min-h-0">
+        <!-- === ANALYZER WRAPPER (Steps 1-6) === -->
+        <div id="analyzerWrapper" class="flex flex-col flex-grow min-h-0">
+            <!-- *** SUGGESTION 2: Icon-Based Step Indicators *** -->
             <div id="stepIndicatorWrapper" class="flex flex-wrap justify-center text-center text-sm border-b pb-2 border-gray-200 no-print mt-6 flex-shrink-0">
                 <div id="step1" class="step-indicator m-1" title="FAQ"><i class="fas fa-question-circle text-xl"></i></div>
-          
-      <div id="step2" class="step-indicator m-1" title="Sensors"><i class="fas fa-compass text-xl"></i></div>
+                <div id="step2" class="step-indicator m-1" title="Sensors"><i class="fas fa-compass text-xl"></i></div>
                 <div id="step3" class="step-indicator m-1" title="Context"><i class="fas fa-tasks text-xl"></i></div>
                 <div id="step4" class="step-indicator m-1" title="Floor Plan"><i class="fas fa-th-large text-xl"></i></div>
                 <div id="step5" class="step-indicator m-1" title="Scan"><i class="fas fa-camera text-xl"></i></div>
-                <div 
-id="step6" class="step-indicator m-1" title="Report"><i class="fas fa-file-alt text-xl"></i></div>
+                <div id="step6" class="step-indicator m-1" title="Report"><i class="fas fa-file-alt text-xl"></i></div>
             </div>
 
+            <!-- === MAIN CONTENT (Scrolling) === -->
             <div id="mainContentArea" class="my-4">
                 <div id="stepContent1" class="step-content no-print">
+                    <!-- *** REMOVED: Tutorial Box *** -->
                     <div class="glass-card p-4 rounded-lg border-2 border-blue-100 h-96 overflow-y-auto">
-    
-                    <h3 class="font-bold text-lg text-blue-800 mb-3"><i class="fas fa-question-circle mr-2"></i>User FAQ & How-To</h3>
+                        <h3 class="font-bold text-lg text-blue-800 mb-3"><i class="fas fa-question-circle mr-2"></i>User FAQ & How-To</h3>
                         <div class="text-sm text-gray-700 space-y-4">
                             <div>
-               
-                 <p class="font-bold text-blue-700">Q: How do I get the most accurate scan?</p>
-                                <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> Stand in the center of the room and turn in a slow, 360-degree circle.
-Make sure the room is well-lit so the AI can see everything clearly.
-The scan takes about 16 seconds.</p>
+                                <p class="font-bold text-blue-700">Q: How do I get the most accurate scan?</p>
+                                <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> Stand in the center of the room and turn in a slow, 360-degree circle. Make sure the room is well-lit so the AI can see everything clearly. The scan takes about 16 seconds.</p>
                             </div>
                             <div>
-                                <p class="font-bold text-blue-700">Q: What is the "Holistic 
-Context" in Step 3?</p>
-                                <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This is an optional but powerful step.
-By telling the AI your concerns (e.g., "Financial", "Health"), it can tailor the Vastu remedies specifically to help you with those problems.</p>
+                                <p class="font-bold text-blue-700">Q: What is the "Holistic Context" in Step 3?</p>
+                                <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This is an optional but powerful step. By telling the AI your concerns (e.g., "Financial", "Health"), it can tailor the Vastu remedies specifically to help you with those problems.</p>
                             </div>
-                                       <div>
+                            <!-- UPDATED FAQ for Step 4 -->
+                            <div>
                                 <p class="font-bold text-blue-700">Q: What is the "Floor Plan" in Step 4?</p>
                                 <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This is the most critical step.
-<br>1. First, select the <strong>type of room</strong> you are in (e.g., "Kitchen").
-                                <br>2.
-Second, select <strong>where that room is located</strong> in your house (e.g., "South-East").
-<br>This two-part selection is required for an accurate analysis.</p>
+                                <br>1. First, select the <strong>type of room</strong> you are in (e.g., "Kitchen").
+                                <br>2. Second, select <strong>where that room is located</strong> in your house (e.g., "South-East").
+                                <br>This two-part selection is required for an accurate analysis.</p>
                             </div>
                             <div>
-                                <p class="font-bold text-blue-700">Q: What's 
-the difference between the two report buttons?</p>
-                                <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A: "Formal Report"</strong> gives a full, 5-section analysis with simple, practical remedies.
-<strong>"Expert Analysis"</strong> gives a short, bulleted list of high-stakes, structural remedies (like moving a wall) that a human expert might suggest.</p>
+                                <p class="font-bold text-blue-700">Q: What's the difference between the two report buttons?</p>
+                                <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A: "Formal Report"</strong> gives a full, 5-section analysis with simple, practical remedies. <strong>"Expert Analysis"</strong> gives a short, bulleted list of high-stakes, structural remedies (like moving a wall) that a human expert might suggest.</p>
                             </div>
                              <div>
-                       
-         <p class="font-bold text-blue-700">Q: My report failed or was empty.
-What do I do?</p>
-                                <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This can happen if the images are too dark or blurry, triggering the AI's safety filters.
-Please try scanning again in a room with better lighting.</p>
+                                <p class="font-bold text-blue-700">Q: My report failed or was empty. What do I do?</p>
+                                <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This can happen if the images are too dark or blurry, triggering the AI's safety filters. Please try scanning again in a room with better lighting.</p>
                             </div>
                             <div>
-                                <p class="font-bold text-blue-700">Q: 
-Can I scan just one wall?</p>
+                                <p class="font-bold text-blue-700">Q: Can I scan just one wall?</p>
                                 <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> No. The app is designed to capture all 8 directions in a full 360-degree scan to analyze every Vastu zone, not just one.</p>
                             </div>
-        
+                        </div>
+                    </div>
+                    <!-- Button moved to footer -->
                 </div>
-                    </div>
-                    </div>
                 <div id="stepContent2" class="step-content hidden no-print">
-   
-                 <p class="text-sm text-center text-gray-600 mb-4">Please grant permission to access your device's sensors.</p>
+                    <!-- *** REMOVED: Tutorial Box *** -->
+                    <p class="text-sm text-center text-gray-600 mb-4">Please grant permission to access your device's sensors.</p>
                     <div class="flex justify-center items-center p-4">
                         <div class="relative w-24 h-24 sm:w-32 sm:h-32 bg-white rounded-full border-4 border-gray-300 flex items-center justify-center">
-            
-                <i class="fas fa-compass text-6xl text-gray-400"></i>
+                            <i class="fas fa-compass text-6xl text-gray-400"></i>
                             <i id="compassNeedle" 
         class="fas fa-arrow-up absolute text-red-500 text-3xl transition-transform" style="transform: rotate(0deg);"></i>
                         </div>
-           
-         </div>
+                    </div>
                     <p class="text-center font-bold text-lg" id="headingDisplay">Heading: N/A</p>
                     <p class="text-center text-xs text-gray-500 mb-4" id="sensorStatus">Sensors: Inactive</p>
-                     </div>
+                    <!-- Button moved to footer -->
+                </div>
 
                 <div id="stepContent3" class="step-content hidden no-print">
+                    <!-- *** REMOVED: Tutorial Box *** -->
                     <p class="text-sm text-center text-gray-600 mb-4">This step is optional, but helps the AI personalize your report.</p>
                     <div class="glass-card p-4 mb-4">
-                      
-  <label class="block text-sm font-bold text-gray-700 mb-3" id="userConcernsLabel">
-                            Step 3a: What are your primary concerns?
-(Optional)
-                            <i class="fas fa-info-circle info-icon" id="concernsInfo"></i>
+                        <label class="block text-sm font-bold text-gray-700 mb-3" id="userConcernsLabel">
+                            Step 3a: What are your primary concerns? (Optional)
+                            <!-- REMOVED: Info Icon -->
                         </label>
                         <div id="userConcernsContainer" class="grid grid-cols-2 gap-2 text-sm">
                             <label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg">
-             
-                   <input type="checkbox" class="concern-checkbox" value="Financial">
+                                <input type="checkbox" class="concern-checkbox" value="Financial">
                                 <span><i class="fas fa-wallet mr-1"></i> Financial</span>
                             </label>
-              
-              <label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg">
+                            <label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg">
                                 <input type="checkbox" class="concern-checkbox" value="Health">
                                 <span><i class="fas fa-heartbeat mr-1"></i> Health</span>
-         
-                   </label>
+                            </label>
                             <label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg">
                                 <input type="checkbox" class="concern-checkbox" value="Relationships">
-            
-                    <span><i class="fas fa-users mr-1"></i> Relationships</span>
+                                <span><i class="fas fa-users mr-1"></i> Relationships</span>
                             </label>
                             <label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg">
-              
-                  <input type="checkbox" class="concern-checkbox" value="Career">
+                                <input type="checkbox" class="concern-checkbox" value="Career">
                                 <span><i class="fas fa-briefcase mr-1"></i> Career</span>
                             </label>
-               
-         </div>
+                        </div>
                     </div>
 
                     <div class="glass-card p-4">
                         <label class="block text-sm font-bold text-gray-700 mb-2">
-                    
-        Step 3b: What is surrounding the property?
-(Optional)
-                            <i class="fas fa-info-circle info-icon" id="surroundingsInfo"></i>
+                            Step 3b: What is surrounding the property? (Optional)
+                            <!-- REMOVED: Info Icon -->
                         </label>
                         <div class="space-y-2">
                             <input type="text" id="surroundingsWater" placeholder="E.g., River in North, Lake in East"
-              
-                     class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500" data-key="Water Body">
+                                   class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500" data-key="Water Body">
                             <p class="text-xs text-gray-500 mt-1">Water body (lake, river, etc.) and its direction?</p>
                             
-    
-                        <input type="text" id="surroundingsHills" placeholder="E.g., Mountain in South-West"
+                            <input type="text" id="surroundingsHills" placeholder="E.g., Mountain in South-West"
                                    class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500" data-key="Hills">
-                           
- <p class="text-xs text-gray-500 mt-1">Hills or large structures and their direction?</p>
+                            <p class="text-xs text-gray-500 mt-1">Hills or large structures and their direction?</p>
                         </div>
                     </div>
-                    </div>
-     
-           
-                <div id="stepContent4" class="step-content 
-hidden no-print space-y-4">
+                    <!-- Button moved to footer -->
+                </div>
+                
+                <!-- ======================================================================
+                START: STEP 4 (NEW GRID-BASED PLANNER)
+                ======================================================================
+                -->
+                <div id="stepContent4" class="step-content hidden no-print space-y-4">
                     
+                    <!-- *** REMOVED: Tutorial Box *** -->
+
+                    <!-- Part 1: Select Room Type -->
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">
-   
-                         Step 4a: What room are you scanning?
-                            <i class="fas fa-info-circle info-icon" id="roomTypeInfo"></i>
-</label>
-                        <div id="roomTypeGrid" class="location-grid">
-                            </div>
-                 
-   </div>
-
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">
-                     
-       Step 4b: Where is this room in your house?
-                            <i class="fas fa-info-circle info-icon" id="roomLocationInfo"></i>
-</label>
-                        <div id="roomLocationGrid" class="location-grid">
-                            </div>
-                 
-   </div>
-
-                    <div class="glass-card p-3">
-                        <label class="block text-sm font-bold text-gray-700 mb-2 text-center">
-                             Visual North Guide
-                            <i class="fas fa-info-circle info-icon" id="northGuideInfo"></i>
+                            Step 4a: What room are you scanning?
+                            <!-- REMOVED: Info Icon -->
                         </label>
-                        <p class="text-xs text-center text-gray-600 mb-2">Use this to find your direction.</p>
-                        <div class="flex justify-center items-center">
-                            <div class="relative w-16 h-16 bg-white rounded-full border-2 border-gray-300 flex items-center justify-center">
-                                <i class="fas fa-compass text-4xl text-gray-400"></i>
-                                <i id="step4CompassNeedle" class="fas fa-arrow-up absolute text-red-500 text-2xl transition-transform" style="transform: rotate(0deg);"></i>
+                        <div id="roomTypeGrid" class="location-grid">
+                            <!-- JS will populate this -->
+                        </div>
+                    </div>
+
+                    <!-- *** NEW: Side-by-side layout (sm:flex) *** -->
+                    <div class="sm:flex sm:gap-4 sm:items-start" id="roomLocationTarget">
+                        <!-- *** MOVED: STEP 4 VISUAL NORTH GUIDE *** -->
+                        <div class="glass-card p-3 sm:flex-1">
+                            <label class="block text-sm font-bold text-gray-700 mb-2 text-center">
+                                Visual North Guide
+                                <!-- REMOVED: Info Icon -->
+                            </label>
+                            <p class="text-xs text-center text-gray-600 mb-2">Use this to find your direction.</p>
+                            <div class="flex justify-center items-center">
+                                <div class="relative w-16 h-16 bg-white rounded-full border-2 border-gray-300 flex items-center justify-center">
+                                    <i class="fas fa-compass text-4xl text-gray-400"></i>
+                                    <i id="step4CompassNeedle" class="fas fa-arrow-up absolute text-red-500 text-2xl transition-transform" style="transform: rotate(0deg);"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- *** END: STEP 4 VISUAL NORTH GUIDE *** -->
+
+                        <!-- Part 2: Select Location in House -->
+                        <div class="sm:flex-1 mt-4 sm:mt-0"> <!-- NEW: Scroll Target -->
+                            <label class="block text-sm font-bold text-gray-700 mb-2">
+                                Step 4b: Where is this room in your house?
+                                <!-- REMOVED: Info Icon -->
+                            </label>
+                            <div id="roomLocationGrid" class="location-grid">
+                                <!-- JS will populate this -->
                             </div>
                         </div>
                     </div>
+                    <!-- *** END: Side-by-side layout *** -->
+
+                    
                     <p class="text-center text-xs text-gray-500 my-2 p-2 glass-card" id="currentRoomDisplay">
                         Selected for Scan: <strong>...</strong> (in <strong>...</strong>)
                     </p>
 
- 
-                   <div class="p-4 glass-card">
+                    <!-- Part 3: Floor Number -->
+                    <div class="p-4 glass-card">
                         <label for="floorNumberInput" class="block text-sm font-bold text-gray-700 mb-2">
-                        
-    Step 4c: Which floor is this on?
-                            <i class="fas fa-info-circle info-icon" id="floorInfo"></i>
-</label>
+                            Step 4c: Which floor is this on?
+                            <!-- REMOVED: Info Icon -->
+                        </label>
                         <input type="text" id="floorNumberInput" placeholder="E.g., 1st Floor, Ground Floor (Required)" 
                                class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500">
                     </div>
 
-         
-           <div id="step4Checklist" class="glass-card p-4 space-y-2 text-sm rounded-lg">
+                    <!-- *** SUGGESTION 4: Step 4 Checklist *** -->
+                    <div id="step4Checklist" class="glass-card p-4 space-y-2 text-sm rounded-lg">
                         <div id="checklistRoom" class="checklist-item pending"><i class="far fa-square mr-2"></i>Select Room Type</div>
-                       
- <div id="checklistLocation" class="checklist-item pending"><i class="far fa-square mr-2"></i>Select Room Location</div>
+                        <div id="checklistLocation" class="checklist-item pending"><i class="far fa-square mr-2"></i>Select Room Location</div>
                         <div id="checklistFloor" class="checklist-item pending"><i class="far fa-square mr-2"></i>Enter Floor</div>
                     </div>
-                     </div>
-                <div id="stepContent5" class="step-content hidden no-print">
-            
-        
-        <p class="text-sm text-center text-gray-600 mb-4">Hold your device steady and turn in a slow 360° circle to capture all zones.</p>
+                    <!-- Button moved to footer -->
+                </div>
+                <!-- ====================================================================
+                END: STEP 4
+                ======================================================================
+                -->
 
+
+                <div id="stepContent5" class="step-content hidden no-print">
+                    
+                    <!-- *** REMOVED: Tutorial Box *** -->
+
+                    <p class="text-sm text-center text-gray-600 mb-4">Hold your device steady and turn in a slow 360° circle to capture all zones.</p>
+
+                    <!-- *** BUG FIX: Moved Progress Bar Up *** -->
                     <div id="captureProgressContainer" class="h-2 bg-gray-200 rounded-full mt-2 mb-4 hidden">
-          
-              <div id="captureProgress" class="h-2 bg-green-500 rounded-full transition-all duration-100"></div>
+                        <div id="captureProgress" class="h-2 bg-green-500 rounded-full transition-all duration-100"></div>
                     </div>
                     
                     <div id="cameraContainer" class="glass-card overflow-hidden mb-4 relative">
-               
-         <video id="cameraVideo" autoplay playsinline class="bg-gray-200 hidden relative z-10"></video>
+                        <!-- *** BUG FIX: Added z-10 *** -->
+                        <video id="cameraVideo" autoplay playsinline class="bg-gray-200 hidden relative z-10"></video>
                         
+                        <!-- *** BUG FIX: Added z-20. REMOVED transform-gpu *** -->
                         <div id="compassOverlay" class="absolute w-full h-full flex flex-col justify-between p-4 pointer-events-none z-20">
                             
                             <div class="text-center">
-    
-                            <span class="inline-block p-1 px-3 bg-black bg-opacity-70 text-white text-3xl font-extrabold rounded-lg shadow-xl" id="overlayHeading">N/A</span>
+                                <span class="inline-block p-1 px-3 bg-black bg-opacity-70 text-white text-3xl font-extrabold rounded-lg shadow-xl" id="overlayHeading">N/A</span>
                             </div>
                             <div class="text-center self-center mb-4">
-  
-                              <span class="inline-block p-1 px-3 bg-black bg-opacity-70 text-white text-base rounded-lg font-semibold" id="overlayZone">Zone: Unknown</span>
+                                <span class="inline-block p-1 px-3 bg-black bg-opacity-70 text-white text-base rounded-lg font-semibold" id="overlayZone">Zone: Unknown</span>
                             </div>
                         </div>
 
-       
-                 <div id="cameraFallback" class="w-full h-full bg-gray-200 flex flex-col items-center justify-center text-center p-4 absolute top-0 left-0 z-0">
+                        <div id="cameraFallback" class="w-full h-full bg-gray-200 flex flex-col items-center justify-center text-center p-4 absolute top-0 left-0 z-0">
                             <i 
         class="fas fa-video camera-icon"></i>
-                            <p class="mt-2 
-text-sm text-gray-500">Camera access is required for Vastu analysis.</p>
+                            <p class="mt-2 text-sm text-gray-500">Camera access is required for Vastu analysis.</p>
                         </div>
                     </div>
                  
                     <p class="text-center text-sm mb-4">
-         
-               <span 
-        id="captureCount">0/8</span> Segments Captured.
-Scan takes ~16 seconds.
+                        <span 
+        id="captureCount">0/8</span> Segments Captured. Scan takes ~16 seconds.
                     </p>
          
-                    <div id="gallery" class="flex flex-wrap gap-2 justify-center p-2 border-dashed border-2 border-gray-300 rounded-lg bg-white overflow-y-auto max-h-40">
-                
-        </div>
-                    </div>
+                    <!-- *** BUG FIX: Removed duplicate progress bar *** -->
 
+                    <!-- *** SUGGESTION 5: Gallery now populates with slots *** -->
+                    <div id="gallery" class="flex flex-wrap gap-2 justify-center p-2 border-dashed border-2 border-gray-300 rounded-lg bg-white overflow-y-auto max-h-40">
+                        <!-- JS will populate this with slots -->
+                    </div>
+                    <!-- Button moved to footer -->
+                </div>
+
+                <!-- *** STEP 6: Modified for Tabs and Flex *** -->
                 <div id="stepContent6" class="step-content hidden h-full flex flex-col">
                     
+                    <!-- *** REMOVED: Tutorial Box *** -->
+
                     <div id="reportLoader" 
         class="text-center py-8 hidden no-print">
-                       
- <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
+                        <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
                         <p class="mt-4 font-semibold text-gray-600">Generating Your AI Report...</p>
-                        <p class="text-xs text-gray-500 mt-2">Analyzing 8 images.
-This may take 1-2 minutes, especially on the first try.</p>
+                        <p class="text-xs text-gray-500 mt-2">Analyzing 8 images. This may take 1-2 minutes, especially on the first try.</p>
                     </div>
 
                    
-                     <div class="flex border-b border-gray-200 
-mb-4 no-print flex-shrink-0">
+                     <!-- *** NEW 3-TAB SYSTEM *** -->
+                     <div class="flex border-b border-gray-200 mb-4 no-print flex-shrink-0">
                         <button id="fullReportTab" class="py-2 px-4 text-xs sm:text-sm font-bold text-gray-600 border-b-2 border-transparent transition-colors hover:bg-gray-50">
                             <i class="fas fa-file-alt mr-1"></i> Full Report
                         </button>
-      
-                  <button id="expertReportTab" class="py-2 px-4 text-xs sm:text-sm font-bold text-gray-600 border-b-2 border-transparent transition-colors hover:bg-gray-50">
+                        <button id="expertReportTab" class="py-2 px-4 text-xs sm:text-sm font-bold text-gray-600 border-b-2 border-transparent transition-colors hover:bg-gray-50">
                             <i class="fas fa-exclamation-triangle mr-1"></i> Expert Analysis
                         </button>
-              
-          </div>
+                        <!-- *** REMOVED: Chat tab from here *** -->
+                    </div>
 
+                    <!-- Tab Content: Full Report -->
                     <div id="fullReportView" class="tab-content">
-               
-         <div id="reportContent" class="glass-card p-4 text-sm report-section">
+                        <div id="reportContent" class="glass-card p-4 text-sm report-section">
                             Click "Formal Report" below to generate.
-</div>
+                        </div>
                     </div>
                     
+                    <!-- Tab Content: Expert Report -->
                     <div id="expertReportView" class="tab-content hidden">
-            
-            <div id="expertReportContent" class="glass-card p-4 text-sm report-section">
+                        <div id="expertReportContent" class="glass-card p-4 text-sm report-section">
                             Click "Expert Analysis" below to generate.
-</div>
+                        </div>
                     </div>
                     
-                         </div>
-            </div> <div id="actionFooter" class="flex-shrink-0">
+                    <!-- *** BUG FIX: Removed duplicate chat view *** -->
+                    
+                </div>
+            </div> <!-- === END MAIN CONTENT === -->
+
+
+            <!-- === STICKY FOOTER (Suggestion 1) === -->
+            <div id="actionFooter" class="flex-shrink-0">
+                <!-- Step 1 Button -->
                 <div id="footerStep1" class="footer-step-wrapper">
-     
-               <button id="tipsNextButton" class="primary-btn w-full p-3 rounded-lg font-bold">
+                    <button id="tipsNextButton" class="primary-btn w-full p-3 rounded-lg font-bold">
                         Next: Activate Sensors <i class="fas fa-arrow-right ml-2"></i>
                     </button>
                 </div>
-             
-   <div id="footerStep2" class="footer-step-wrapper">
+                <!-- Step 2 Button -->
+                <div id="footerStep2" class="footer-step-wrapper">
                     <button id="compassButton" class="primary-btn w-full p-3 rounded-lg font-bold">
                         <i class="fas fa-magic mr-2"></i>Activate Sensors
                     </button>
- 
-               </div>
+                </div>
+                <!-- Step 3 Button -->
                 <div id="footerStep3" class="footer-step-wrapper">
                     <button id="holisticNextButton" class="primary-btn w-full p-3 rounded-lg font-bold">
-                     
-   Next: Floor Plan <i class="fas fa-arrow-right ml-2"></i>
+                        Next: Floor Plan <i class="fas fa-arrow-right ml-2"></i>
                     </button>
                 </div>
+                <!-- Step 4 Button -->
                 <div id="footerStep4" class="footer-step-wrapper">
-                 
-    <button id="cameraButton" class="primary-btn w-full p-3 rounded-lg font-bold" disabled>
+                     <button id="cameraButton" class="primary-btn w-full p-3 rounded-lg font-bold" disabled>
                         <i class="fas fa-arrow-right mr-2"></i>Next: Activate Camera
                     </button>
                 </div>
-                            <div id="footerStep5" class="footer-step-wrapper">
+                <!-- Step 5 Button -->
+                <div id="footerStep5" class="footer-step-wrapper">
                     <button id="captureButton" class="primary-btn w-full p-3 rounded-lg font-bold" disabled>
                         <i class="fas fa-location-arrow mr-2"></i>Start 16-Second Vastu Scan
                     </button>
-         
-       </div>
+                </div>
+                <!-- Step 6 Buttons -->
                 <div id="footerStep6" class="footer-step-wrapper">
+                    <!-- *** MODIFIED: Smaller, more compact buttons *** -->
                     <div class="flex flex-wrap gap-2 no-print">
-   
-                     <button id="analyzeButton" class="primary-btn p-3 rounded-lg font-bold flex-1" disabled>
+                        <button id="analyzeButton" class="primary-btn p-3 rounded-lg font-bold flex-1" disabled>
                             <i class="fas fa-chart-area mr-2"></i>Formal Report
                          </button>
-               
-         <button id="deepAnalysisButton" class="primary-btn p-3 rounded-lg font-bold bg-blue-500 hover:bg-blue-600 flex-1" style="box-shadow: 0 4px #1d4ed8;"
-disabled>
+                        <button id="deepAnalysisButton" class="primary-btn p-3 rounded-lg font-bold bg-blue-500 hover:bg-blue-600 flex-1" style="box-shadow: 0 4px #1d4ed8;" disabled>
                             <i class="fas fa-exclamation-triangle mr-2"></i>Expert Analysis
                         </button>
                     </div>
-                    <div class="flex flex-wrap gap-2 
-no-print mt-2">
+                    <div class="flex flex-wrap gap-2 no-print mt-2">
+                        <!-- *** SUGGESTION 3: Scan Again Button *** -->
                         <button id="scanAgainButton" class="secondary-btn p-2 text-sm rounded-lg font-bold flex-1">
                             <i class="fas fa-redo mr-1"></i>New Scan
-    
-                    </button>
+                        </button>
                         <button id="saveReportButton" class="secondary-btn p-2 text-sm rounded-lg font-bold flex-1 hidden">
                             <i class="fas fa-file-export mr-1"></i>Export .txt
-                
-        </button>
+                        </button>
                         <button id="printReportButton" class="secondary-btn p-2 text-sm rounded-lg font-bold flex-1 hidden">
                             <i class="fas fa-print mr-1"></i>Print/Save PDF
                         </button>
-    
-                </div>
+                    </div>
+                    <!-- *** NEW: Report Feedback Buttons *** -->
                     <div class="flex justify-center items-center gap-4 no-print mt-3 pt-3 border-t border-gray-300/50">
-                        <span class="text-xs font-semibold text-gray-600">Was 
-this report helpful?</span>
+                        <span class="text-xs font-semibold text-gray-600">Was this report helpful?</span>
                         <button class="secondary-btn p-2 text-sm rounded-lg font-bold"><i class="far fa-thumbs-up"></i></button>
                         <button class="secondary-btn p-2 text-sm rounded-lg font-bold"><i class="far fa-thumbs-down"></i></button>
                     </div>
-                
-</div>
+                </div>
             </div>
-            </div> <div id="chatView" class="hidden no-print h-full flex flex-col">
+            <!-- === END STICKY FOOTER === -->
+        </div> <!-- === END ANALYZER WRAPPER === -->
+
+
+        <!-- === NEW: CHATBOT VIEW (Top Level) === -->
+        <div id="chatView" class="hidden no-print h-full flex flex-col">
             <div id="chatMessages" class="glass-card p-4 text-sm flex flex-col space-y-2">
-      
-          <div class="ai-message chat-message text-gray-700">
+                <div class="ai-message chat-message text-gray-700">
                    <i class="fas fa-robot mr-1 text-blue-500"></i>
-                    Hello!
-I am your Vastu AI Assistant. You can ask me general Vastu questions, or complete a scan in the "Analyzer" tab to ask about your specific report.
-</div>
+                    Hello! I am your Vastu AI Assistant. You can ask me general Vastu questions, or complete a scan in the "Analyzer" tab to ask about your specific report.
+                </div>
             </div>
             <div class="flex mt-4 flex-shrink-0">
                 <input type="text" id="chatInput" placeholder="Ask your Vastu question..." class="flex-1 p-3 border border-gray-300 rounded-l-lg focus:ring-blue-500 focus:border-blue-500 text-gray-800">
                 <button id="sendChatButton" class="primary-btn p-3 rounded-r-lg font-bold">
                    <i class="fas fa-paper-plane"></i>
- 
-               </button>
+                </button>
             </div>
         </div>
-           <div id="tutorialOverlay" class="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center p-4 z-50 hidden no-print">
-            <div class="glass-card w-full max-w-md p-6 relative">
-                <h3 id="tutorialTitle" class="font-extrabold text-xl text-blue-800 mb-3">
-                    <i class="fas fa-info-circle mr-2"></i> How This Works
-                </h3>
-    
-            
-                <p id="tutorialBody" class="text-sm text-gray-700 mb-6">
-                    This is the tutorial text.
-</p>
+        <!-- === END CHATBOT VIEW === -->
 
-                <div class="flex flex-col sm:flex-row gap-2">
-                    <button id="tutorialCloseButton" class="primary-btn p-3 rounded-lg font-bold sm:flex-1">
-                        Got It!
-</button>
-                    </div>
-        
-    </div>
+
+        <!-- 
+        ======================================================================
+        START: NEW "BALLOON TIP" TUTORIAL
+        ======================================================================
+        -->
+        <div id="tutorialTooltip" class="no-print">
+            <!-- Text will be set by JS -->
         </div>
-        </div> <canvas id="captureCanvas" style="display:none;"
-class="no-print"></canvas>
+        <!-- ====================================================================
+        END: "BALLOON TIP" TUTORIAL
+        ======================================================================
+        -->
+
+    </div> <!-- This is the closing tag for #appContainer -->
+
+    <canvas id="captureCanvas" style="display:none;" class="no-print"></canvas>
 
 
     <script type="module">
@@ -895,8 +936,8 @@ class="no-print"></canvas>
         
         // --- IMPROVEMENT: PASTE YOUR RENDER SERVER URL HERE ---
         // e.g., "https://vastu-app-server.onrender.com"
-        const renderApiUrl = "https://test12-6qay.onrender.com";
-// ----------------------------------------------------------------------------------
+        const renderApiUrl = "https://test12-6qay.onrender.com"; 
+        // ----------------------------------------------------------------------------------
         
         let currentHeading = null;
 let isCompassActive = false;
@@ -907,8 +948,7 @@ let isCompassActive = false;
 let videoStream = null;
         let capturedFrames = [];
         let fullReportMarkdown = "";
-        let expertReportMarkdown = "";
-// *** NEW: Separate expert report ***
+        let expertReportMarkdown = ""; // *** NEW: Separate expert report ***
         let chatContextSummary = "";
 // NEW: Variable to hold the summary for the chatbot
         let chatHistory = [];
@@ -916,59 +956,76 @@ let simulationInterval;
         let captureInterval;
         let sensorCheckTimeout; // NEW: Global for the fallback timer
         
+        // --- NEW: Tutorial State ---
+        let isTutorialActive = true; // Is the main guidance flow active?
+        let tutorialTimeout; // To show delayed tips
+
         const totalCaptures = 8;
 const captureIntervalTime = 2000; // 2 seconds
         const scanDuration = totalCaptures * (captureIntervalTime / 1000);
 // 16 seconds
 
         // --- GLOBAL STATE FOR ROOM CONTEXT ---
-        let currentRoomTag = null;
-// Default
+        let currentRoomTag = null; // Default
 let roomLocationInHouse = null; // Default
         let floorNumber = "";
-// --- REMOVED: FLOOR PLANNER GLOBALS ---
+
+        // --- REMOVED: FLOOR PLANNER GLOBALS ---
         
         const VASTU_ZONES_16 = [
             "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
             "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"
         ];
-// --- IMPROVEMENT: GLOBAL STATE FOR HOLISTIC CONTEXT ---
+
+
+        // --- IMPROVEMENT: GLOBAL STATE FOR HOLISTIC CONTEXT ---
         let userIssues = [];
-let propertySurroundings = {}; // e.g., { "Water Body": "North", "Hills": "South-West" }
+        let propertySurroundings = {}; // e.g., { "Water Body": "North", "Hills": "South-West" }
 
         // --- DOM Elements (GLOBAL DECLARATIONS) ---
         // These will be assigned values *after* the DOM loads
         let stepContents, stepIndicators, tipsNextButton, headingDisplay, sensorStatus,
             compassNeedle, compassButton, cameraButton, captureCanvas, cameraVideo,
             cameraFallback, overlayHeading, overlayZone, gallery, captureButton,
-            
-captureCountDisplay, captureProgressContainer, captureProgress, analyzeButton,
+            captureCountDisplay, captureProgressContainer, captureProgress, analyzeButton,
             deepAnalysisButton, saveReportButton, printReportButton, reportContent,
             reportLoader, 
             chatInput, sendChatButton, currentRoomDisplay,
             floorNumberInput, holisticNextButton,
-            userConcernsContainer, surroundingsWater, surroundingsHills;
-// --- NEW: STEP 4 GRID DOM ELEMENTS ---
+            userConcernsContainer, surroundingsWater, surroundingsHills,
+            mainContentArea, appContainer; // <-- NEW: For scrolling & positioning
+
+        // --- NEW: STEP 4 GRID DOM ELEMENTS ---
         let roomTypeGrid, roomLocationGrid, step4CompassNeedle;
-// --- NEW: STICKY FOOTER DOM ELEMENTS ---
+        
+        // --- NEW: STICKY FOOTER DOM ELEMENTS ---
         let actionFooter, footerStepWrappers, stepIndicatorWrapper;
-// --- NEW: STEP 4 CHECKLIST DOM ELEMENTS ---
+
+        // --- NEW: STEP 4 CHECKLIST DOM ELEMENTS ---
         let step4Checklist, checklistRoom, checklistLocation, checklistFloor;
-// --- NEW: SCAN AGAIN BUTTON ---
+
+        // --- NEW: SCAN AGAIN BUTTON ---
         let scanAgainButton;
-// --- NEW: STEP 6 TABS AND VIEWS (MODIFIED) ---
+        
+        // --- NEW: STEP 6 TABS AND VIEWS (MODIFIED) ---
         let fullReportTab, expertReportTab,
             fullReportView, expertReportView,
             expertReportContent;
-// --- NEW: TOP LEVEL APP TABS ---
+            
+        // --- NEW: TOP LEVEL APP TABS ---
         let analyzerTab, chatbotTab, analyzerWrapper, chatView, chatMessages;
-// --- (MODIFIED) TUTORIAL MODAL ELEMENTS ---
-        let tutorialOverlay, tutorialTitle, tutorialBody, tutorialCloseButton;
-// --- UTILITY FUNCTIONS ---
+
+
+        // --- NEW: Tutorial Tooltip Element ---
+        let tutorialTooltip;
+        let currentTutorialElement = null; // Track what the tip is pointing to
+
+
+        // --- UTILITY FUNCTIONS ---
         function getVastuZone(degrees) {
             // This function is for the COMPASS (0 = North)
             const offset = 11.25;
-let index = Math.floor(((degrees + offset) % 360) / 22.5);
+            let index = Math.floor(((degrees + offset) % 360) / 22.5);
             return VASTU_ZONES_16[index % 16];
 }
 
@@ -981,8 +1038,7 @@ let index = Math.floor(((degrees + offset) % 360) / 22.5);
             let formattedText = rawText;
 formattedText = formattedText.replace(/\n\n/g, '<p></p>');
             formattedText = formattedText.replace(/\n/g, '<br>');
-            formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-// Re-enabled bold
+            formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Re-enabled bold
             return formattedText.length > 0 ?
 `<div class="pdf-report-body">${formattedText}</div>` : '';
         }
@@ -1003,12 +1059,10 @@ capturedFrames.forEach((frame, index) => {
                 html += `
                     <div class="frame-item">
                     
-
     <img src="${imageUrl}" alt="Segment ${index + 1}" title="Segment ${index + 1}: ${zone}">
                         <div class="frame-data">
                             <span class="text-xs font-bold text-blue-500">#${index + 1}</span> | 
                           
-
   ${frame.heading.toFixed(1)}° 
                         </div>
                     </div>
@@ -1024,63 +1078,85 @@ formattedText = formattedText.replace(/\n\n/g, '\n\n');
              formattedText = formattedText.replace(/(?<!\n)\n(?!\n)/g, ' ');
              // We still want to format for .txt export
              formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, (match, p1) => `\n\n--- ${p1.toUpperCase()} ---\n`);
-return formattedText;
+             return formattedText;
 }
 
         // REMOVED updateStatus function
 
         // --- *** NEW: Main App Tab Switcher *** ---
         function switchMainTab(target) {
+            // --- NEW: Tutorial logic ---
+            if (isTutorialActive) {
+                // If user clicks Analyzer, start the tutorial flow
+                if (target === 'analyzer') {
+                    // This is handled by the event listener now
+                } else {
+                    // If they click chatbot, pause tutorial
+                    isTutorialActive = false;
+                    hideTutorialTip();
+                }
+            } else {
+                // Show informational tip on click
+                if (target === 'analyzer') {
+                    showTutorialTip(analyzerTab, "This is the Analyzer. Click 'New Scan' to start over.", 'bottom');
+                } else {
+                    showTutorialTip(chatbotTab, "Ask me any Vastu questions here.", 'bottom');
+                }
+                // Hide it after a few seconds
+                clearTimeout(tutorialTimeout);
+                tutorialTimeout = setTimeout(hideTutorialTip, 3000);
+            }
+            // --- END: Tutorial logic ---
+
             if (target === 'analyzer') {
                 analyzerTab.classList.add('active');
-chatbotTab.classList.remove('active');
+                chatbotTab.classList.remove('active');
                 analyzerWrapper.classList.remove('hidden');
                 chatView.classList.add('hidden');
             } else {
                 analyzerTab.classList.remove('active');
-chatbotTab.classList.add('active');
+                chatbotTab.classList.add('active');
                 analyzerWrapper.classList.add('hidden');
                 chatView.classList.remove('hidden');
                 // Scroll chat to bottom
                 setTimeout(() => chatMessages.scrollTop = chatMessages.scrollHeight, 10);
-}
+            }
         }
 
 
         // IMPROVEMENT: Updated for 6 steps
         function updateNextStepHighlight(currentStep = 1) {
             
-            // --- REMOVED: Free navigation sensor logic ---
+            // --- REMOVED: Tutorial logic from here ---
 
             stepContents.forEach((content, index) => {
-                const stepNum = index + 
-1;
+                const stepNum = index + 1;
                 stepIndicators[index].classList.remove('step-active');
                 if (stepNum === currentStep) {
          
            content.classList.remove('hidden');
                     stepIndicators[index].classList.add('step-active');
                 } else {
-      
-              content.classList.add('hidden');
+                    content.classList.add('hidden');
                 }
             });
-// --- NEW: Sticky Footer Logic ---
+
+            // --- NEW: Sticky Footer Logic ---
             footerStepWrappers.forEach((wrapper, index) => {
                 const stepNum = index + 1;
                 if (stepNum === currentStep) {
                     wrapper.style.display = 'block';
-                
-} else {
+                } else {
                     wrapper.style.display = 'none';
                 }
             });
-// --- NEW: Hide/Show Step Indicators ---
+
+            // --- NEW: Hide/Show Step Indicators ---
             if (currentStep === 6) {
                 stepIndicatorWrapper.classList.add('hidden');
-} else {
+            } else {
                 stepIndicatorWrapper.classList.remove('hidden');
-}
+            }
             // --- END ---
 
             if (currentStep === 4) { // Location Step
@@ -1088,124 +1164,145 @@ chatbotTab.classList.add('active');
                 if (!isCompassActive) {
                     activateCompass(null); // Pass null to prevent navigation
                 }
-                checkStep4Completion();
-// Check if next button should be enabled
+                checkStep4Completion(); // Check if next button should be enabled
             
             } else if (currentStep === 5) { // Scan Step
                 if (capturedFrames.length === 0) {
-                    initializeGallerySlots();
-// *** NEW (Suggestion 5) ***
+                    initializeGallerySlots(); // *** NEW (Suggestion 5) ***
                 }
-                captureButton.disabled = isCapturing ||
-capturedFrames.length >= totalCaptures;
+                captureButton.disabled = isCapturing || capturedFrames.length >= totalCaptures;
 
             } else if (currentStep === 6) { // Report Step
-                analyzeButton.disabled = isReportGenerating ||
-capturedFrames.length < totalCaptures;
-                deepAnalysisButton.disabled = isReportGenerating || capturedFrames.length < totalCaptures;
-// Chat is now independent
-                // chatInput.disabled = !fullReportMarkdown;
-// sendChatButton.disabled = !fullReportMarkdown;
+                analyzeButton.disabled = isReportGenerating || capturedFrames.length < totalCaptures;
+                deepAnalysisButton.disabled = isReportGenerating || capturedFrames.length < totalCaptures; 
             }
-
-            // --- REMOVED: Old tutorial call ---
-}
+            
+            // --- Tutorial logic is now handled by the action triggers ---
+        }
 
         // --- *** NEW: Step 4 Grid Logic *** ---
         function initializeStep4Grids() {
             const ROOM_TYPES = [
                 'Living Room', 'Kitchen', 'Master Bed',
                 'Bedroom', 'Pooja Room', 'Toilet/Bath',
-                'Main Entrance', 'Staircase', 
-'Study Room'
+                'Main Entrance', 'Staircase', 'Study Room'
             ];
-const LOCATIONS = [
+
+            const LOCATIONS = [
                 'NW', 'N', 'NE',
                 'W', 'Center', 'E',
                 'SW', 'S', 'SE'
             ];
-roomTypeGrid.innerHTML = '';
+
+            roomTypeGrid.innerHTML = '';
             ROOM_TYPES.forEach(type => {
                 const cell = document.createElement('div');
                 cell.className = 'location-cell';
                 cell.textContent = type;
                 cell.dataset.value = type;
                 cell.addEventListener('click', () => selectGridCell(roomTypeGrid, cell, 'room'));
- 
-               roomTypeGrid.appendChild(cell);
+                roomTypeGrid.appendChild(cell);
             });
-roomLocationGrid.innerHTML = '';
+
+            roomLocationGrid.innerHTML = '';
             LOCATIONS.forEach(loc => {
                 const cell = document.createElement('div');
                 cell.className = 'location-cell';
                 cell.textContent = loc;
                 cell.dataset.value = loc;
                 cell.addEventListener('click', () => selectGridCell(roomLocationGrid, cell, 'location'));
- 
-               roomLocationGrid.appendChild(cell);
+                roomLocationGrid.appendChild(cell);
             });
-updateRoomDisplay(); // Set initial text
-            updateChecklist();
-// Set initial checklist
+
+            updateRoomDisplay(); // Set initial text
+            updateChecklist(); // Set initial checklist
         }
 
         function selectGridCell(grid, cell, type) {
             // Remove 'selected' from all siblings
             Array.from(grid.children).forEach(c => c.classList.remove('selected'));
-// Add 'selected' to the clicked cell
+            // Add 'selected' to the clicked cell
             cell.classList.add('selected');
-if (type === 'room') {
+
+            if (type === 'room') {
                 currentRoomTag = cell.dataset.value;
-} else if (type === 'location') {
+                // --- NEW: Update tutorial ---
+                if (isTutorialActive) {
+                    showTutorialTip(step4CompassNeedle, "Great. Now use this live compass to find North...", 'right');
+                    clearTimeout(tutorialTimeout);
+                    tutorialTimeout = setTimeout(() => {
+                        showTutorialTip(roomLocationGrid, "...then tap the <strong>Room's Location</strong> in your house.", 'bottom');
+                    }, 3500); // Show next tip after 3.5s
+                }
+
+            } else if (type === 'location') {
                 roomLocationInHouse = cell.dataset.value;
-}
+                // --- NEW: Auto-scroll and update tutorial ---
+                if (isTutorialActive) {
+                    clearTimeout(tutorialTimeout); // Cancel previous timeout
+                    floorNumberInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    floorNumberInput.focus();
+                    showTutorialTip(floorNumberInput, "Perfect! Last thing: enter the <strong>Floor Number</strong>.", 'top');
+                }
+            }
 
             updateRoomDisplay();
             checkStep4Completion();
-}
+        }
 
         function updateRoomDisplay() {
-            const room = currentRoomTag ||
-'...';
+            const room = currentRoomTag || '...';
             const loc = roomLocationInHouse || '...';
             currentRoomDisplay.innerHTML = `Selected for Scan: <strong>${room}</strong> (in <strong>${loc}</strong> zone)`;
-}
+        }
 
         function checkStep4Completion() {
             // Check if all 3 parts of Step 4 are complete
-            if (currentRoomTag && roomLocationInHouse && floorNumber.trim().length > 0) {
+            const allDone = currentRoomTag && roomLocationInHouse && floorNumber.trim().length > 0;
+            
+            if (allDone) {
                 cameraButton.disabled = false;
-} else {
+                if (isTutorialActive) {
+                    hideTutorialTip(); // Hide tutorial on complete
+                    showTutorialTip(cameraButton, "All set! Tap here to start the camera.", 'top');
+                }
+            } else {
                 cameraButton.disabled = true;
-}
-            updateChecklist();
-// *** NEW (Suggestion 4) ***
+                // Tutorial text is handled by selectGridCell and floorNumberInput listener
+            }
+            updateChecklist(); // *** NEW (Suggestion 4) ***
         }
 
         // --- *** NEW: Step 4 Checklist UI Function (Suggestion 4) *** ---
         function updateChecklist() {
-            if (currentRoomTag) {
-                checklistRoom.innerHTML = `<i class="far fa-check-square mr-2 text-green-500"></i>Room: <strong>${currentRoomTag}</strong>`;
-checklistRoom.className = 'checklist-item complete';
-            } else {
-                checklistRoom.innerHTML = `<i class="far fa-square mr-2"></i>Select Room Type`;
-checklistRoom.className = 'checklist-item pending';
+            if (checklistRoom) { // Add safety checks
+                if (currentRoomTag) {
+                    checklistRoom.innerHTML = `<i class="far fa-check-square mr-2 text-green-500"></i>Room: <strong>${currentRoomTag}</strong>`;
+                    checklistRoom.className = 'checklist-item complete';
+                } else {
+                    checklistRoom.innerHTML = `<i class="far fa-square mr-2"></i>Select Room Type`;
+                    checklistRoom.className = 'checklist-item pending';
+                }
             }
 
-            if (roomLocationInHouse) {
-                checklistLocation.innerHTML = `<i class="far fa-check-square mr-2 text-green-500"></i>Location: <strong>${roomLocationInHouse}</strong>`;
-checklistLocation.className = 'checklist-item complete';
-            } else {
-                checklistLocation.innerHTML = `<i class="far fa-square mr-2"></i>Select Room Location`;
-checklistLocation.className = 'checklist-item pending';
+            if (checklistLocation) {
+                if (roomLocationInHouse) {
+                    checklistLocation.innerHTML = `<i class="far fa-check-square mr-2 text-green-500"></i>Location: <strong>${roomLocationInHouse}</strong>`;
+                    checklistLocation.className = 'checklist-item complete';
+                } else {
+                    checklistLocation.innerHTML = `<i class="far fa-square mr-2"></i>Select Room Location`;
+                    checklistLocation.className = 'checklist-item pending';
+                }
             }
 
-            if (floorNumber.trim().length > 0) {
-                checklistFloor.innerHTML = `<i class="far fa-check-square mr-2 text-green-500"></i>Floor: <strong>${floorNumber}</strong>`;
-checklistFloor.className = 'checklist-item complete';
-            } else {
-                checklistFloor.innerHTML = `<i class="far fa-square mr-2"></i>Enter Floor`;
-checklistFloor.className = 'checklist-item pending';
+            if (checklistFloor) {
+                if (floorNumber.trim().length > 0) {
+                    checklistFloor.innerHTML = `<i class="far fa-check-square mr-2 text-green-500"></i>Floor: <strong>${floorNumber}</strong>`;
+                    checklistFloor.className = 'checklist-item complete';
+                } else {
+                    checklistFloor.innerHTML = `<i class="far fa-square mr-2"></i>Enter Floor`;
+                    checklistFloor.className = 'checklist-item pending';
+                }
             }
         }
         // --- *** END: Step 4 Grid Logic *** ---
@@ -1213,42 +1310,125 @@ checklistFloor.className = 'checklist-item pending';
         
         // --- *** MODIFIED: For 3 Tabs *** ---
         function switchReportTab(target) {
+            hideTutorialTip(); // Hide tip on tab switch
             // Reset all tabs to inactive state
             fullReportTab.classList.remove('border-blue-500', 'border-b-2', 'text-blue-800');
-expertReportTab.classList.remove('border-blue-500', 'border-b-2', 'text-blue-800');
+            expertReportTab.classList.remove('border-blue-500', 'border-b-2', 'text-blue-800');
             // chatTab.classList.remove('border-blue-500', 'border-b-2', 'text-blue-800');
             fullReportTab.classList.add('border-transparent', 'text-gray-600');
             expertReportTab.classList.add('border-transparent', 'text-gray-600');
             // chatTab.classList.add('border-transparent', 'text-gray-600');
-// Hide all views
+
+            // Hide all views
             fullReportView.classList.add('hidden');
             expertReportView.classList.add('hidden');
             // chatView.classList.add('hidden');
-if (target === 'full') {
+
+            if (target === 'full') {
                 fullReportTab.classList.remove('border-transparent', 'text-gray-600');
-fullReportTab.classList.add('border-blue-500', 'border-b-2', 'text-blue-800');
+                fullReportTab.classList.add('border-blue-500', 'border-b-2', 'text-blue-800');
                 fullReportView.classList.remove('hidden');
             } else if (target === 'expert') {
                 expertReportTab.classList.remove('border-transparent', 'text-gray-600');
-expertReportTab.classList.add('border-blue-500', 'border-b-2', 'text-blue-800');
+                expertReportTab.classList.add('border-blue-500', 'border-b-2', 'text-blue-800');
                 expertReportView.classList.remove('hidden');
             } 
             // Chat is handled by switchMainTab
         }
 
         // ----------------------------------------------------------------------------------
-        // --- (MODIFIED) STEP 7: NESTED TUTORIAL LOGIC ---
+        // --- NEW: "BALLOON TIP" TUTORIAL FUNCTIONS ---
         // ----------------------------------------------------------------------------------
 
-        function showMicroTutorial(title, body) {
-            // 3. Show the modal with the correct content
-            tutorialTitle.textContent = title;
-tutorialBody.innerHTML = body; // Use .innerHTML to render the <br> and <strong> tags
-            tutorialOverlay.classList.remove('hidden');
-}
-        
-        // --- REMOVED: Old showTutorial(step) function ---
+        function showTutorialTip(targetElement, text, position = 'top') {
+            if (!tutorialTooltip || !targetElement) return;
 
+            // Clear any pending hide timeouts
+            clearTimeout(tutorialTimeout);
+
+            // Set text and position class
+            tutorialTooltip.innerHTML = text;
+            // Remove all old positions
+            tutorialTooltip.className = 'no-print'; 
+            
+            // Get coordinates
+            const targetRect = targetElement.getBoundingClientRect();
+            const appRect = appContainer.getBoundingClientRect(); // Get app container's rect
+            
+            // Calculate position relative to the appContainer (which is position: relative)
+            const topOffset = appRect.top;
+            const leftOffset = appRect.left;
+
+            // Get tip dimensions *after* setting text
+            const tipRect = tutorialTooltip.getBoundingClientRect();
+
+            let top, left;
+            let finalPosition = position; // Store the final position
+
+            // --- NEW: Boundary Detection ---
+            const tipHeight = tipRect.height;
+            const tipWidth = tipRect.width;
+            const gap = 12; // 12px arrow + gap
+
+            // Check Top/Bottom
+            if (position === 'top') {
+                if (targetRect.top - topOffset - tipHeight - gap < 0) { // Not enough space at top
+                    finalPosition = 'bottom';
+                }
+            } else if (position === 'bottom') {
+                if (targetRect.bottom - topOffset + tipHeight + gap > appRect.height) { // Not enough space at bottom
+                    finalPosition = 'top';
+                }
+            }
+
+            // Check Left/Right
+            if (position === 'left') {
+                if (targetRect.left - leftOffset - tipWidth - gap < 0) { // Not enough space at left
+                    finalPosition = 'right';
+                }
+            } else if (position === 'right') {
+                if (targetRect.right - leftOffset + tipWidth + gap > appRect.width) { // Not enough space at right
+                    finalPosition = 'left';
+                }
+            }
+            // --- End Boundary Detection ---
+
+            // Re-calculate based on finalPosition
+            switch (finalPosition) {
+                case 'top':
+                    top = targetRect.top - topOffset - tipHeight - gap;
+                    left = targetRect.left - leftOffset + (targetRect.width / 2) - (tipWidth / 2);
+                    break;
+                case 'bottom':
+                    top = targetRect.bottom - topOffset + gap;
+                    left = targetRect.left - leftOffset + (targetRect.width / 2) - (tipWidth / 2);
+                    break;
+                case 'left':
+                    top = targetRect.top - topOffset + (targetRect.height / 2) - (tipHeight / 2);
+                    left = targetRect.left - leftOffset - tipWidth - gap;
+                    break;
+                case 'right':
+                    top = targetRect.top - topOffset + (targetRect.height / 2) - (tipHeight / 2);
+                    left = targetRect.right - leftOffset + gap;
+                    break;
+            }
+
+            // Apply styles
+            tutorialTooltip.style.top = `${top}px`;
+            tutorialTooltip.style.left = `${left}px`;
+            
+            // Show it
+            tutorialTooltip.classList.add(`pos-${finalPosition}`); // Add the correct arrow class
+            tutorialTooltip.classList.add('visible');
+            currentTutorialElement = targetElement;
+        }
+
+        function hideTutorialTip() {
+             if (tutorialTooltip) {
+                tutorialTooltip.classList.remove('visible');
+             }
+             currentTutorialElement = null;
+        }
 
         // ----------------------------------------------------------------------------------
         // --- STEP 2: COMPASS ACTIVATION (FIXED WITH TIMEOUT FALLBACK) ---
@@ -1257,19 +1437,17 @@ tutorialBody.innerHTML = body; // Use .innerHTML to render the <br> and <strong>
         function handleOrientation(event) {
             let heading;
 if (event.webkitCompassHeading) {
-                heading = event.webkitCompassHeading;
-// iOS
+                heading = event.webkitCompassHeading; // iOS
 } else if (event.alpha !== null) {
                 // Use absolute orientation if available (0 = North)
                 if (event.absolute === true || typeof event.absolute === 'undefined') {
-                     heading = (360 - event.alpha) % 360;
-} else {
+                     heading = (360 - event.alpha) % 360; 
+                } else {
                     // Fallback for relative orientation (less reliable)
                     // We can't be sure where "0" is.
-// For this app, absolute is required.
+                    // For this app, absolute is required.
                     console.warn("Relative orientation not supported. Using 0.");
-                    heading = (360 - event.alpha) % 360;
-// Assume it's absolute-like
+                    heading = (360 - event.alpha) % 360; // Assume it's absolute-like
                 }
 } else {
                 return;
@@ -1281,10 +1459,10 @@ sensorCheckTimeout = null;
             }
 
             currentHeading = parseFloat(heading.toFixed(1));
-headingDisplay.textContent = `${currentHeading}°`;
-            overlayHeading.textContent = `${currentHeading}°`;
-            compassNeedle.style.transform = `rotate(-${currentHeading}deg)`;
-            overlayZone.textContent = `Zone: ${getVastuZone(currentHeading)}`;
+if (headingDisplay) headingDisplay.textContent = `${currentHeading}°`;
+            if (overlayHeading) overlayHeading.textContent = `${currentHeading}°`;
+            if (compassNeedle) compassNeedle.style.transform = `rotate(-${currentHeading}deg)`;
+            if (overlayZone) overlayZone.textContent = `Zone: ${getVastuZone(currentHeading)}`;
 
             // *** NEW: Update Step 4 compass needle ***
             if (step4CompassNeedle) {
@@ -1297,25 +1475,21 @@ headingDisplay.textContent = `${currentHeading}°`;
              if (typeof DeviceOrientationEvent.requestPermission === 'function') {
                 DeviceOrientationEvent.requestPermission()
                     .then(permissionState => {
-                     
- 
+                      
   if (permissionState === 'granted') {
                             // Add listeners *after* permission is granted
                             window.addEventListener('deviceorientation', handleOrientation);
                             window.addEventListener('deviceorientationabsolute', handleOrientation);
- 
-                           startCompassLogic(navigateToStep); // Now start the logic
+                            startCompassLogic(navigateToStep); // Now start the logic
      
                    } else {
                             // Permission denied
-            
-                console.warn("Sensor permission denied by user.");
+                            console.warn("Sensor permission denied by user.");
                             startCompassSimulation(navigateToStep);
         }
                     })
                     .catch(e => {
-  
-  console.error('Sensor permission error:', e);
+    console.error('Sensor permission error:', e);
                         startCompassSimulation(navigateToStep); // Fallback on error
                     });
 } else {
@@ -1327,16 +1501,16 @@ headingDisplay.textContent = `${currentHeading}°`;
         // Start logic with original, complex listener attachment check
         function startCompassLogic(navigateToStep = null) {
             if (isCompassActive) return;
-if (window.DeviceOrientationEvent) {
+            
+            if (window.DeviceOrientationEvent) {
                 // Add listeners (if not already added by iOS permission)
                 // This check avoids duplicate listeners
                 if (typeof DeviceOrientationEvent.requestPermission !== 'function') { 
                      window.addEventListener('deviceorientation', handleOrientation);
-window.addEventListener('deviceorientationabsolute', handleOrientation);
+                     window.addEventListener('deviceorientationabsolute', handleOrientation);
                 }
             } else {
-                 startCompassSimulation(navigateToStep);
-// No sensors found
+                 startCompassSimulation(navigateToStep); // No sensors found
 return;
             }
 
@@ -1344,63 +1518,63 @@ return;
                 if (currentHeading === null) {
                     // No sensor data received after 1s
                     console.warn("No sensor data. Falling back to simulation.");
-        
-            stopCompassLogic(); // Stop listeners
+                    stopCompassLogic(); // Stop listeners
                     startCompassSimulation(navigateToStep);
                 } 
-            }, 1000);
-// 1 second timeout
+            }, 1000); // 1 second timeout
 
 
             isCompassActive = true;
-sensorStatus.textContent = 'Sensors: Active';
+if (sensorStatus) sensorStatus.textContent = 'Sensors: Active';
             // --- BUTTON REVERTED TO SEQUENTIAL ---
             compassButton.classList.remove('primary-btn');
-compassButton.classList.add('bg-gray-400');
+            compassButton.classList.add('bg-gray-400');
             compassButton.innerHTML = '<i class="fas fa-check mr-2"></i>Sensors Active';
             compassButton.style.boxShadow = 'none';
-            compassButton.disabled = true;
-// Not a toggle
+            compassButton.disabled = true; // Not a toggle
             
             // *** NEW CONDITIONAL NAVIGATION ***
             if (navigateToStep) {
                 updateNextStepHighlight(navigateToStep);
-}
+                // --- NEW: Auto-scroll ---
+                if (mainContentArea) setTimeout(() => mainContentArea.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+            }
         }
 
         function startCompassSimulation(navigateToStep = null) {
             if (isCompassActive) return;
 isCompassActive = true;
             let simHeading = 0;
-            sensorStatus.textContent = 'Sensors: SIMULATION (Not Found)';
+            if (sensorStatus) sensorStatus.textContent = 'Sensors: SIMULATION (Not Found)';
 simulationInterval = setInterval(() => {
                 simHeading = (simHeading + 0.1) % 360; 
                 currentHeading = parseFloat(simHeading.toFixed(1));
-                headingDisplay.textContent = `Heading: ${currentHeading}° (SIM)`;
-                overlayHeading.textContent = `${currentHeading}° (SIM)`;
+                if (headingDisplay) headingDisplay.textContent = `Heading: ${currentHeading}° (SIM)`;
+                if (overlayHeading) overlayHeading.textContent = `${currentHeading}° (SIM)`;
                 
 
-
-                compassNeedle.style.transform = `rotate(-${currentHeading}deg)`;
-                overlayZone.textContent = `Zone: ${getVastuZone(currentHeading)}`;
+                if (compassNeedle) compassNeedle.style.transform = `rotate(-${currentHeading}deg)`;
+                if (overlayZone) overlayZone.textContent = `Zone: ${getVastuZone(currentHeading)}`;
                 
                 // *** NEW: Update Step 4 compass needle ***
                 if (step4CompassNeedle) {
                     step4CompassNeedle.style.transform = `rotate(-${currentHeading}deg)`;
                 }
             }, 100);
-// --- BUTTON REVERTED TO SEQUENTIAL ---
+            
+            // --- BUTTON REVERTED TO SEQUENTIAL ---
             compassButton.classList.remove('primary-btn');
             compassButton.classList.add('bg-gray-400');
-compassButton.innerHTML = '<i class="fas fa-check mr-2"></i>Simulation Active';
+            compassButton.innerHTML = '<i class="fas fa-check mr-2"></i>Simulation Active';
             compassButton.style.boxShadow = 'none';
-            compassButton.disabled = true;
-// Not a toggle
+            compassButton.disabled = true; // Not a toggle
             
             // *** NEW CONDITIONAL NAVIGATION ***
             if (navigateToStep) {
                 updateNextStepHighlight(navigateToStep);
-}
+                // --- NEW: Auto-scroll ---
+                if (mainContentArea) setTimeout(() => mainContentArea.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+            }
         }
         
         // --- REFACTORED activateCompass ---
@@ -1410,31 +1584,33 @@ compassButton.innerHTML = '<i class="fas fa-check mr-2"></i>Simulation Active';
                 // *** NEW: If already active, just navigate ***
                 if (navigateToStep) {
                     updateNextStepHighlight(navigateToStep);
+                    // --- NEW: Auto-scroll ---
+                    if (mainContentArea) setTimeout(() => mainContentArea.scrollTo({ top: 0, behavior: 'smooth' }), 100);
                 }
                 return;
-}
+            }
             
+            // --- NEW: Hide tutorial on click ---
+            hideTutorialTip();
+
             // --- NEW PERMISSION-FIRST LOGIC ---
             if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
-                // This is iOS 13+.
-Must request permission.
+                // This is iOS 13+. Must request permission.
                 requestIOSSensorPermission(navigateToStep);
             } 
             else if (window.DeviceOrientationEvent) {
-                // This is Android or other non-iOS.
-No permission needed.
+                // This is Android or other non-iOS. No permission needed.
                 startCompassLogic(navigateToStep);
             } 
             else {
                 // No sensors detected.
-startCompassSimulation(navigateToStep);
+                startCompassSimulation(navigateToStep);
             }
         }
 
 
         function stopVideoStream() {
-            if (!isCameraActive) return;
-// Already stopped
+            if (!isCameraActive) return; // Already stopped
             if (videoStream) {
                 videoStream.getTracks().forEach(track => track.stop());
 videoStream = null;
@@ -1442,35 +1618,34 @@ videoStream = null;
             isCameraActive = false;
             cameraVideo.classList.add('hidden');
             cameraFallback.classList.remove('hidden');
-// Reset button state (back on Step 4)
+
+            // Reset button state (back on Step 4)
             cameraButton.classList.remove('bg-red-500', 'hover:bg-red-600', 'bg-gray-400');
-cameraButton.classList.add('primary-btn');
+            cameraButton.classList.add('primary-btn');
             cameraButton.innerHTML = `<i class="fas fa-arrow-right mr-2"></i>Next: Activate Camera`;
             cameraButton.style.boxShadow = '0 4px var(--color-text-dark)';
-            checkStep4Completion();
-// Re-check if button should be enabled
+            checkStep4Completion(); // Re-check if button should be enabled
         }
 
         function stopCompassLogic() {
-            if (!isCompassActive) return;
-// Already stopped
+            if (!isCompassActive) return; // Already stopped
             isCompassActive = false;
-sensorStatus.textContent = 'Sensors: Inactive';
+            if (sensorStatus) sensorStatus.textContent = 'Sensors: Inactive';
             
             // Reset button state
             compassButton.classList.remove('bg-red-500', 'hover:bg-red-600', 'bg-gray-400');
-compassButton.classList.add('primary-btn');
+            compassButton.classList.add('primary-btn');
             compassButton.innerHTML = '<i class="fas fa-magic mr-2"></i>Activate Sensors';
             compassButton.style.boxShadow = '0 4px var(--color-text-dark)';
             compassButton.disabled = false;
 
-            headingDisplay.textContent = 'Heading: N/A';
-overlayHeading.textContent = 'N/A';
-            compassNeedle.style.transform = `rotate(0deg)`;
+            if (headingDisplay) headingDisplay.textContent = 'Heading: N/A';
+            if (overlayHeading) overlayHeading.textContent = 'N/A';
+            if (compassNeedle) compassNeedle.style.transform = `rotate(0deg)`;
             if (step4CompassNeedle) {
                 step4CompassNeedle.style.transform = `rotate(0deg)`;
             }
-            overlayZone.textContent = 'Zone: Unknown';
+            if (overlayZone) overlayZone.textContent = 'Zone: Unknown';
 
             window.removeEventListener('deviceorientation', handleOrientation);
             window.removeEventListener('deviceorientationabsolute', handleOrientation);
@@ -1488,41 +1663,38 @@ sensorCheckTimeout = null;
         async function activateCamera() {
             // This button is now ONLY a "Next" button on Step 4
             const currentStep = Array.from(stepIndicators).findIndex(s => s.classList.contains('step-active')) + 1;
-if (currentStep === 4) {
-                // We are on the floor plan step.
-Move to camera step.
+
+            if (currentStep === 4) {
+                hideTutorialTip(); // Hide tip on click
+                // We are on the floor plan step. Move to camera step.
                 // We also need to activate the compass FOR the camera step
                 if (!isCompassActive) {
-                    activateCompass(null);
-// *** FIX: Pass null to prevent navigation ***
+                    activateCompass(null); // *** FIX: Pass null to prevent navigation ***
                 }
-                updateNextStepHighlight(5);
-// Go to Step 5
+                updateNextStepHighlight(5); // Go to Step 5
+                // --- NEW: Auto-scroll ---
+                if (mainContentArea) setTimeout(() => mainContentArea.scrollTo({ top: 0, behavior: 'smooth' }), 100);
                 
                 // Now, activate the camera
-                if (isCameraActive) return;
-// Already on
-                if (isCapturing) return;
-// Don't mess with it
+                if (isCameraActive) return; // Already on
+                if (isCapturing) return; // Don't mess with it
 
                  try {
                     videoStream = await navigator.mediaDevices.getUserMedia({ 
                         video: { 
-                            
-facingMode: 'environment',
+                            facingMode: 'environment',
                             width: { ideal: 320 },
                             height: { ideal: 320 }
                         } 
-          
-          });
+                    });
                     cameraVideo.srcObject = videoStream;
                     cameraVideo.classList.remove('hidden'); 
                     cameraFallback.classList.add('hidden');
                     await cameraVideo.play();
-isCameraActive = true;
+                    isCameraActive = true;
                 } catch (err) {
                     console.error('Camera access error:', err);
-cameraVideo.classList.add('hidden');
+                    cameraVideo.classList.add('hidden');
                     cameraFallback.classList.remove('hidden');
                 }
             }
@@ -1547,10 +1719,12 @@ canvas.width = size;
             const startX = (video.videoWidth - size) / 2;
 const startY = (video.videoHeight - size) / 2;
             context.drawImage(video, startX, startY, size, size, 0, 0, size, size);
-// Payload Size Reduced: 0.1 -> 0.05
+            
+            // Payload Size Reduced: 0.1 -> 0.05
 const dataUrl = canvas.toDataURL('image/jpeg', 0.05); 
             const base64Data = dataUrl.split(',')[1];
-return {
+            
+            return {
                 image: base64Data, 
                 heading: currentHeading,
                 zone: getVastuZone(currentHeading),
@@ -1560,9 +1734,10 @@ return {
 
         function startCapture() {
             if (isCapturing) return;
-if (!isCompassActive || !isCameraActive) {
+
+            if (!isCompassActive || !isCameraActive) {
                 alert("Please ensure sensors and camera are active (Steps 2 & 5).");
-return;
+                return;
             }
             
             // Data now comes from the planner, but we still need floor number
@@ -1572,18 +1747,18 @@ return;
             }
             
             isCapturing = true;
+            hideTutorialTip(); // Hide tutorial on action
 capturedFrames = [];
             captureCountDisplay.textContent = `0/${totalCaptures}`;
             captureButton.disabled = true;
             captureButton.textContent = 'Scanning... (Hold Steady)';
-            // gallery.innerHTML = '';
-// --- MODIFIED: Don't clear, just let it be overwritten
+            // gallery.innerHTML = ''; // --- MODIFIED: Don't clear, just let it be overwritten
             captureProgressContainer.classList.remove('hidden');
 captureProgress.style.width = '0%';
             analyzeButton.disabled = true;
             deepAnalysisButton.disabled = true; // Disable new button
             saveReportButton.classList.add('hidden');
-printReportButton.classList.add('hidden'); // Hide print button
+            printReportButton.classList.add('hidden'); // Hide print button
 let capturesTaken = 0;
             
             const executeCapture = () => {
@@ -1593,7 +1768,7 @@ if (frameData) {
 capturesTaken++;
                     // *** NEW: Call new display function ***
                     displayCapturedFrame(frameData, capturesTaken - 1);
-captureCountDisplay.textContent = `${capturesTaken}/${totalCaptures}`;
+                    captureCountDisplay.textContent = `${capturesTaken}/${totalCaptures}`;
                     captureProgress.style.width = `${(capturesTaken / totalCaptures) * 100}%`;
 if (capturesTaken >= totalCaptures) {
                         clearInterval(captureInterval);
@@ -1631,39 +1806,42 @@ analyzeButton.disabled = false;
 analyzeButton.disabled = true; 
                 deepAnalysisButton.disabled = true; // Keep disabled
             }
+            // --- NEW: Auto-scroll ---
+            if (mainContentArea) setTimeout(() => mainContentArea.scrollTo({ top: 0, behavior: 'smooth' }), 100);
         }
 
         // --- *** (FIXED) Function to fill one gallery slot *** ---
         function displayCapturedFrame(frame, index) {
             // *** FIX: Select *all* children, not just .gallery-slot ***
+            if (!gallery) return;
             const allSlots = gallery.children;
-if (index >= allSlots.length) return; // Safety check
+            if (index >= allSlots.length) return; // Safety check
 
             const slot = allSlots[index];
-slot.innerHTML = ''; // Clear the slot number
+            slot.innerHTML = ''; // Clear the slot number
             slot.classList.remove('gallery-slot');
-slot.classList.add('frame-item');
+            slot.classList.add('frame-item');
 
             const img = document.createElement('img');
             img.src = `data:image/jpeg;base64,${frame.image}`;
             img.alt = `Segment ${index + 1}: ${frame.zone}`;
-img.title = `Segment ${index + 1}: ${frame.zone} (${frame.heading}°)`;
+            img.title = `Segment ${index + 1}: ${frame.zone} (${frame.heading}°)`;
             
             const labelContainer = document.createElement('div');
             labelContainer.className = 'frame-data';
-labelContainer.innerHTML = `<span class="text-xs font-bold text-blue-500">#${index + 1}</span> | ${frame.heading.toFixed(1)}°`;
+            labelContainer.innerHTML = `<span class="text-xs font-bold text-blue-500">#${index + 1}</span> | ${frame.heading.toFixed(1)}°`;
 
             slot.appendChild(img);
             slot.appendChild(labelContainer);
-}
+        }
 
         // --- *** NEW: Function to create empty gallery slots (Suggestion 5) *** ---
         function initializeGallerySlots() {
-            gallery.innerHTML = '';
-// Clear previous images
+            if (!gallery) return;
+            gallery.innerHTML = ''; // Clear previous images
             for (let i = 0; i < totalCaptures; i++) {
                 const slot = document.createElement('div');
-slot.className = 'gallery-slot';
+                slot.className = 'gallery-slot';
                 slot.innerHTML = `<i class="far fa-image"></i>`;
                 gallery.appendChild(slot);
             }
@@ -1675,7 +1853,7 @@ slot.className = 'gallery-slot';
         async function generateReport(isDeepAnalysis = false) {
             if (isReportGenerating || capturedFrames.length < totalCaptures) {
 return;
-}
+            }
             
             // SERVER-CLIENT CHANGE: Check for Render URL
             if (renderApiUrl.includes("YOUR_RENDER_URL_HERE") || renderApiUrl.length < 10) {
@@ -1684,78 +1862,73 @@ return;
             }
 
             isReportGenerating = true;
-// *** MODIFIED: Clear specific report variables ***
+            hideTutorialTip(); // Hide tutorial on action
+            isTutorialActive = false; // Main tutorial flow is done
+            // *** MODIFIED: Clear specific report variables ***
             if (isDeepAnalysis) {
                 expertReportMarkdown = "";
-} else {
+            } else {
                 fullReportMarkdown = "";
-}
-            chatContextSummary = "";
-// Reset summary
-            // chatHistory = [];
-// --- MODIFIED: Don't reset history
+            }
+            chatContextSummary = ""; // Reset summary
+            // chatHistory = []; // --- MODIFIED: Don't reset history
             // *** NEW: Show loader, switch tab ***
             reportLoader.classList.remove('hidden');
-if (isDeepAnalysis) {
+            if (isDeepAnalysis) {
                 expertReportContent.innerHTML = '';
-switchReportTab('expert');
+                switchReportTab('expert');
             } else {
                 reportContent.innerHTML = '';
-switchReportTab('full');
+                switchReportTab('full');
             }
 
             analyzeButton.disabled = true;
-            deepAnalysisButton.disabled = true;
-// Disable new button
+            deepAnalysisButton.disabled = true; // Disable new button
             saveReportButton.classList.add('hidden');
-            printReportButton.classList.add('hidden');
-// Hide print button
-            chatInput.disabled = true;
-// Chat is disabled during generation
+            printReportButton.classList.add('hidden'); // Hide print button
+            chatInput.disabled = true; // Chat is disabled during generation
             sendChatButton.disabled = true;
-// scanAgainButton.disabled = true; // <-- MODIFIED: This is now REMOVED to keep "New Scan" active
+            // scanAgainButton.disabled = true; // <-- MODIFIED: This is now REMOVED to keep "New Scan" active
 
             // Format holistic context for the prompt
             let holisticIssues = "None specified";
-if (userIssues.length > 0) {
+            if (userIssues.length > 0) {
                 holisticIssues = userIssues.join(', ');
-}
+            }
             
             let holisticSurroundings = "None specified";
-const surroundingsEntries = Object.entries(propertySurroundings).filter(([key, value]) => value.trim() !== "");
+            const surroundingsEntries = Object.entries(propertySurroundings).filter(([key, value]) => value.trim() !== "");
             if (surroundingsEntries.length > 0) {
                 holisticSurroundings = surroundingsEntries.map(([key, value]) => `${key}: ${value}`).join('; ');
-}
+            }
 
             // SERVER-CLIENT CHANGE: Create the payload for our *own* server
             const clientPayload = {
                 isDeepAnalysis: isDeepAnalysis,
                 scanData: {
                     capturedFrames: capturedFrames.map(f => ({ 
-      
-                  image: f.image, 
+                        image: f.image, 
                         heading: f.heading, 
                         zone: f.zone 
                     })),
-        
-            // --- UPDATED CONTEXT ---
+                    // --- UPDATED CONTEXT ---
                     currentRoomTag: currentRoomTag,
                     roomLocationInHouse: roomLocationInHouse,
                     floorNumber: floorNumber,
-                    // 
---- END UPDATED CONTEXT ---
+                    // --- END UPDATED CONTEXT ---
                     holisticIssues: holisticIssues,
                     holisticSurroundings: holisticSurroundings
                 }
             };
-// --- NEW: Client-side Timeout (Fixes "forever" & "keeps generating") ---
+            
+            // --- NEW: Client-side Timeout (Fixes "forever" & "keeps generating") ---
             const controller = new AbortController();
-const timeoutDuration = 180000; // 3 minutes (180,000 ms)
+            const timeoutDuration = 180000; // 3 minutes (180,000 ms)
             const timeoutId = setTimeout(() => {
                 console.warn("Client-side timeout reached. Aborting fetch.");
                 controller.abort();
             }, timeoutDuration);
-// --- END: Client-side Timeout ---
+            // --- END: Client-side Timeout ---
 
 try {
                 // SERVER-CLIENT CHANGE: Call our Render server, not Google
@@ -1765,27 +1938,24 @@ const response = await fetch(apiUrl, {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(clientPayload),
                     signal: controller.signal // <-- Add signal
-    
-            });
+                });
 
-                clearTimeout(timeoutId);
-// <-- Clear timeout if fetch succeeds
+                clearTimeout(timeoutId); // <-- Clear timeout if fetch succeeds
 
 if (!response.ok) {
                     const errorData = await response.json();
-throw new Error(`Server Error: ${response.status} - ${errorData.error || 'Failed to fetch'}`);
+                    throw new Error(`Server Error: ${response.status} - ${errorData.error || 'Failed to fetch'}`);
 }
                 
                 const result = await response.json();
-const reportText = result.text || ""; // Get the raw text
+                const reportText = result.text || ""; // Get the raw text
                 
                 if (!reportText) {
                     throw new Error("API returned an empty response. This is likely due to the API's safety filters (e.g., a blurry/dark image) or a silent timeout. Please try scanning again in a well-lit area.");
 }
 
                 // IMPROVEMENT: Always update chat context
-                const summaryEndMarker = '**II.
-Directional Data and Environmental Assessment**'; 
+                const summaryEndMarker = '**II. Directional Data and Environmental Assessment**'; 
                 const summaryEndIndex = reportText.indexOf(summaryEndMarker);
 
                 if (summaryEndIndex !== -1) { // It's a Formal Report, grab the summary
@@ -1796,48 +1966,45 @@ Directional Data and Environmental Assessment**';
                 
                 // *** NEW: Populate correct view and variable ***
                 const formattedHtml = formatAITextForDisplay(reportText) + displayCapturedFrames();
-if (isDeepAnalysis) {
-                    expertReportMarkdown = reportText;
-// Save to correct variable
+                if (isDeepAnalysis) {
+                    expertReportMarkdown = reportText; // Save to correct variable
                     expertReportContent.innerHTML = formattedHtml;
-} else {
-                    fullReportMarkdown = reportText;
-// Save to correct variable
+                } else {
+                    fullReportMarkdown = reportText; // Save to correct variable
                     reportContent.innerHTML = formattedHtml;
-}
+                }
 
                 saveReportButton.classList.remove('hidden');
-                printReportButton.classList.remove('hidden');
-// Show print button
+                printReportButton.classList.remove('hidden'); // Show print button
 chatInput.disabled = false; // Re-enable chat
                 sendChatButton.disabled = false;
 } catch (error) {
-                clearTimeout(timeoutId);
-// <-- Clear timeout if fetch fails
+                clearTimeout(timeoutId); // <-- Clear timeout if fetch fails
                 console.error('Report Generation Error:', error);
-let specificErrorMessage = error.message;
+
+                let specificErrorMessage = error.message;
                 if (error.name === 'AbortError') {
                     specificErrorMessage = "The request took too long and was timed out by the app (3-minute limit). This can happen if the AI server is very busy or slow to start. Please try again.";
-}
+                }
 
 let errorHtml = formatAITextForDisplay(`**I. Executive Summary (Layman's Terms)**\n\nReport generation failed due to an error.`);
 errorHtml += `<p class="text-red-600 font-bold mt-4">REPORT GENERATION FAILED</p>
                               <p class="mt-2 text-sm">A critical API error occurred.
 Please try running the scan again.</p>
                               <p class="mt-2 text-xs text-gray-400">Error Details: ${error.message}</p>`;
-// *** NEW: Populate correct view with error ***
+                
+                // *** NEW: Populate correct view with error ***
                 if (isDeepAnalysis) {
                     expertReportContent.innerHTML = errorHtml + displayCapturedFrames();
-} else {
+                } else {
                     reportContent.innerHTML = errorHtml + displayCapturedFrames();
-}
+                }
             } finally {
                 isReportGenerating = false;
 reportLoader.classList.add('hidden');
                 analyzeButton.disabled = false;
                 deepAnalysisButton.disabled = false; // Re-enable
-                // scanAgainButton.disabled = false;
-// <-- MODIFIED: This is now REMOVED
+                // scanAgainButton.disabled = false; // <-- MODIFIED: This is now REMOVED
             }
         }
 
@@ -1845,19 +2012,20 @@ reportLoader.classList.add('hidden');
         function exportReportAsTxt() {
             // *** NEW: Check which report is active ***
             let reportToExport = "";
-if (fullReportTab.classList.contains('active')) {
+            if (fullReportTab.classList.contains('active')) {
                 reportToExport = fullReportMarkdown;
-} else if (expertReportTab.classList.contains('active')) {
+            } else if (expertReportTab.classList.contains('active')) {
                 reportToExport = expertReportMarkdown;
-}
+            }
 
             if (!reportToExport) {
                 alert("Please generate a report first.");
-return;
+                return;
             }
             
 saveReportButton.disabled = true;
-// IMPROVEMENT: Removed timestamp and heading
+
+            // IMPROVEMENT: Removed timestamp and heading
             const header = `
 *** Vastu Pro Analyzer Formal AI Report ***
 Scan Area: ${currentRoomTag} 
@@ -1899,13 +2067,12 @@ msgDiv.className = `chat-message ${sender}-message`;
             if (sender === 'ai') {
                 // Format AI text: Convert markdown bold to <strong> and newlines to <br>
                 let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-formattedText = formattedText.replace(/\n/g, '<br>');
+                formattedText = formattedText.replace(/\n/g, '<br>');
                 // *** NEW: Add feedback icons ***
                 msgDiv.innerHTML = `<i class="fas fa-robot mr-1 text-blue-500"></i> ${formattedText}
                     <div class="feedback-icons text-xs">
                         <i class="far fa-thumbs-up"></i>
-                   
-     <i class="far fa-thumbs-down"></i>
+                        <i class="far fa-thumbs-down"></i>
                     </div>`;
 } else {
                 // User text is plain
@@ -1913,7 +2080,7 @@ formattedText = formattedText.replace(/\n/g, '<br>');
 }
             
             chatMessages.appendChild(msgDiv);
-chatMessages.scrollTop = chatMessages.scrollHeight;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
         async function handleChat() {
@@ -1923,7 +2090,7 @@ if (!userText || isChatGenerating) return;
             // SERVER-CLIENT CHANGE: Check for Render URL
             if (renderApiUrl.includes("YOUR_RENDER_URL_HERE") || renderApiUrl.length < 10) {
     appendMessage("Error: Chat server not configured.", 'ai');
-return;
+                 return;
             }
             
             appendMessage(userText, 'user');
@@ -1935,12 +2102,14 @@ chatInput.value = '';
 chatHistory.push({ role: "user", parts: [{ text: userText }] });
             
             const chatHistoryToSend = chatHistory.slice(-3);
-// SERVER-CLIENT CHANGE: Create payload for our *own* server
+
+            // SERVER-CLIENT CHANGE: Create payload for our *own* server
             const clientPayload = {
                 chatHistory: chatHistoryToSend,
                 chatContextSummary: chatContextSummary // *** This is the "magic" context ***
             };
-try {
+
+            try {
                 // SERVER-CLIENT CHANGE: Call our Render server, not Google
                 const apiUrl = `${renderApiUrl}/api/handleChat`;
 const response = await fetch(apiUrl, {
@@ -1978,118 +2147,153 @@ chatInput.disabled = false;
         // IMPROVEMENT: All listeners are now wrapped in DOMContentLoaded
         document.addEventListener('DOMContentLoaded', () => {
 
-           
- // --- IMPROVEMENT: ALL DOM ELEMENT GRABBERS MOVED HERE ---
+            // --- IMPROVEMENT: ALL DOM ELEMENT GRABBERS MOVED HERE ---
             stepContents = [1, 2, 3, 4, 5, 6].map(i => document.getElementById(`stepContent${i}`));
             stepIndicators = [1, 2, 3, 4, 5, 6].map(i => document.getElementById(`step${i}`));
+            mainContentArea = document.getElementById('mainContentArea'); // <-- NEW
+            appContainer = document.getElementById('appContainer'); // <-- NEW
             
             // --- Buttons are now in the footer ---
             tipsNextButton = document.getElementById('tipsNextButton');
-  
-          compassButton = document.getElementById('compassButton');
+            compassButton = document.getElementById('compassButton');
             holisticNextButton = document.getElementById('holisticNextButton');
-cameraButton = document.getElementById('cameraButton');
+            cameraButton = document.getElementById('cameraButton');
             captureButton = document.getElementById('captureButton');
             analyzeButton = document.getElementById('analyzeButton');
             deepAnalysisButton = document.getElementById('deepAnalysisButton');
             saveReportButton = document.getElementById('saveReportButton');
             printReportButton = document.getElementById('printReportButton');
-scanAgainButton = document.getElementById('scanAgainButton'); // *** NEW ***
+            scanAgainButton = document.getElementById('scanAgainButton'); // *** NEW ***
 
             // --- Sticky Footer Wrappers ---
             actionFooter = document.getElementById('actionFooter');
-footerStepWrappers = [
+            footerStepWrappers = [
                 document.getElementById('footerStep1'),
                 document.getElementById('footerStep2'),
                 document.getElementById('footerStep3'),
                 document.getElementById('footerStep4'),
                 document.getElementById('footerStep5'),
                 document.getElementById('footerStep6')
-  
-          ];
-            stepIndicatorWrapper = document.getElementById('stepIndicatorWrapper');
-// *** NEW ***
+            ];
+            stepIndicatorWrapper = document.getElementById('stepIndicatorWrapper'); // *** NEW ***
 
             // --- Other UI Elements ---
             headingDisplay = document.getElementById('headingDisplay');
-sensorStatus = document.getElementById('sensorStatus');
+            sensorStatus = document.getElementById('sensorStatus');
             compassNeedle = document.getElementById('compassNeedle');
             captureCanvas = document.getElementById('captureCanvas');
             cameraVideo = document.getElementById('cameraVideo');
             cameraFallback = document.getElementById('cameraFallback');
             overlayHeading = document.getElementById('overlayHeading');
-overlayZone = document.getElementById('overlayZone');
+            overlayZone = document.getElementById('overlayZone');
             gallery = document.getElementById('gallery');
             captureCountDisplay = document.getElementById('captureCount');
             captureProgressContainer = document.getElementById('captureProgressContainer');
             captureProgress = document.getElementById('captureProgress');
             reportContent = document.getElementById('reportContent');
-reportLoader = document.getElementById('reportLoader');
+            reportLoader = document.getElementById('reportLoader');
             
             // --- UPDATED STEP 4 GRABBERS ---
-            currentRoomDisplay = document.getElementById('currentRoomDisplay');
-floorNumberInput = document.getElementById('floorNumberInput'); 
+            currentRoomDisplay = document.getElementById('currentRoomDisplay'); 
+            floorNumberInput = document.getElementById('floorNumberInput'); 
             roomTypeGrid = document.getElementById('roomTypeGrid');
             roomLocationGrid = document.getElementById('roomLocationGrid');
             step4CompassNeedle = document.getElementById('step4CompassNeedle'); // *** NEW ***
             step4Checklist = document.getElementById('step4Checklist');
             checklistRoom = document.getElementById('checklistRoom');
             checklistLocation = document.getElementById('checklistLocation');
-checklistFloor = document.getElementById('checklistFloor');
+            checklistFloor = document.getElementById('checklistFloor');
 
 
             holisticNextButton = document.getElementById('holisticNextButton');
             userConcernsContainer = document.getElementById('userConcernsContainer');
             surroundingsWater = document.getElementById('surroundingsWater');
             surroundingsHills = document.getElementById('surroundingsHills');
-// --- NEW: Step 6 Tab/View Grabbers (MODIFIED) ---
+
+            // --- NEW: Step 6 Tab/View Grabbers (MODIFIED) ---
             fullReportTab = document.getElementById('fullReportTab');
-expertReportTab = document.getElementById('expertReportTab');
+            expertReportTab = document.getElementById('expertReportTab');
             
             fullReportView = document.getElementById('fullReportView');
             expertReportView = document.getElementById('expertReportView');
             
             expertReportContent = document.getElementById('expertReportContent');
-// --- NEW: Top-Level Tab Grabbers ---
+            
+            // --- NEW: Top-Level Tab Grabbers ---
             analyzerTab = document.getElementById('analyzerTab');
-chatbotTab = document.getElementById('chatbotTab');
+            chatbotTab = document.getElementById('chatbotTab');
             analyzerWrapper = document.getElementById('analyzerWrapper');
             chatView = document.getElementById('chatView');
             chatMessages = document.getElementById('chatMessages');
             chatInput = document.getElementById('chatInput');
             sendChatButton = document.getElementById('sendChatButton');
-// --- (MODIFIED) TUTORIAL MODAL GRABBERS ---
-            tutorialOverlay = document.getElementById('tutorialOverlay');
-tutorialTitle = document.getElementById('tutorialTitle');
-            tutorialBody = document.getElementById('tutorialBody');
-            tutorialCloseButton = document.getElementById('tutorialCloseButton');
-            // --- REMOVED: tutorialSkipAllButton
-// --- END OF DOM ELEMENT GRABBERS ---
+            
+            
+            // --- NEW: Tutorial Tooltip Grabber ---
+            tutorialTooltip = document.getElementById('tutorialTooltip');
+            
+            // --- REMOVED: Tutorial Box Grabbers ---
+            
+            // --- END OF DOM ELEMENT GRABBERS ---
 
             // Initial setup
-            initializeStep4Grids();
-// *** NEW ***
-            updateNextStepHighlight();
-// Defaults to step 1 (Tips)
-            switchReportTab('full');
-// Default to full report tab
-            switchMainTab('analyzer');
-// Default to analyzer view
-        
-            // Listener for the new Step 1 button
-            tipsNextButton.addEventListener('click', () => updateNextStepHighlight(2));
-// Listener for the new Step 3 button
-            holisticNextButton.addEventListener('click', () => updateNextStepHighlight(4));
-// *** FIX: Pass navigation step to compass ***
-            compassButton.addEventListener('click', () => activateCompass(3));
-// cameraButton now serves 2 purposes
-            cameraButton.addEventListener('click', activateCamera);
-captureButton.addEventListener('click', startCapture);
-            analyzeButton.addEventListener('click', () => generateReport(false)); // Standard report
-            deepAnalysisButton.addEventListener('click', () => generateReport(true));
-// Deep analysis report
-            saveReportButton.addEventListener('click', exportReportAsTxt);
+            initializeStep4Grids(); // *** NEW ***
+            
+            // *** (FIX) Call updateNextStepHighlight to show Step 1 ***
+            updateNextStepHighlight(1); // Defaults to step 1 (Tips)
+            
+            switchReportTab('full'); // Default to full report tab
+            switchMainTab('analyzer'); // Default to analyzer view
 
+            // --- FIX: Show first tutorial on load ---
+            // We use a small timeout to ensure the element is ready
+            setTimeout(() => {
+                if (isTutorialActive) {
+                    showTutorialTip(analyzerTab, "Welcome! Tap here to start your Vastu scan.", 'bottom');
+                }
+            }, 300);
+        
+            // --- *** (FIX #1) Listener for the new Step 1 button *** ---
+            tipsNextButton.addEventListener('click', () => {
+                updateNextStepHighlight(2);
+                if (isTutorialActive) {
+                    showTutorialTip(compassButton, "Next, tap here to <strong>activate the compass</strong>.", 'top');
+                }
+                // --- NEW: Auto-scroll ---
+                if (mainContentArea) setTimeout(() => mainContentArea.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+            });
+            
+            // --- Listener for the new Step 3 button ---
+            holisticNextButton.addEventListener('click', () => {
+                updateNextStepHighlight(4);
+                if (isTutorialActive) {
+                    showTutorialTip(roomTypeGrid, "First, tap the <strong>Room Type</strong> you're in.", 'bottom');
+                }
+                // --- NEW: Auto-scroll ---
+                if (mainContentArea) setTimeout(() => mainContentArea.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+            });
+            
+            // *** FIX: Pass navigation step to compass ***
+            compassButton.addEventListener('click', () => {
+                 if (isTutorialActive) {
+                    showTutorialTip(holisticNextButton, "Great! This step is optional. Tap 'Next' when you're ready.", 'top');
+                 }
+                activateCompass(3);
+            });
+            
+            // --- cameraButton now serves 2 purposes ---
+            cameraButton.addEventListener('click', () => {
+                if (isTutorialActive) {
+                    showTutorialTip(captureButton, "Great! Now tap here to start the <strong>16-second scan</strong>.", 'top');
+                }
+                activateCamera();
+            });
+            
+            captureButton.addEventListener('click', startCapture);
+            analyzeButton.addEventListener('click', () => generateReport(false)); // Standard report
+            deepAnalysisButton.addEventListener('click', () => generateReport(true)); // Deep analysis report
+            saveReportButton.addEventListener('click', exportReportAsTxt);
+            
             // --- *** (FIXED) Print Button Logic (with dynamic title) *** ---
             printReportButton.addEventListener('click', () => {
                 let activeReportView;
@@ -2101,8 +2305,7 @@ captureButton.addEventListener('click', startCapture);
                 } else {
                     // Default to printing the full report if no report tab is active
                     activeReportView = fullReportView;
-      
-              switchReportTab('full'); // Switch to it
+                    switchReportTab('full'); // Switch to it
                 }
 
                 // --- NEW: DYNAMIC FILENAME ---
@@ -2115,24 +2318,18 @@ captureButton.addEventListener('click', startCapture);
                 
                 window.print();
            
-     // --- FIX: Use setTimeout to clean up *after* print dialog ---
+                // --- FIX: Use setTimeout to clean up *after* print dialog ---
                 setTimeout(() => {
                     activeReportView.classList.remove('print-this');
                     document.title = originalTitle; // Restore original title
                 }, 1000); // 1 second delay
             });
-// ====================================================================
+
+            // ====================================================================
             // START: (MODIFIED) TUTORIAL & NAVIGATION LISTENERS
             // ====================================================================
-
-            // --- 1. (MODIFIED) Tutorial Modal Button Listener ---
-            tutorialCloseButton.addEventListener('click', () => {
-                tutorialOverlay.classList.add('hidden');
-            });
-// --- REMOVED: tutorialSkipAllButton listener ---
-
-
-// --- 3. (FIXED) Scan Again Button (Full App Reset) ---
+            
+            // --- 3. (FIXED) Scan Again Button (Full App Reset) ---
             scanAgainButton.addEventListener('click', () => {
                 
                 // --- 1. STOP ALL ACTIVE PROCESSES ---
@@ -2148,97 +2345,105 @@ captureButton.addEventListener('click', startCapture);
                 // --- 2. RESET STATE VARIABLES ---
                 currentRoomTag = null;
                 roomLocationInHouse = null;
-              floorNumber = "";
+                floorNumber = "";
                 capturedFrames = [];
                 fullReportMarkdown = "";
                 expertReportMarkdown = ""; // *** NEW ***
-                // chatContextSummary = ""; // --- MODIFIED: Keep context for 
-chat
+                // chatContextSummary = ""; // --- MODIFIED: Keep context for chat
                 // chatHistory = []; // --- MODIFIED: Keep history for chat
                 userIssues = [];
                 propertySurroundings = {};
 
                 // --- 3. RESET UI - STEP 3 (Context) ---
-                document.querySelectorAll('.concern-checkbox').forEach(cb => cb.checked = false);
-                surroundingsWater.value = "";
-                surroundingsHills.value = "";
+                if (userConcernsContainer) {
+                    document.querySelectorAll('.concern-checkbox').forEach(cb => cb.checked = false);
+                }
+                if (surroundingsWater) surroundingsWater.value = "";
+                if (surroundingsHills) surroundingsHills.value = "";
 
                 // --- 4. RESET UI - STEP 4 (Floor Plan) ---
-                floorNumberInput.value = "";
-               initializeStep4Grids(); // This already resets grids and checklist
+                if (floorNumberInput) floorNumberInput.value = "";
+                initializeStep4Grids(); // This already resets grids and checklist
 
                 // --- 5. RESET UI - STEP 5 (Scan) ---
                 initializeGallerySlots(); // Resets gallery to empty slots
-                captureButton.textContent = 'Start 16-Second Vastu Scan';
+                if (captureButton) captureButton.textContent = 'Start 16-Second Vastu Scan';
                 // Reset button state (it will be correctly enabled/disabled by updateNextStepHighlight)
-                captureProgress.style.width = '0%';
-                captureProgressContainer.classList.add('hidden');
+                if (captureProgress) captureProgress.style.width = '0%';
+                if (captureProgressContainer) captureProgressContainer.classList.add('hidden');
 
                 // --- 6. RESET UI - STEP 6 (Report) ---
-expertReportContent.innerHTML = "Click 'Expert Analysis' below to generate.";
-                reportContent.innerHTML = "Click 'Formal Report' below to generate.";
-                reportLoader.classList.add('hidden');
-                analyzeButton.disabled = true;
-                deepAnalysisButton.disabled = true;
-                saveReportButton.classList.add('hidden');
-                printReportButton.classList.add('hidden');
+                if (expertReportContent) expertReportContent.innerHTML = "Click 'Expert Analysis' below to generate.";
+                if (reportContent) reportContent.innerHTML = "Click 'Formal Report' below to generate.";
+                if (reportLoader) reportLoader.classList.add('hidden');
+                if (analyzeButton) analyzeButton.disabled = true;
+                if (deepAnalysisButton) deepAnalysisButton.disabled = true;
+                if (saveReportButton) saveReportButton.classList.add('hidden');
+                if (printReportButton) printReportButton.classList.add('hidden');
                 switchReportTab('full'); // Default to full report tab
 
                 // --- 7. NAVIGATE TO START ---
+                isTutorialActive = true; // RESTART TUTORIAL FLOW
                 switchMainTab('analyzer'); // Ensure we are on the analyzer tab
-updateNextStepHighlight(1); // Go back to Step 1
-});
+                updateNextStepHighlight(1); // Go back to Step 1
+                // --- NEW: Auto-scroll & restart tutorial ---
+                if (mainContentArea) setTimeout(() => mainContentArea.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+                setTimeout(() => {
+                    if (isTutorialActive) {
+                        showTutorialTip(analyzerTab, "Welcome back! Tap here to start a new scan.", 'bottom');
+                    }
+                }, 300);
+            });
 
             // ====================================================================
             // END: (MODIFIED) TUTORIAL & NAVIGATION LISTENERS
             // ====================================================================
             
-            // --- *** NEW: NESTED TUTORIAL LISTENERS *** ---
-            document.getElementById('concernsInfo').addEventListener('click', () => {
-                showMicroTutorial('Primary Concerns', 'Select any areas in your life where you feel "stuck." This helps the AI connect Vastu defects to real-world problems and tailor remedies for you.');
-            });
-            document.getElementById('surroundingsInfo').addEventListener('click', () => {
-                showMicroTutorial('Property Surroundings', 'External Vastu is just as important. Tell the AI about any large water bodies (lakes, rivers) or heavy structures (mountains, tall buildings) and their direction from your property.');
-            });
-            document.getElementById('roomTypeInfo').addEventListener('click', () => {
-                showMicroTutorial('Step 4a: Room Type', 'Select the room you are *currently standing in*. This tells the AI what to look for (e.g., in a "Kitchen" it will look for the stove, in a "Toilet" it will look for the WC).');
-            });
-            document.getElementById('roomLocationInfo').addEventListener('click', () => {
-                showMicroTutorial('Step 4b: Room Location', 'This is the most critical step. Based on the "Visual North Guide" below, select where this room is located within your *entire house plan*.');
-            });
-            document.getElementById('northGuideInfo').addEventListener('click', () => {
-                showMicroTutorial('How to use the North Guide', '1. Stand in the center of your house (if possible) or the center of your room.<br>2. Hold your phone flat.<br>3. Turn your body until the **Red Arrow** points to the physical "North" direction of your house.<br>4. Now, look at the "Room Location" grid above. You can see which direction (e.g., "SE" or "NW") your current room is in.');
-            });
-            document.getElementById('floorInfo').addEventListener('click', () => {
-                showMicroTutorial('Step 4c: Floor', 'This is required for an accurate analysis. Please enter the floor number, e.g., "Ground Floor", "1st Floor", "Basement".');
-            });
-            // --- *** END: NESTED TUTORIAL LISTENERS *** ---
+            // --- (REMOVED) NESTED TUTORIAL LISTENERS ---
 
 
             // --- NEW: Main Tab Listeners ---
-            analyzerTab.addEventListener('click', () => switchMainTab('analyzer'));
-chatbotTab.addEventListener('click', () => switchMainTab('chatbot'));
+            analyzerTab.addEventListener('click', () => {
+                if (isTutorialActive) {
+                    showTutorialTip(tipsNextButton, "Great! This is the main FAQ. Tap 'Next' to begin.", 'top');
+                }
+                switchMainTab('analyzer');
+            });
+            chatbotTab.addEventListener('click', () => switchMainTab('chatbot'));
             
             // Listeners for new Step 3 inputs
-            userConcernsContainer.addEventListener('change', (e) => {
-                if (e.target.type === 'checkbox') {
-                    userIssues = Array.from(userConcernsContainer.querySelectorAll('input:checked')).map(cb => cb.value);
-                }
-            });
-surroundingsWater.addEventListener('input', () => {
-                propertySurroundings[surroundingsWater.dataset.key] = surroundingsWater.value;
-            });
-surroundingsHills.addEventListener('input', () => {
-                propertySurroundings[surroundingsHills.dataset.key] = surroundingsHills.value;
-            });
-// Listeners for Step 4 inputs
-            floorNumberInput.addEventListener('input', () => {
-                 floorNumber = floorNumberInput.value.trim();
-                 checkStep4Completion(); // Check if next button should be enabled
-            });
-// Listeners for Step 6
+            if (userConcernsContainer) {
+                userConcernsContainer.addEventListener('change', (e) => {
+                    if (e.target.type === 'checkbox') {
+                        userIssues = Array.from(userConcernsContainer.querySelectorAll('input:checked')).map(cb => cb.value);
+                    }
+                });
+            }
+            if (surroundingsWater) {
+                surroundingsWater.addEventListener('input', () => {
+                    propertySurroundings[surroundingsWater.dataset.key] = surroundingsWater.value;
+                });
+            }
+            if (surroundingsHills) {
+                surroundingsHills.addEventListener('input', () => {
+                    propertySurroundings[surroundingsHills.dataset.key] = surroundingsHills.value;
+                });
+            }
+
+            // Listeners for Step 4 inputs
+            if (floorNumberInput) {
+                floorNumberInput.addEventListener('input', () => {
+                    floorNumber = floorNumberInput.value.trim();
+                    if (floorNumber.trim().length > 0 && isTutorialActive) {
+                        hideTutorialTip(); // Hide tip when user starts typing
+                    }
+                    checkStep4Completion(); // Check if next button should be enabled
+                });
+            }
+
+            // Listeners for Step 6
             fullReportTab.addEventListener('click', () => switchReportTab('full'));
-expertReportTab.addEventListener('click', () => switchReportTab('expert'));
+            expertReportTab.addEventListener('click', () => switchReportTab('expert'));
             
             sendChatButton.addEventListener('click', handleChat);
             chatInput.addEventListener('keypress', (e) => {
@@ -2246,21 +2451,31 @@ expertReportTab.addEventListener('click', () => switchReportTab('expert'));
                     handleChat();
                 }
             });
-chatInput.addEventListener('input', () => {
+            chatInput.addEventListener('input', () => {
                 sendChatButton.disabled = chatInput.value.trim() === '' || isChatGenerating;
             });
-// --- NEW: Chat Feedback Listener ---
+
+            // --- NEW: Chat Feedback Listener ---
             chatMessages.addEventListener('click', (e) => {
                 if (e.target.classList.contains('fa-thumbs-up')) {
                     e.target.classList.toggle('selected');
                     e.target.parentElement.querySelector('.fa-thumbs-down').classList.remove('selected');
                 } else if (e.target.classList.contains('fa-thumbs-down')) {
- 
-                   e.target.classList.toggle('selected');
+                    e.target.classList.toggle('selected');
                     e.target.parentElement.querySelector('.fa-thumbs-up').classList.remove('selected');
                 }
             });
-});
+            
+            // --- NEW: Hide tutorial on scroll ---
+            mainContentArea.addEventListener('scroll', () => {
+                // Only hide non-sticky tips
+                if (currentTutorialElement && !currentTutorialElement.closest('#actionFooter')) {
+                    hideTutorialTip();
+                }
+            });
+        
+        });
 </script>
 </body>
 </html>
+
