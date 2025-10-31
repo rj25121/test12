@@ -789,10 +789,7 @@ align-self: flex-start;
                             <p class="mt-2 text-sm text-gray-500">Camera access is required for Vastu analysis.</p>
                         </div>
                         
-                        <!-- *** FIX: Moved Gallery INSIDE camera container *** -->
-                        <div id="gallery" class="absolute bottom-2 left-2 right-2 flex flex-wrap gap-2 justify-center p-2 rounded-lg bg-black/30 backdrop-blur-sm z-30 overflow-y-auto max-h-24">
-                            <!-- JS will populate this with slots -->
-                        </div>
+                        <!-- *** FIX: Gallery removed from Step 5 *** -->
                     </div>
                  
                     <p class="text-center text-sm mb-4">
@@ -802,10 +799,10 @@ align-self: flex-start;
          
                     <!-- *** BUG FIX: Removed duplicate progress bar *** -->
 
-                    <!-- *** SUGGESTION 5: Gallery is now inside camera container *** -->
-                    <!-- <div id="gallery" class="flex flex-wrap gap-2 justify-center p-2 border-dashed border-2 border-gray-300 rounded-lg bg-white overflow-y-auto max-h-40"> -->
-                        <!-- MOVED -->
-                    <!-- </div> -->
+                    <!-- *** FIX: Gallery removed from Step 5 *** -->
+                    <div id="gallery" class="hidden">
+                        <!-- Gallery is no longer shown on this step -->
+                    </div>
                     <!-- Button moved to footer -->
                 </div>
 
@@ -1793,8 +1790,8 @@ let capturesTaken = 0;
 if (frameData) {
                     capturedFrames.push(frameData);
 capturesTaken++;
-                    // *** NEW: Call new display function ***
-                    displayCapturedFrame(frameData, capturesTaken - 1);
+                    // *** FIX: Gallery removed from step 5, so we skip this ***
+                    // displayCapturedFrame(frameData, capturesTaken - 1);
                     captureCountDisplay.textContent = `${capturesTaken}/${totalCaptures}`;
                     captureProgress.style.width = `${(capturesTaken / totalCaptures) * 100}%`;
 if (capturesTaken >= totalCaptures) {
@@ -1840,8 +1837,9 @@ analyzeButton.disabled = true;
 
         // --- *** (FIXED) Function to fill one gallery slot *** ---
         function displayCapturedFrame(frame, index) {
-            // *** FIX: Select *all* children, not just .gallery-slot ***
-            if (!gallery) return;
+            // *** FIX: Gallery removed from step 5, this function is no longer called in a loop ***
+            // It is ONLY called by displayCapturedFrames (plural) in the final report
+            if (!gallery) return; 
             const allSlots = gallery.children;
             if (index >= allSlots.length) return; // Safety check
 
@@ -1865,7 +1863,8 @@ analyzeButton.disabled = true;
 
         // --- *** NEW: Function to create empty gallery slots (Suggestion 5) *** ---
         function initializeGallerySlots() {
-            if (!gallery) return;
+            // *** FIX: Gallery removed from step 5 ***
+            if (!gallery) return; 
             gallery.innerHTML = ''; // Clear previous images
             for (let i = 0; i < totalCaptures; i++) {
                 const slot = document.createElement('div');
@@ -2214,7 +2213,7 @@ chatInput.disabled = false;
             cameraFallback = document.getElementById('cameraFallback');
             overlayHeading = document.getElementById('overlayHeading');
             overlayZone = document.getElementById('overlayZone');
-            gallery = document.getElementById('gallery');
+            gallery = document.getElementById('gallery'); // <-- *** FIX: Re-enabled this grabber ***
             captureCountDisplay = document.getElementById('captureCount');
             captureProgressContainer = document.getElementById('captureProgressContainer');
             captureProgress = document.getElementById('captureProgress');
@@ -2346,11 +2345,9 @@ chatInput.disabled = false;
                 
                 window.print();
            
-                // --- FIX: Use setTimeout to clean up *after* print dialog ---
-                setTimeout(() => {
-                    activeReportView.classList.remove('print-this');
-                    document.title = originalTitle; // Restore original title
-                }, 1000); // 1 second delay
+                // --- FIX: REVERTED to original logic per user ---
+                activeReportView.classList.remove('print-this');
+                document.title = originalTitle; // Restore original title
             });
 
             // ====================================================================
@@ -2392,7 +2389,7 @@ chatInput.disabled = false;
                 initializeStep4Grids(); // This already resets grids and checklist
 
                 // --- 5. RESET UI - STEP 5 (Scan) ---
-                initializeGallerySlots(); // Resets gallery to empty slots
+                // initializeGallerySlots(); // Gallery removed from Step 5
                 if (captureButton) captureButton.textContent = 'Start 16-Second Vastu Scan';
                 // Reset button state (it will be correctly enabled/disabled by updateNextStepHighlight)
                 if (captureProgress) captureProgress.style.width = '0%';
