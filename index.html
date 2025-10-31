@@ -63,6 +63,16 @@ border-bottom: 2px solid var(--color-primary);
             font-weight: 600;
         }
 
+        /* --- NEW: Main App Tab Styles --- */
+        .main-tab {
+            transition: all 0.2s ease;
+            border-bottom: 3px solid transparent;
+        }
+        .main-tab.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
         /* Button Styles */
         .primary-btn {
             background-color: var(--color-primary);
@@ -166,8 +176,7 @@ height: auto;
         /* --- Live Overlay Styles --- */
         #compassOverlay {
             pointer-events: none;
-/* Allows clicks/touches to pass through to the elements beneath (i.e., the video) */
-        }
+}
         #overlayHeading {
             /* Large degree number */
             font-size: 2.25rem;
@@ -196,6 +205,24 @@ align-self: flex-start;
             border: 1px solid #e0e7ff;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
+        /* --- NEW: Feedback Icons --- */
+        .feedback-icons {
+            margin-top: 8px;
+            opacity: 0.5;
+        }
+        .feedback-icons i {
+            cursor: pointer;
+            margin-right: 8px;
+            transition: all 0.2s;
+        }
+        .feedback-icons i:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        .feedback-icons i.selected {
+             opacity: 1;
+             color: var(--color-primary);
+        }
 
         /* --- PRINT-FRIENDLY STYLES --- */
         @media print {
@@ -210,7 +237,7 @@ align-self: flex-start;
             }
 
             /* Expand all containers */
-            #appContainer, #mainContentArea {
+            #appContainer, #mainContentArea, #analyzerWrapper {
                 max-height: none;
                 overflow: visible;
                 display: block;
@@ -218,12 +245,14 @@ align-self: flex-start;
                 border: none;
             }
             
-            /* Ensure the correct report view is visible */
+            /* --- *** NEW PRINT FIX *** --- */
+            /* Hide ALL tab content by default */
             .tab-content {
-                display: none; /* Hide all tabs by default */
+                display: none !important; 
             }
-            #fullReportView, #expertReportView {
-                display: block !important; /* Show both report tabs */
+            /* ONLY show the one we tag with .print-this */
+            .print-this {
+                display: block !important;
                 visibility: visible;
             }
             #chatView {
@@ -231,7 +260,8 @@ align-self: flex-start;
             }
 
             /* Make the report content visible and printable */
-            #reportContent, #expertReportContent {
+            .print-this #reportContent, 
+            .print-this #expertReportContent {
                 visibility: visible;
                 display: block;
                 width: 100%;
@@ -249,7 +279,8 @@ align-self: flex-start;
             }
             
             /* Ensure report titles print well */
-            #reportContent strong, #expertReportContent strong {
+            .print-this #reportContent strong, 
+            .print-this #expertReportContent strong {
                 /* REMOVED color: #000; to allow orange to print */
                 border-bottom: 2px solid #ccc;
                 page-break-after: avoid;
@@ -258,11 +289,12 @@ align-self: flex-start;
             }
             
             /* Ensure images in the gallery print */
-            .image-gallery img {
+            .print-this .image-gallery img {
                 visibility: visible;
                 -webkit-print-color-adjust: exact;
                 color-adjust: exact;
             }
+            /* --- *** END PRINT FIX *** --- */
         }
 
         /* ======================================================================
@@ -390,18 +422,26 @@ align-self: flex-start;
         }
 
         /* --- 1. Larger Reading Area (Step 6) --- */
-        #reportContent, #expertReportContent, #chatMessages {
+        #reportContent, #expertReportContent {
             /* REMOVED h-96 */
             /* NEW: Let flex-grow handle the height */
             flex-grow: 1;
             overflow-y: auto;
-        }
-        #chatView {
-            /* Make chat view a flex column to fill space */
-            display: flex;
-            flex-direction: column;
             /* Give it a min-height to push footer down */
             min-height: 400px; 
+        }
+        /* --- NEW: Chat View Structure --- */
+        #chatView {
+            /* This is now a top-level view */
+            /* REMOVED: display: flex; This was the bug. */
+            flex-direction: column;
+            /* Use a fixed height for the chat view based on viewport */
+            height: 65vh; 
+        }
+        #chatMessages {
+            min-height: 100px;
+            flex-grow: 1; /* Make messages area grow */
+            overflow-y: auto; /* Make messages scrollable */
         }
         /* --- End Larger Reading Area --- */
 
@@ -419,10 +459,22 @@ align-self: flex-start;
         <div class="flex-shrink-0">
             <h1 class="text-xl sm:text-2xl font-extrabold text-center no-print">Vastu Pro Analyzer |
     AI Edition</h1>
-            <p class="text-xs text-center text-gray-500 no-print">Generate a Vastu Shastra report using your device's sensors.</p>
+            
+            <!-- *** NEW: Main App Tabs *** -->
+            <div class="flex justify-center gap-6 border-b border-gray-200 mt-4 no-print">
+                <button id="analyzerTab" class="main-tab active py-2 px-4 font-bold text-lg">
+                    <i class="fas fa-camera-retro mr-2"></i>Analyzer
+                </button>
+                <button id="chatbotTab" class="main-tab py-2 px-4 font-bold text-lg">
+                    <i class="fas fa-comment-dots mr-2"></i>Vastu Chatbot
+                </button>
+            </div>
+        </div>
 
+        <!-- === ANALYZER WRAPPER (Steps 1-6) === -->
+        <div id="analyzerWrapper" class="flex flex-col flex-grow min-h-0">
             <!-- *** SUGGESTION 2: Icon-Based Step Indicators *** -->
-            <div class="flex flex-wrap justify-center text-center text-sm border-b pb-2 border-gray-200 no-print mt-6">
+            <div id="stepIndicatorWrapper" class="flex flex-wrap justify-center text-center text-sm border-b pb-2 border-gray-200 no-print mt-6 flex-shrink-0">
                 <div id="step1" class="step-indicator m-1" title="FAQ"><i class="fas fa-question-circle text-xl"></i></div>
                 <div id="step2" class="step-indicator m-1" title="Sensors"><i class="fas fa-compass text-xl"></i></div>
                 <div id="step3" class="step-indicator m-1" title="Context"><i class="fas fa-tasks text-xl"></i></div>
@@ -430,315 +482,328 @@ align-self: flex-start;
                 <div id="step5" class="step-indicator m-1" title="Scan"><i class="fas fa-camera text-xl"></i></div>
                 <div id="step6" class="step-indicator m-1" title="Report"><i class="fas fa-file-alt text-xl"></i></div>
             </div>
-        </div>
 
-        <!-- === MAIN CONTENT (Scrolling) === -->
-        <div id="mainContentArea" class="my-4">
-            <div id="stepContent1" class="step-content no-print">
-                <div class="glass-card p-4 rounded-lg border-2 border-blue-100 h-96 overflow-y-auto">
-                    <h3 class="font-bold text-lg text-blue-800 mb-3"><i class="fas fa-question-circle mr-2"></i>User FAQ & How-To</h3>
-                    <div class="text-sm text-gray-700 space-y-4">
-                        <div>
-                            <p class="font-bold text-blue-700">Q: How do I get the most accurate scan?</p>
-                            <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> Stand in the center of the room and turn in a slow, 360-degree circle. Make sure the room is well-lit so the AI can see everything clearly. The scan takes about 16 seconds.</p>
-                        </div>
-                        <div>
-                            <p class="font-bold text-blue-700">Q: What is the "Holistic Context" in Step 3?</p>
-                            <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This is an optional but powerful step. By telling the AI your concerns (e.g., "Financial", "Health"), it can tailor the Vastu remedies specifically to help you with those problems.</p>
-                        </div>
-                        <!-- UPDATED FAQ for Step 4 -->
-                        <div>
-                            <p class="font-bold text-blue-700">Q: What is the "Floor Plan" in Step 4?</p>
-                            <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This is the most critical step.
-                            <br>1. First, select the <strong>type of room</strong> you are in (e.g., "Kitchen").
-                            <br>2. Second, select <strong>where that room is located</strong> in your house (e.g., "South-East").
-                            <br>This two-part selection is required for an accurate analysis.</p>
-                        </div>
-                        <div>
-                            <p class="font-bold text-blue-700">Q: What's the difference between the two report buttons?</p>
-                            <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A: "Formal Report"</strong> gives a full, 5-section analysis with simple, practical remedies. <strong>"Expert Analysis"</strong> gives a short, bulleted list of high-stakes, structural remedies (like moving a wall) that a human expert might suggest.</p>
-                        </div>
-                         <div>
-                            <p class="font-bold text-blue-700">Q: My report failed or was empty. What do I do?</p>
-                            <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This can happen if the images are too dark or blurry, triggering the AI's safety filters. Please try scanning again in a room with better lighting.</p>
-                        </div>
-                        <div>
-                            <p class="font-bold text-blue-700">Q: Can I scan just one wall?</p>
-                            <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> No. The app is designed to capture all 8 directions in a full 360-degree scan to analyze every Vastu zone, not just one.</p>
+            <!-- === MAIN CONTENT (Scrolling) === -->
+            <div id="mainContentArea" class="my-4">
+                <div id="stepContent1" class="step-content no-print">
+                    <div class="glass-card p-4 rounded-lg border-2 border-blue-100 h-96 overflow-y-auto">
+                        <h3 class="font-bold text-lg text-blue-800 mb-3"><i class="fas fa-question-circle mr-2"></i>User FAQ & How-To</h3>
+                        <div class="text-sm text-gray-700 space-y-4">
+                            <div>
+                                <p class="font-bold text-blue-700">Q: How do I get the most accurate scan?</p>
+                                <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> Stand in the center of the room and turn in a slow, 360-degree circle. Make sure the room is well-lit so the AI can see everything clearly. The scan takes about 16 seconds.</p>
+                            </div>
+                            <div>
+                                <p class="font-bold text-blue-700">Q: What is the "Holistic Context" in Step 3?</p>
+                                <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This is an optional but powerful step. By telling the AI your concerns (e.g., "Financial", "Health"), it can tailor the Vastu remedies specifically to help you with those problems.</p>
+                            </div>
+                            <!-- UPDATED FAQ for Step 4 -->
+                            <div>
+                                <p class="font-bold text-blue-700">Q: What is the "Floor Plan" in Step 4?</p>
+                                <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This is the most critical step.
+                                <br>1. First, select the <strong>type of room</strong> you are in (e.g., "Kitchen").
+                                <br>2. Second, select <strong>where that room is located</strong> in your house (e.g., "South-East").
+                                <br>This two-part selection is required for an accurate analysis.</p>
+                            </div>
+                            <div>
+                                <p class="font-bold text-blue-700">Q: What's the difference between the two report buttons?</p>
+                                <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A: "Formal Report"</strong> gives a full, 5-section analysis with simple, practical remedies. <strong>"Expert Analysis"</strong> gives a short, bulleted list of high-stakes, structural remedies (like moving a wall) that a human expert might suggest.</p>
+                            </div>
+                             <div>
+                                <p class="font-bold text-blue-700">Q: My report failed or was empty. What do I do?</p>
+                                <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This can happen if the images are too dark or blurry, triggering the AI's safety filters. Please try scanning again in a room with better lighting.</p>
+                            </div>
+                            <div>
+                                <p class="font-bold text-blue-700">Q: Can I scan just one wall?</p>
+                                <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> No. The app is designed to capture all 8 directions in a full 360-degree scan to analyze every Vastu zone, not just one.</p>
+                            </div>
                         </div>
                     </div>
+                    <!-- Button moved to footer -->
                 </div>
-                <!-- Button moved to footer -->
-            </div>
-            <div id="stepContent2" class="step-content hidden no-print">
-                <p class="text-sm text-center text-gray-600 mb-4">Please grant permission to access your device's sensors.</p>
-                <div class="flex justify-center items-center p-4">
-                    <div class="relative w-24 h-24 sm:w-32 sm:h-32 bg-white rounded-full border-4 border-gray-300 flex items-center justify-center">
-                        <i class="fas fa-compass text-6xl text-gray-400"></i>
-                        <i id="compassNeedle" 
-    class="fas fa-arrow-up absolute text-red-500 text-3xl transition-transform" style="transform: rotate(0deg);"></i>
+                <div id="stepContent2" class="step-content hidden no-print">
+                    <p class="text-sm text-center text-gray-600 mb-4">Please grant permission to access your device's sensors.</p>
+                    <div class="flex justify-center items-center p-4">
+                        <div class="relative w-24 h-24 sm:w-32 sm:h-32 bg-white rounded-full border-4 border-gray-300 flex items-center justify-center">
+                            <i class="fas fa-compass text-6xl text-gray-400"></i>
+                            <i id="compassNeedle" 
+        class="fas fa-arrow-up absolute text-red-500 text-3xl transition-transform" style="transform: rotate(0deg);"></i>
+                        </div>
                     </div>
-                </div>
-                <p class="text-center font-bold text-lg" id="headingDisplay">Heading: N/A</p>
-                <p class="text-center text-xs text-gray-500 mb-4" id="sensorStatus">Sensors: Inactive</p>
-                <!-- Button moved to footer -->
-            </div>
-
-            <div id="stepContent3" class="step-content hidden no-print">
-                <p class="text-sm text-center text-gray-600 mb-4">This step is optional, but helps the AI personalize your report.</p>
-                <div class="glass-card p-4 mb-4">
-                    <label class="block text-sm font-bold text-gray-700 mb-3">
-                        Step 3a: What are your primary concerns? (Optional)
-                    </label>
-                    <div id="userConcernsContainer" class="grid grid-cols-2 gap-2 text-sm">
-                        <label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg">
-                            <input type="checkbox" class="concern-checkbox" value="Financial">
-                            <span><i class="fas fa-wallet mr-1"></i> Financial</span>
-                        </label>
-                        <label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg">
-                            <input type="checkbox" class="concern-checkbox" value="Health">
-                            <span><i class="fas fa-heartbeat mr-1"></i> Health</span>
-                        </label>
-                        <label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg">
-                            <input type="checkbox" class="concern-checkbox" value="Relationships">
-                            <span><i class="fas fa-users mr-1"></i> Relationships</span>
-                        </label>
-                        <label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg">
-                            <input type="checkbox" class="concern-checkbox" value="Career">
-                            <span><i class="fas fa-briefcase mr-1"></i> Career</span>
-                        </label>
-                    </div>
+                    <p class="text-center font-bold text-lg" id="headingDisplay">Heading: N/A</p>
+                    <p class="text-center text-xs text-gray-500 mb-4" id="sensorStatus">Sensors: Inactive</p>
+                    <!-- Button moved to footer -->
                 </div>
 
-                <div class="glass-card p-4">
-                    <label class="block text-sm font-bold text-gray-700 mb-2">
-                        Step 3b: What is surrounding the property? (Optional)
-                    </label>
-                    <div class="space-y-2">
-                        <input type="text" id="surroundingsWater" placeholder="E.g., River in North, Lake in East"
-                               class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500" data-key="Water Body">
-                        <p class="text-xs text-gray-500 mt-1">Water body (lake, river, etc.) and its direction?</p>
-                        
-                        <input type="text" id="surroundingsHills" placeholder="E.g., Mountain in South-West"
-                               class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500" data-key="Hills">
-                        <p class="text-xs text-gray-500 mt-1">Hills or large structures and their direction?</p>
+                <div id="stepContent3" class="step-content hidden no-print">
+                    <p class="text-sm text-center text-gray-600 mb-4">This step is optional, but helps the AI personalize your report.</p>
+                    <div class="glass-card p-4 mb-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-3">
+                            Step 3a: What are your primary concerns? (Optional)
+                        </label>
+                        <div id="userConcernsContainer" class="grid grid-cols-2 gap-2 text-sm">
+                            <label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg">
+                                <input type="checkbox" class="concern-checkbox" value="Financial">
+                                <span><i class="fas fa-wallet mr-1"></i> Financial</span>
+                            </label>
+                            <label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg">
+                                <input type="checkbox" class="concern-checkbox" value="Health">
+                                <span><i class="fas fa-heartbeat mr-1"></i> Health</span>
+                            </label>
+                            <label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg">
+                                <input type="checkbox" class="concern-checkbox" value="Relationships">
+                                <span><i class="fas fa-users mr-1"></i> Relationships</span>
+                            </label>
+                            <label class="flex items-center space-x-2 p-2 bg-white/50 rounded-lg">
+                                <input type="checkbox" class="concern-checkbox" value="Career">
+                                <span><i class="fas fa-briefcase mr-1"></i> Career</span>
+                            </label>
+                        </div>
                     </div>
-                </div>
-                <!-- Button moved to footer -->
-            </div>
-            
-            <!-- ======================================================================
-            START: STEP 4 (NEW GRID-BASED PLANNER)
-            ======================================================================
-            -->
-            <div id="stepContent4" class="step-content hidden no-print space-y-4">
-                
-                <!-- Part 1: Select Room Type -->
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">
-                        Step 4a: What room are you scanning?
-                    </label>
-                    <div id="roomTypeGrid" class="location-grid">
-                        <!-- JS will populate this -->
-                    </div>
-                </div>
 
-                <!-- Part 2: Select Location in House -->
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">
-                        Step 4b: Where is this room in your house?
-                    </label>
-                    <div id="roomLocationGrid" class="location-grid">
-                        <!-- JS will populate this -->
+                    <div class="glass-card p-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">
+                            Step 3b: What is surrounding the property? (Optional)
+                        </label>
+                        <div class="space-y-2">
+                            <input type="text" id="surroundingsWater" placeholder="E.g., River in North, Lake in East"
+                                   class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500" data-key="Water Body">
+                            <p class="text-xs text-gray-500 mt-1">Water body (lake, river, etc.) and its direction?</p>
+                            
+                            <input type="text" id="surroundingsHills" placeholder="E.g., Mountain in South-West"
+                                   class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500" data-key="Hills">
+                            <p class="text-xs text-gray-500 mt-1">Hills or large structures and their direction?</p>
+                        </div>
                     </div>
+                    <!-- Button moved to footer -->
                 </div>
                 
-                <p class="text-center text-xs text-gray-500 my-2 p-2 glass-card" id="currentRoomDisplay">
-                    Selected for Scan: <strong>...</strong> (in <strong>...</strong>)
-                </p>
-
-                <!-- Part 3: Floor Number -->
-                <div class="p-4 glass-card">
-                    <label for="floorNumberInput" class="block text-sm font-bold text-gray-700 mb-2">
-                        Step 4c: Which floor is this on?
-                    </label>
-                    <input type="text" id="floorNumberInput" placeholder="E.g., 1st Floor, Ground Floor (Required)" 
-                           class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500">
-                </div>
-
-                <!-- *** SUGGESTION 4: Step 4 Checklist *** -->
-                <div id="step4Checklist" class="glass-card p-4 space-y-2 text-sm rounded-lg">
-                    <div id="checklistRoom" class="checklist-item pending"><i class="far fa-square mr-2"></i>Select Room Type</div>
-                    <div id="checklistLocation" class="checklist-item pending"><i class="far fa-square mr-2"></i>Select Room Location</div>
-                    <div id="checklistFloor" class="checklist-item pending"><i class="far fa-square mr-2"></i>Enter Floor</div>
-                </div>
-                <!-- Button moved to footer -->
-            </div>
-            <!-- ====================================================================
-            END: STEP 4
-            ======================================================================
-            -->
-
-
-            <div id="stepContent5" class="step-content hidden no-print">
-                
-    <p class="text-sm text-center text-gray-600 mb-4">Hold your device steady and turn in a slow 360° circle to capture all zones.</p>
-                <div id="cameraContainer" class="glass-card overflow-hidden mb-4 relative">
-                    <video id="cameraVideo" autoplay playsinline class="bg-gray-200 hidden"></video>
+                <!-- ======================================================================
+                START: STEP 4 (NEW GRID-BASED PLANNER)
+                ======================================================================
+                -->
+                <div id="stepContent4" class="step-content hidden no-print space-y-4">
                     
-                    <div id="compassOverlay" class="absolute w-full h-full flex flex-col justify-between p-4 pointer-events-none z-50">
+                    <!-- Part 1: Select Room Type -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">
+                            Step 4a: What room are you scanning?
+                        </label>
+                        <div id="roomTypeGrid" class="location-grid">
+                            <!-- JS will populate this -->
+                        </div>
+                    </div>
+
+                    <!-- Part 2: Select Location in House -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">
+                            Step 4b: Where is this room in your house?
+                        </label>
+                        <div id="roomLocationGrid" class="location-grid">
+                            <!-- JS will populate this -->
+                        </div>
+                    </div>
+                    
+                    <p class="text-center text-xs text-gray-500 my-2 p-2 glass-card" id="currentRoomDisplay">
+                        Selected for Scan: <strong>...</strong> (in <strong>...</strong>)
+                    </p>
+
+                    <!-- Part 3: Floor Number -->
+                    <div class="p-4 glass-card">
+                        <label for="floorNumberInput" class="block text-sm font-bold text-gray-700 mb-2">
+                            Step 4c: Which floor is this on?
+                        </label>
+                        <input type="text" id="floorNumberInput" placeholder="E.g., 1st Floor, Ground Floor (Required)" 
+                               class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <!-- *** SUGGESTION 4: Step 4 Checklist *** -->
+                    <div id="step4Checklist" class="glass-card p-4 space-y-2 text-sm rounded-lg">
+                        <div id="checklistRoom" class="checklist-item pending"><i class="far fa-square mr-2"></i>Select Room Type</div>
+                        <div id="checklistLocation" class="checklist-item pending"><i class="far fa-square mr-2"></i>Select Room Location</div>
+                        <div id="checklistFloor" class="checklist-item pending"><i class="far fa-square mr-2"></i>Enter Floor</div>
+                    </div>
+                    <!-- Button moved to footer -->
+                </div>
+                <!-- ====================================================================
+                END: STEP 4
+                ======================================================================
+                -->
+
+
+                <div id="stepContent5" class="step-content hidden no-print">
+                    
+        <p class="text-sm text-center text-gray-600 mb-4">Hold your device steady and turn in a slow 360° circle to capture all zones.</p>
+
+                    <!-- *** BUG FIX: Moved Progress Bar Up *** -->
+                    <div id="captureProgressContainer" class="h-2 bg-gray-200 rounded-full mt-2 mb-4 hidden">
+                        <div id="captureProgress" class="h-2 bg-green-500 rounded-full transition-all duration-100"></div>
+                    </div>
+                    
+                    <div id="cameraContainer" class="glass-card overflow-hidden mb-4 relative">
+                        <!-- *** BUG FIX: Added z-10 *** -->
+                        <video id="cameraVideo" autoplay playsinline class="bg-gray-200 hidden relative z-10"></video>
                         
-    <div class="text-center">
-                            <span class="inline-block p-1 px-3 bg-black bg-opacity-70 text-white text-3xl font-extrabold rounded-lg shadow-xl" id="overlayHeading">N/A</span>
+                        <!-- *** BUG FIX: Added z-20 and transform-gpu *** -->
+                        <div id="compassOverlay" class="absolute w-full h-full flex flex-col justify-between p-4 pointer-events-none z-20 transform-gpu">
+                            
+                            <div class="text-center">
+                                <span class="inline-block p-1 px-3 bg-black bg-opacity-70 text-white text-3xl font-extrabold rounded-lg shadow-xl" id="overlayHeading">N/A</span>
+                            </div>
+                            <div class="text-center self-center mb-4">
+                                <span class="inline-block p-1 px-3 bg-black bg-opacity-70 text-white text-base rounded-lg font-semibold" id="overlayZone">Zone: Unknown</span>
+                            </div>
                         </div>
-                        <div class="text-center self-center mb-4">
-                         
-       <span class="inline-block p-1 px-3 bg-black bg-opacity-70 text-white text-base rounded-lg font-semibold" id="overlayZone">Zone: Unknown</span>
+
+                        <div id="cameraFallback" class="w-full h-full bg-gray-200 flex flex-col items-center justify-center text-center p-4 absolute top-0 left-0 z-0">
+                            <i 
+        class="fas fa-video camera-icon"></i>
+                            <p class="mt-2 text-sm text-gray-500">Camera access is required for Vastu analysis.</p>
                         </div>
                     </div>
-
-                    <div id="cameraFallback" class="w-full h-full bg-gray-200 flex flex-col items-center justify-center text-center p-4 absolute top-0 left-0">
-                        <i 
-    class="fas fa-video camera-icon"></i>
-                        <p class="mt-2 text-sm text-gray-500">Camera access is required for Vastu analysis.</p>
+                 
+                    <p class="text-center text-sm mb-4">
+                        <span 
+        id="captureCount">0/8</span> Segments Captured. Scan takes ~16 seconds.
+                    </p>
+         
+                    <!-- *** BUG FIX: Moved Progress Bar Down (from top) *** -->
+                    <div id="captureProgressContainer" class="h-2 bg-gray-200 rounded-full mt-2 mb-4 hidden">
+                        <div id="captureProgress" class="h-2 bg-green-500 rounded-full transition-all duration-100"></div>
                     </div>
-                </div>
-             
-                <p class="text-center text-sm mb-4">
-                    <span 
-    id="captureCount">0/8</span> Segments Captured. Scan takes ~16 seconds.
-                </p>
-     
-       
-                <div id="captureProgressContainer" class="h-2 bg-gray-200 rounded-full mt-2 mb-4 hidden">
-                    <div id="captureProgress" class="h-2 bg-green-500 rounded-full transition-all duration-100"></div>
+
+                    <!-- *** SUGGESTION 5: Gallery now populates with slots *** -->
+                    <div id="gallery" class="flex flex-wrap gap-2 justify-center p-2 border-dashed border-2 border-gray-300 rounded-lg bg-white overflow-y-auto max-h-40">
+                        <!-- JS will populate this with slots -->
+                    </div>
+                    <!-- Button moved to footer -->
                 </div>
 
-                <!-- *** SUGGESTION 5: Gallery now populates with slots *** -->
-                <div id="gallery" class="flex flex-wrap gap-2 justify-center p-2 border-dashed border-2 border-gray-300 rounded-lg bg-white overflow-y-auto max-h-40">
-                    <!-- JS will populate this with slots -->
-                </div>
-                <!-- Button moved to footer -->
-            </div>
+                <!-- *** STEP 6: Modified for Tabs and Flex *** -->
+                <div id="stepContent6" class="step-content hidden h-full flex flex-col">
+                    
+                    <div id="reportLoader" 
+        class="text-center py-8 hidden no-print">
+                        <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
+                        <p class="mt-4 font-semibold text-gray-600">Generating Your AI Report...</p>
+                        <p class="text-xs text-gray-500 mt-2">Analyzing 8 images. This may take 1-2 minutes, especially on the first try.</p>
+                    </div>
 
-            <!-- *** STEP 6: Modified for Tabs and Flex *** -->
-            <div id="stepContent6" class="step-content hidden h-full flex flex-col">
-                
-                <div id="reportLoader" 
-    class="text-center py-8 hidden no-print">
-                    <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
-                    <p class="mt-4 font-semibold text-gray-600">Generating Report...</p>
-                    <p class="text-xs text-gray-500 mt-2">The process may take a few seconds.</p>
-                </div>
+                   
+                     <!-- *** NEW 3-TAB SYSTEM *** -->
+                     <div class="flex border-b border-gray-200 mb-4 no-print flex-shrink-0">
+                        <button id="fullReportTab" class="py-2 px-4 text-xs sm:text-sm font-bold text-gray-600 border-b-2 border-transparent transition-colors hover:bg-gray-50">
+                            <i class="fas fa-file-alt mr-1"></i> Full Report
+                        </button>
+                        <button id="expertReportTab" class="py-2 px-4 text-xs sm:text-sm font-bold text-gray-600 border-b-2 border-transparent transition-colors hover:bg-gray-50">
+                            <i class="fas fa-exclamation-triangle mr-1"></i> Expert Analysis
+                        </button>
+                        <!-- *** REMOVED: Chat tab from here *** -->
+                    </div>
 
-               
-                 <!-- *** NEW 3-TAB SYSTEM *** -->
-                 <div class="flex border-b border-gray-200 mb-4 no-print flex-shrink-0">
-                    <button id="fullReportTab" class="py-2 px-4 text-xs sm:text-sm font-bold text-gray-600 border-b-2 border-transparent transition-colors hover:bg-gray-50">
-                        <i class="fas fa-file-alt mr-1"></i> Full Report
+                    <!-- Tab Content: Full Report -->
+                    <div id="fullReportView" class="tab-content">
+                        <div id="reportContent" class="glass-card p-4 text-sm report-section">
+                            Click "Formal Report" below to generate.
+                        </div>
+                    </div>
+                    
+                    <!-- Tab Content: Expert Report -->
+                    <div id="expertReportView" class="tab-content hidden">
+                        <div id="expertReportContent" class="glass-card p-4 text-sm report-section">
+                            Click "Expert Analysis" below to generate.
+                        </div>
+                    </div>
+                    
+                    <!-- *** BUG FIX: Removed duplicate chat view *** -->
+                    
+                </div>
+            </div> <!-- === END MAIN CONTENT === -->
+
+
+            <!-- === STICKY FOOTER (Suggestion 1) === -->
+            <div id="actionFooter" class="flex-shrink-0">
+                <!-- Step 1 Button -->
+                <div id="footerStep1" class="footer-step-wrapper">
+                    <button id="tipsNextButton" class="primary-btn w-full p-3 rounded-lg font-bold">
+                        Next: Activate Sensors <i class="fas fa-arrow-right ml-2"></i>
                     </button>
-                    <button id="expertReportTab" class="py-2 px-4 text-xs sm:text-sm font-bold text-gray-600 border-b-2 border-transparent transition-colors hover:bg-gray-50">
-                        <i class="fas fa-exclamation-triangle mr-1"></i> Expert Analysis
+                </div>
+                <!-- Step 2 Button -->
+                <div id="footerStep2" class="footer-step-wrapper">
+                    <button id="compassButton" class="primary-btn w-full p-3 rounded-lg font-bold">
+                        <i class="fas fa-magic mr-2"></i>Activate Sensors
                     </button>
-                    <button id="chatTab" class="py-2 px-4 text-xs sm:text-sm font-bold text-gray-600 border-b-2 border-transparent transition-colors 
-    hover:bg-gray-50">
-                        <i class="fas fa-comment-dots mr-1"></i> Vastu Chatbot
+                </div>
+                <!-- Step 3 Button -->
+                <div id="footerStep3" class="footer-step-wrapper">
+                    <button id="holisticNextButton" class="primary-btn w-full p-3 rounded-lg font-bold">
+                        Next: Floor Plan <i class="fas fa-arrow-right ml-2"></i>
                     </button>
                 </div>
-
-                <!-- Tab Content: Full Report -->
-                <div id="fullReportView" class="tab-content">
-                    <div id="reportContent" class="glass-card p-4 text-sm report-section">
-                        Click "Formal Report" below to generate.
-                    </div>
+                <!-- Step 4 Button -->
+                <div id="footerStep4" class="footer-step-wrapper">
+                     <button id="cameraButton" class="primary-btn w-full p-3 rounded-lg font-bold" disabled>
+                        <i class="fas fa-arrow-right mr-2"></i>Next: Activate Camera
+                    </button>
                 </div>
-                
-                <!-- Tab Content: Expert Report -->
-                <div id="expertReportView" class="tab-content hidden">
-                    <div id="expertReportContent" class="glass-card p-4 text-sm report-section">
-                        Click "Expert Analysis" below to generate.
-                    </div>
+                <!-- Step 5 Button -->
+                <div id="footerStep5" class="footer-step-wrapper">
+                    <button id="captureButton" class="primary-btn w-full p-3 rounded-lg font-bold" disabled>
+                        <i class="fas fa-location-arrow mr-2"></i>Start 16-Second Vastu Scan
+                    </button>
                 </div>
-                
-                <!-- Tab Content: Chat -->
-                <div id="chatView" class="tab-content hidden no-print flex-grow">
-                    <div id="chatMessages" class="glass-card p-4 text-sm flex flex-col space-y-2">
-                        <div class="ai-message chat-message text-gray-700">
-               <i class="fas fa-robot mr-1 text-blue-500"></i>
-                            Hello!
-    I am your Vastu AI Assistant. Ask me a general question about Vastu, or ask me for details about the report you just generated (e.g., "Tell me more about the North-East zone in my report").
-    </div>
-                    </div>
-                    <div class="flex mt-4">
-                        <input type="text" id="chatInput" placeholder="Ask your Vastu question..." class="flex-1 p-3 border border-gray-300 rounded-l-lg focus:ring-blue-500 focus:border-blue-500 text-gray-800" disabled>
-                        <button id="sendChatButton" class="primary-btn p-3 rounded-r-lg font-bold" disabled>
-                       <i class="fas fa-paper-plane"></i>
+                <!-- Step 6 Buttons -->
+                <div id="footerStep6" class="footer-step-wrapper">
+                    <!-- *** MODIFIED: Smaller, more compact buttons *** -->
+                    <div class="flex flex-wrap gap-2 no-print">
+                        <button id="analyzeButton" class="primary-btn p-3 rounded-lg font-bold flex-1" disabled>
+                            <i class="fas fa-chart-area mr-2"></i>Formal Report
+                         </button>
+                        <button id="deepAnalysisButton" class="primary-btn p-3 rounded-lg font-bold bg-blue-500 hover:bg-blue-600 flex-1" style="box-shadow: 0 4px #1d4ed8;" disabled>
+                            <i class="fas fa-exclamation-triangle mr-2"></i>Expert Analysis
                         </button>
                     </div>
+                    <div class="flex flex-wrap gap-2 no-print mt-2">
+                        <!-- *** SUGGESTION 3: Scan Again Button *** -->
+                        <button id="scanAgainButton" class="secondary-btn p-2 text-sm rounded-lg font-bold flex-1">
+                            <i class="fas fa-redo mr-1"></i>New Scan
+                        </button>
+                        <button id="saveReportButton" class="secondary-btn p-2 text-sm rounded-lg font-bold flex-1 hidden">
+                            <i class="fas fa-file-export mr-1"></i>Export .txt
+                        </button>
+                        <button id="printReportButton" class="secondary-btn p-2 text-sm rounded-lg font-bold flex-1 hidden">
+                            <i class="fas fa-print mr-1"></i>Print/Save PDF
+                        </button>
+                    </div>
+                    <!-- *** NEW: Report Feedback Buttons *** -->
+                    <div class="flex justify-center items-center gap-4 no-print mt-3 pt-3 border-t border-gray-300/50">
+                        <span class="text-xs font-semibold text-gray-600">Was this report helpful?</span>
+                        <button class="secondary-btn p-2 text-sm rounded-lg font-bold"><i class="far fa-thumbs-up"></i></button>
+                        <button class="secondary-btn p-2 text-sm rounded-lg font-bold"><i class="far fa-thumbs-down"></i></button>
+                    </div>
                 </div>
-                <!-- Buttons moved to footer -->
             </div>
-        </div> <!-- === END MAIN CONTENT === -->
+            <!-- === END STICKY FOOTER === -->
+        </div> <!-- === END ANALYZER WRAPPER === -->
 
 
-        <!-- === STICKY FOOTER (Suggestion 1) === -->
-        <div id="actionFooter" class="flex-shrink-0">
-            <!-- Step 1 Button -->
-            <div id="footerStep1" class="footer-step-wrapper">
-                <button id="tipsNextButton" class="primary-btn w-full p-3 rounded-lg font-bold">
-                    Next: Activate Sensors <i class="fas fa-arrow-right ml-2"></i>
-                </button>
-            </div>
-            <!-- Step 2 Button -->
-            <div id="footerStep2" class="footer-step-wrapper">
-                <button id="compassButton" class="primary-btn w-full p-3 rounded-lg font-bold">
-                    <i class="fas fa-magic mr-2"></i>Activate Sensors
-                </button>
-            </div>
-            <!-- Step 3 Button -->
-            <div id="footerStep3" class="footer-step-wrapper">
-                <button id="holisticNextButton" class="primary-btn w-full p-3 rounded-lg font-bold">
-                    Next: Floor Plan <i class="fas fa-arrow-right ml-2"></i>
-                </button>
-            </div>
-            <!-- Step 4 Button -->
-            <div id="footerStep4" class="footer-step-wrapper">
-                 <button id="cameraButton" class="primary-btn w-full p-3 rounded-lg font-bold" disabled>
-                    <i class="fas fa-arrow-right mr-2"></i>Next: Activate Camera
-                </button>
-            </div>
-            <!-- Step 5 Button -->
-            <div id="footerStep5" class="footer-step-wrapper">
-                <button id="captureButton" class="primary-btn w-full p-3 rounded-lg font-bold" disabled>
-                    <i class="fas fa-location-arrow mr-2"></i>Start 16-Second Vastu Scan
-                </button>
-            </div>
-            <!-- Step 6 Buttons -->
-            <div id="footerStep6" class="footer-step-wrapper">
-                <!-- *** MODIFIED: Smaller, more compact buttons *** -->
-                <div class="flex flex-wrap gap-2 no-print">
-                    <button id="analyzeButton" class="primary-btn p-3 rounded-lg font-bold flex-1" disabled>
-                        <i class="fas fa-chart-area mr-2"></i>Formal Report
-                     </button>
-                    <button id="deepAnalysisButton" class="primary-btn p-3 rounded-lg font-bold bg-blue-500 hover:bg-blue-600 flex-1" style="box-shadow: 0 4px #1d4ed8;" disabled>
-                        <i class="fas fa-exclamation-triangle mr-2"></i>Expert Analysis
-                    </button>
+        <!-- === NEW: CHATBOT VIEW (Top Level) === -->
+        <div id="chatView" class="hidden no-print h-full flex flex-col">
+            <div id="chatMessages" class="glass-card p-4 text-sm flex flex-col space-y-2">
+                <div class="ai-message chat-message text-gray-700">
+                   <i class="fas fa-robot mr-1 text-blue-500"></i>
+                    Hello! I am your Vastu AI Assistant. You can ask me general Vastu questions, or complete a scan in the "Analyzer" tab to ask about your specific report.
                 </div>
-                <div class="flex flex-wrap gap-2 no-print mt-2">
-                    <!-- *** SUGGESTION 3: Scan Again Button *** -->
-                    <button id="scanAgainButton" class="secondary-btn p-2 text-sm rounded-lg font-bold flex-1">
-                        <i class="fas fa-redo mr-1"></i>New Scan
-                    </button>
-                    <button id="saveReportButton" class="secondary-btn p-2 text-sm rounded-lg font-bold flex-1 hidden">
-                        <i class="fas fa-file-export mr-1"></i>Export .txt
-                    </button>
-                    <button id="printReportButton" class="secondary-btn p-2 text-sm rounded-lg font-bold flex-1 hidden">
-                        <i class="fas fa-print mr-1"></i>Print/Save PDF
-                    </button>
-                </div>
+            </div>
+            <div class="flex mt-4 flex-shrink-0">
+                <input type="text" id="chatInput" placeholder="Ask your Vastu question..." class="flex-1 p-3 border border-gray-300 rounded-l-lg focus:ring-blue-500 focus:border-blue-500 text-gray-800">
+                <button id="sendChatButton" class="primary-btn p-3 rounded-r-lg font-bold">
+                   <i class="fas fa-paper-plane"></i>
+                </button>
             </div>
         </div>
-        <!-- === END STICKY FOOTER === -->
+        <!-- === END CHATBOT VIEW === -->
 
 
         <!-- 
@@ -777,15 +842,128 @@ align-self: flex-start;
 
 
     <script type="module">
-        const renderApiUrl="https://test12-6qay.onrender.com";let currentHeading=null;let isCompassActive=!1;let isCameraActive=!1;let isCapturing=!1;let isReportGenerating=!1;let isChatGenerating=!1;let videoStream=null;let capturedFrames=[];let fullReportMarkdown="";let chatContextSummary="";let chatHistory=[];let simulationInterval;let captureInterval;let sensorCheckTimeout;const totalCaptures=8;const captureIntervalTime=2000;const scanDuration=totalCaptures*(captureIntervalTime/1000);let currentRoomTag=null;let roomLocationInHouse=null;let floorNumber="";const VASTU_ZONES_16=["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];let userIssues=[];let propertySurroundings={};let stepContents,stepIndicators,tipsNextButton,headingDisplay,sensorStatus,compassNeedle,compassButton,cameraButton,captureCanvas,cameraVideo,cameraFallback,overlayHeading,overlayZone,gallery,captureButton,captureCountDisplay,captureProgressContainer,captureProgress,analyzeButton,deepAnalysisButton,saveReportButton,printReportButton,reportContent,reportLoader,chatInput,sendChatButton,currentRoomDisplay,floorNumberInput,holisticNextButton,userConcernsContainer,surroundingsWater,surroundingsHills;let roomTypeGrid,roomLocationGrid;let actionFooter,footerStepWrappers;let step4Checklist,checklistRoom,checklistLocation,checklistFloor;let scanAgainButton;let fullReportTab,expertReportTab,chatTab,fullReportView,expertReportView,chatView,expertReportContent;let tutorialOverlay,tutorialTitle,tutorialBody,tutorialCloseButton,tutorialSkipAllButton;function getVastuZone(degrees){const offset=11.25;let index=Math.floor(((degrees+offset)%360)/22.5);return VASTU_ZONES_16[index%16]}
-function formatAITextForDisplay(rawText){let formattedText=rawText;formattedText=formattedText.replace(/\n\n/g,'<p></p>');formattedText=formattedText.replace(/\n/g,'<br>');formattedText=formattedText.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');return formattedText.length>0?`<div class="pdf-report-body">${formattedText}</div>`:''}
-function displayCapturedFrames(){let html=`
+        // ----------------------------------------------------------------------------------
+        // *** CLIENT-SIDE CODE: API KEY IS REMOVED ***
+        // ----------------------------------------------------------------------------------
+        
+        // --- IMPROVEMENT: PASTE YOUR RENDER SERVER URL HERE ---
+        // e.g., "https://vastu-app-server.onrender.com"
+        const renderApiUrl = "https://test12-6qay.onrender.com"; 
+        
+        // ----------------------------------------------------------------------------------
+        
+        let currentHeading = null;
+let isCompassActive = false;
+        let isCameraActive = false;
+        let isCapturing = false;
+        let isReportGenerating = false;
+        let isChatGenerating = false;
+let videoStream = null;
+        let capturedFrames = [];
+        let fullReportMarkdown = "";
+        let expertReportMarkdown = ""; // *** NEW: Separate expert report ***
+        let chatContextSummary = "";
+// NEW: Variable to hold the summary for the chatbot
+        let chatHistory = [];
+let simulationInterval;
+        let captureInterval;
+        let sensorCheckTimeout; // NEW: Global for the fallback timer
+        
+        const totalCaptures = 8;
+const captureIntervalTime = 2000; // 2 seconds
+        const scanDuration = totalCaptures * (captureIntervalTime / 1000);
+// 16 seconds
+
+        // --- GLOBAL STATE FOR ROOM CONTEXT ---
+        let currentRoomTag = null; // Default
+let roomLocationInHouse = null; // Default
+        let floorNumber = "";
+
+        // --- REMOVED: FLOOR PLANNER GLOBALS ---
+        
+        const VASTU_ZONES_16 = [
+            "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
+            "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"
+        ];
+
+
+        // --- IMPROVEMENT: GLOBAL STATE FOR HOLISTIC CONTEXT ---
+        let userIssues = [];
+        let propertySurroundings = {}; // e.g., { "Water Body": "North", "Hills": "South-West" }
+
+        // --- DOM Elements (GLOBAL DECLARATIONS) ---
+        // These will be assigned values *after* the DOM loads
+        let stepContents, stepIndicators, tipsNextButton, headingDisplay, sensorStatus,
+            compassNeedle, compassButton, cameraButton, captureCanvas, cameraVideo,
+            cameraFallback, overlayHeading, overlayZone, gallery, captureButton,
+            captureCountDisplay, captureProgressContainer, captureProgress, analyzeButton,
+            deepAnalysisButton, saveReportButton, printReportButton, reportContent,
+            reportLoader, 
+            chatInput, sendChatButton, currentRoomDisplay,
+            floorNumberInput, holisticNextButton,
+            userConcernsContainer, surroundingsWater, surroundingsHills;
+
+        // --- NEW: STEP 4 GRID DOM ELEMENTS ---
+        let roomTypeGrid, roomLocationGrid;
+        
+        // --- NEW: STICKY FOOTER DOM ELEMENTS ---
+        let actionFooter, footerStepWrappers, stepIndicatorWrapper;
+
+        // --- NEW: STEP 4 CHECKLIST DOM ELEMENTS ---
+        let step4Checklist, checklistRoom, checklistLocation, checklistFloor;
+
+        // --- NEW: SCAN AGAIN BUTTON ---
+        let scanAgainButton;
+        
+        // --- NEW: STEP 6 TABS AND VIEWS (MODIFIED) ---
+        let fullReportTab, expertReportTab,
+            fullReportView, expertReportView,
+            expertReportContent;
+            
+        // --- NEW: TOP LEVEL APP TABS ---
+        let analyzerTab, chatbotTab, analyzerWrapper, chatView, chatMessages;
+
+
+        // --- TUTORIAL MODAL ELEMENTS (Add these lines) ---
+        let tutorialOverlay, tutorialTitle, tutorialBody, tutorialCloseButton, tutorialSkipAllButton;
+
+
+        // --- UTILITY FUNCTIONS ---
+        function getVastuZone(degrees) {
+            // This function is for the COMPASS (0 = North)
+            const offset = 11.25;
+            let index = Math.floor(((degrees + offset) % 360) / 22.5);
+            return VASTU_ZONES_16[index % 16];
+}
+
+        // --- REMOVED: Planner Zone Calculation ---
+        // function getVastuZoneFromAngle(angle) { ... }
+
+
+        // IMPROVEMENT: RE-ENABLED asterisk-to-strong conversion
+        function formatAITextForDisplay(rawText) {
+            let formattedText = rawText;
+formattedText = formattedText.replace(/\n\n/g, '<p></p>');
+            formattedText = formattedText.replace(/\n/g, '<br>');
+            formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Re-enabled bold
+            return formattedText.length > 0 ?
+`<div class="pdf-report-body">${formattedText}</div>` : '';
+        }
+
+        // IMPROVEMENT: Enabled bolding
+        function displayCapturedFrames() {
+            let html = `
                 <strong class="no-print">VI.
 Captured Visual Data Segments (${capturedFrames.length} Frames)</strong>
                 <p class="text-sm font-semibold text-gray-600 mt-2 no-print">Scan Context: Data captured for the ${currentRoomTag} area, located in the ${roomLocationInHouse ||
 'N/A'} of the entire property, on the ${floorNumber || 'N/A'}.</p>
                 <div class="image-gallery">
-            `;capturedFrames.forEach((frame,index)=>{const zone=getVastuZone(frame.heading);const imageUrl=`data:image/jpeg;base64,${frame.image}`;html+=`
+            `;
+capturedFrames.forEach((frame, index) => {
+                const zone = getVastuZone(frame.heading);
+                const imageUrl = `data:image/jpeg;base64,${frame.image}`;
+
+                html += `
                     <div class="frame-item">
                     
     <img src="${imageUrl}" alt="Segment ${index + 1}" title="Segment ${index + 1}: ${zone}">
@@ -795,88 +973,1200 @@ Captured Visual Data Segments (${capturedFrames.length} Frames)</strong>
   ${frame.heading.toFixed(1)}° 
                         </div>
                     </div>
-                `});html+=`</div>`;return html}
-function formatAITextForTxtExport(rawText){let formattedText=rawText;formattedText=formattedText.replace(/\n\n/g,'\n\n');formattedText=formattedText.replace(/(?<!\n)\n(?!\n)/g,' ');formattedText=formattedText.replace(/\*\*(.*?)\*\*/g,(match,p1)=>`\n\n--- ${p1.toUpperCase()} ---\n`);return formattedText}
-function updateNextStepHighlight(currentStep=1){stepContents.forEach((content,index)=>{const stepNum=index+1;stepIndicators[index].classList.remove('step-active');if(stepNum===currentStep){content.classList.remove('hidden');stepIndicators[index].classList.add('step-active')}else{content.classList.add('hidden')}});footerStepWrappers.forEach((wrapper,index)=>{const stepNum=index+1;if(stepNum===currentStep){wrapper.style.display='block'}else{wrapper.style.display='none'}});if(currentStep===4){checkStep4Completion()}else if(currentStep===5){if(capturedFrames.length===0){initializeGallerySlots()}
-captureButton.disabled=isCapturing||capturedFrames.length>=totalCaptures}else if(currentStep===6){analyzeButton.disabled=isReportGenerating||capturedFrames.length<totalCaptures;deepAnalysisButton.disabled=isReportGenerating||capturedFrames.length<totalCaptures;chatInput.disabled=!fullReportMarkdown;sendChatButton.disabled=!fullReportMarkdown}
-showTutorial(currentStep)}
-function initializeStep4Grids(){const ROOM_TYPES=['Living Room','Kitchen','Master Bed','Bedroom','Pooja Room','Toilet/Bath','Main Entrance','Staircase','Study Room'];const LOCATIONS=['NW','N','NE','W','Center','E','SW','S','SE'];roomTypeGrid.innerHTML='';ROOM_TYPES.forEach(type=>{const cell=document.createElement('div');cell.className='location-cell';cell.textContent=type;cell.dataset.value=type;cell.addEventListener('click',()=>selectGridCell(roomTypeGrid,cell,'room'));roomTypeGrid.appendChild(cell)});roomLocationGrid.innerHTML='';LOCATIONS.forEach(loc=>{const cell=document.createElement('div');cell.className='location-cell';cell.textContent=loc;cell.dataset.value=loc;cell.addEventListener('click',()=>selectGridCell(roomLocationGrid,cell,'location'));roomLocationGrid.appendChild(cell)});updateRoomDisplay();updateChecklist()}
-function selectGridCell(grid,cell,type){Array.from(grid.children).forEach(c=>c.classList.remove('selected'));cell.classList.add('selected');if(type==='room'){currentRoomTag=cell.dataset.value}else if(type==='location'){roomLocationInHouse=cell.dataset.value}
-updateRoomDisplay();checkStep4Completion()}
-function updateRoomDisplay(){const room=currentRoomTag||'...';const loc=roomLocationInHouse||'...';currentRoomDisplay.innerHTML=`Selected for Scan: <strong>${room}</strong> (in <strong>${loc}</strong> zone)`}
-function checkStep4Completion(){if(currentRoomTag&&roomLocationInHouse&&floorNumber.trim().length>0){cameraButton.disabled=!1}else{cameraButton.disabled=!0}
-updateChecklist()}
-function updateChecklist(){if(currentRoomTag){checklistRoom.innerHTML=`<i class="far fa-check-square mr-2 text-green-500"></i>Room: <strong>${currentRoomTag}</strong>`;checklistRoom.className='checklist-item complete'}else{checklistRoom.innerHTML=`<i class="far fa-square mr-2"></i>Select Room Type`;checklistRoom.className='checklist-item pending'}
-if(roomLocationInHouse){checklistLocation.innerHTML=`<i class="far fa-check-square mr-2 text-green-500"></i>Location: <strong>${roomLocationInHouse}</strong>`;checklistLocation.className='checklist-item complete'}else{checklistLocation.innerHTML=`<i class="far fa-square mr-2"></i>Select Room Location`;checklistLocation.className='checklist-item pending'}
-if(floorNumber.trim().length>0){checklistFloor.innerHTML=`<i class="far fa-check-square mr-2 text-green-500"></i>Floor: <strong>${floorNumber}</strong>`;checklistFloor.className='checklist-item complete'}else{checklistFloor.innerHTML=`<i class="far fa-square mr-2"></i>Enter Floor`;checklistFloor.className='checklist-item pending'}}
-function switchReportTab(target){fullReportTab.classList.remove('border-blue-500','border-b-2','text-blue-800');expertReportTab.classList.remove('border-blue-500','border-b-2','text-blue-800');chatTab.classList.remove('border-blue-500','border-b-2','text-blue-800');fullReportTab.classList.add('border-transparent','text-gray-600');expertReportTab.classList.add('border-transparent','text-gray-600');chatTab.classList.add('border-transparent','text-gray-600');fullReportView.classList.add('hidden');expertReportView.classList.add('hidden');chatView.classList.add('hidden');if(target==='full'){fullReportTab.classList.remove('border-transparent','text-gray-600');fullReportTab.classList.add('border-blue-500','border-b-2','text-blue-800');fullReportView.classList.remove('hidden')}else if(target==='expert'){expertReportTab.classList.remove('border-transparent','text-gray-600');expertReportTab.classList.add('border-blue-500','border-b-2','text-blue-800');expertReportView.classList.remove('hidden')}else if(target==='chat'){chatTab.classList.remove('border-transparent','text-gray-600');chatTab.classList.add('border-blue-500','border-b-2','text-blue-800');chatView.classList.remove('hidden');setTimeout(()=>chatMessages.scrollTop=chatMessages.scrollHeight,10)}}
-function showTutorial(step){if(localStorage.getItem('vastuAppTutorialsSkipped')==='true'){return}
-let title="";let body="";switch(step){case 1:title="Welcome to Vastu Pro AI";body="This app is a 6-step Vastu analyzer. You are on the FAQ page, a great place to start.<br><br>Click 'Got It!' to continue, or 'Skip All Tutorials' to hide these messages permanently.";break;case 2:title="Step 2: Activate Sensors";body="This is a key step. The app needs access to your device's <strong>compass</strong> to know which direction you are facing.<br><br>Please tap the 'Activate Sensors' button and grant permission if prompted.";break;case 3:title="Step 3: Holistic Context (Optional)";body="This step is optional but highly recommended.<br><br>Telling the AI your personal concerns (like 'Financial' or 'Health') helps it create remedies that are specifically tailored to your goals.";break;case 4:title="Step 4: Location (Required)";body=`This is the <strong>most critical step</strong> for accuracy. Please complete all 3 parts:
+                `;
+            });
+html += `</div>`;
+            return html;
+        }
+        
+        function formatAITextForTxtExport(rawText) {
+             let formattedText = rawText;
+formattedText = formattedText.replace(/\n\n/g, '\n\n');
+             formattedText = formattedText.replace(/(?<!\n)\n(?!\n)/g, ' ');
+             // We still want to format for .txt export
+             formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, (match, p1) => `\n\n--- ${p1.toUpperCase()} ---\n`);
+             return formattedText;
+}
+
+        // REMOVED updateStatus function
+
+        // --- *** NEW: Main App Tab Switcher *** ---
+        function switchMainTab(target) {
+            if (target === 'analyzer') {
+                analyzerTab.classList.add('active');
+                chatbotTab.classList.remove('active');
+                analyzerWrapper.classList.remove('hidden');
+                chatView.classList.add('hidden');
+            } else {
+                analyzerTab.classList.remove('active');
+                chatbotTab.classList.add('active');
+                analyzerWrapper.classList.add('hidden');
+                chatView.classList.remove('hidden');
+                // Scroll chat to bottom
+                setTimeout(() => chatMessages.scrollTop = chatMessages.scrollHeight, 10);
+            }
+        }
+
+
+        // IMPROVEMENT: Updated for 6 steps
+        function updateNextStepHighlight(currentStep = 1) {
+            
+            // --- REMOVED: Free navigation sensor logic ---
+
+            stepContents.forEach((content, index) => {
+                const stepNum = index + 1;
+                stepIndicators[index].classList.remove('step-active');
+                if (stepNum === currentStep) {
+         
+           content.classList.remove('hidden');
+                    stepIndicators[index].classList.add('step-active');
+                } else {
+                    content.classList.add('hidden');
+                }
+            });
+
+            // --- NEW: Sticky Footer Logic ---
+            footerStepWrappers.forEach((wrapper, index) => {
+                const stepNum = index + 1;
+                if (stepNum === currentStep) {
+                    wrapper.style.display = 'block';
+                } else {
+                    wrapper.style.display = 'none';
+                }
+            });
+
+            // --- NEW: Hide/Show Step Indicators ---
+            if (currentStep === 6) {
+                stepIndicatorWrapper.classList.add('hidden');
+            } else {
+                stepIndicatorWrapper.classList.remove('hidden');
+            }
+            // --- END ---
+
+            if (currentStep === 4) { // Location Step
+                checkStep4Completion(); // Check if next button should be enabled
+            
+            } else if (currentStep === 5) { // Scan Step
+                if (capturedFrames.length === 0) {
+                    initializeGallerySlots(); // *** NEW (Suggestion 5) ***
+                }
+                captureButton.disabled = isCapturing || capturedFrames.length >= totalCaptures;
+
+            } else if (currentStep === 6) { // Report Step
+                analyzeButton.disabled = isReportGenerating || capturedFrames.length < totalCaptures;
+                deepAnalysisButton.disabled = isReportGenerating || capturedFrames.length < totalCaptures; 
+                // Chat is now independent
+                // chatInput.disabled = !fullReportMarkdown; 
+                // sendChatButton.disabled = !fullReportMarkdown;
+            }
+
+            // --- ADD THIS LINE ---
+            // Call the tutorial modal for the new step
+            showTutorial(currentStep);
+        }
+
+        // --- *** NEW: Step 4 Grid Logic *** ---
+        function initializeStep4Grids() {
+            const ROOM_TYPES = [
+                'Living Room', 'Kitchen', 'Master Bed',
+                'Bedroom', 'Pooja Room', 'Toilet/Bath',
+                'Main Entrance', 'Staircase', 'Study Room'
+            ];
+
+            const LOCATIONS = [
+                'NW', 'N', 'NE',
+                'W', 'Center', 'E',
+                'SW', 'S', 'SE'
+            ];
+
+            roomTypeGrid.innerHTML = '';
+            ROOM_TYPES.forEach(type => {
+                const cell = document.createElement('div');
+                cell.className = 'location-cell';
+                cell.textContent = type;
+                cell.dataset.value = type;
+                cell.addEventListener('click', () => selectGridCell(roomTypeGrid, cell, 'room'));
+                roomTypeGrid.appendChild(cell);
+            });
+
+            roomLocationGrid.innerHTML = '';
+            LOCATIONS.forEach(loc => {
+                const cell = document.createElement('div');
+                cell.className = 'location-cell';
+                cell.textContent = loc;
+                cell.dataset.value = loc;
+                cell.addEventListener('click', () => selectGridCell(roomLocationGrid, cell, 'location'));
+                roomLocationGrid.appendChild(cell);
+            });
+
+            updateRoomDisplay(); // Set initial text
+            updateChecklist(); // Set initial checklist
+        }
+
+        function selectGridCell(grid, cell, type) {
+            // Remove 'selected' from all siblings
+            Array.from(grid.children).forEach(c => c.classList.remove('selected'));
+            // Add 'selected' to the clicked cell
+            cell.classList.add('selected');
+
+            if (type === 'room') {
+                currentRoomTag = cell.dataset.value;
+            } else if (type === 'location') {
+                roomLocationInHouse = cell.dataset.value;
+            }
+
+            updateRoomDisplay();
+            checkStep4Completion();
+        }
+
+        function updateRoomDisplay() {
+            const room = currentRoomTag || '...';
+            const loc = roomLocationInHouse || '...';
+            currentRoomDisplay.innerHTML = `Selected for Scan: <strong>${room}</strong> (in <strong>${loc}</strong> zone)`;
+        }
+
+        function checkStep4Completion() {
+            // Check if all 3 parts of Step 4 are complete
+            if (currentRoomTag && roomLocationInHouse && floorNumber.trim().length > 0) {
+                cameraButton.disabled = false;
+            } else {
+                cameraButton.disabled = true;
+            }
+            updateChecklist(); // *** NEW (Suggestion 4) ***
+        }
+
+        // --- *** NEW: Step 4 Checklist UI Function (Suggestion 4) *** ---
+        function updateChecklist() {
+            if (currentRoomTag) {
+                checklistRoom.innerHTML = `<i class="far fa-check-square mr-2 text-green-500"></i>Room: <strong>${currentRoomTag}</strong>`;
+                checklistRoom.className = 'checklist-item complete';
+            } else {
+                checklistRoom.innerHTML = `<i class="far fa-square mr-2"></i>Select Room Type`;
+                checklistRoom.className = 'checklist-item pending';
+            }
+
+            if (roomLocationInHouse) {
+                checklistLocation.innerHTML = `<i class="far fa-check-square mr-2 text-green-500"></i>Location: <strong>${roomLocationInHouse}</strong>`;
+                checklistLocation.className = 'checklist-item complete';
+            } else {
+                checklistLocation.innerHTML = `<i class="far fa-square mr-2"></i>Select Room Location`;
+                checklistLocation.className = 'checklist-item pending';
+            }
+
+            if (floorNumber.trim().length > 0) {
+                checklistFloor.innerHTML = `<i class="far fa-check-square mr-2 text-green-500"></i>Floor: <strong>${floorNumber}</strong>`;
+                checklistFloor.className = 'checklist-item complete';
+            } else {
+                checklistFloor.innerHTML = `<i class="far fa-square mr-2"></i>Enter Floor`;
+                checklistFloor.className = 'checklist-item pending';
+            }
+        }
+        // --- *** END: Step 4 Grid Logic *** ---
+
+        
+        // --- *** MODIFIED: For 3 Tabs *** ---
+        function switchReportTab(target) {
+            // Reset all tabs to inactive state
+            fullReportTab.classList.remove('border-blue-500', 'border-b-2', 'text-blue-800');
+            expertReportTab.classList.remove('border-blue-500', 'border-b-2', 'text-blue-800');
+            // chatTab.classList.remove('border-blue-500', 'border-b-2', 'text-blue-800');
+            fullReportTab.classList.add('border-transparent', 'text-gray-600');
+            expertReportTab.classList.add('border-transparent', 'text-gray-600');
+            // chatTab.classList.add('border-transparent', 'text-gray-600');
+
+            // Hide all views
+            fullReportView.classList.add('hidden');
+            expertReportView.classList.add('hidden');
+            // chatView.classList.add('hidden');
+
+            if (target === 'full') {
+                fullReportTab.classList.remove('border-transparent', 'text-gray-600');
+                fullReportTab.classList.add('border-blue-500', 'border-b-2', 'text-blue-800');
+                fullReportView.classList.remove('hidden');
+            } else if (target === 'expert') {
+                expertReportTab.classList.remove('border-transparent', 'text-gray-600');
+                expertReportTab.classList.add('border-blue-500', 'border-b-2', 'text-blue-800');
+                expertReportView.classList.remove('hidden');
+            } 
+            // Chat is handled by switchMainTab
+        }
+
+        // ----------------------------------------------------------------------------------
+        // --- STEP 7 (NEW): TUTORIAL LOGIC ---
+        // ----------------------------------------------------------------------------------
+
+        function showTutorial(step) {
+            // 1. Check if user has skipped all tutorials
+            if (localStorage.getItem('vastuAppTutorialsSkipped') === 'true') {
+                return; // Don't show any tutorials
+            }
+
+            let title = "";
+            let body = "";
+
+            // 2. Define content for each step's tutorial
+            switch(step) {
+                case 1:
+                    title = "Welcome to Vastu Pro AI";
+                    body = "This app has two parts: the <strong>Analyzer</strong> (for scans) and the <strong>Vastu Chatbot</strong> (for questions).<br><br>You are on Step 1 of the Analyzer. Follow the steps to get your report.";
+                    break;
+                case 2:
+                    title = "Step 2: Activate Sensors";
+                    body = "This is a key step. The app needs access to your device's <strong>compass</strong> to know which direction you are facing.<br><br>Please tap the 'Activate Sensors' button and grant permission if prompted.";
+                    break;
+                case 3:
+                    title = "Step 3: Holistic Context (Optional)";
+                    body = "This step is optional but highly recommended.<br><br>Telling the AI your personal concerns (like 'Financial' or 'Health') helps it create remedies that are specifically tailored to your goals.";
+                    break;
+                case 4:
+                    // --- *** NEW: DEEPER TUTORIAL FOR STEP 4 *** ---
+                    title = "Step 4: Location (Required)";
+                    body = `This is the <strong>most critical step</strong> for accuracy. Please complete all 3 parts:
                         <br><br><strong>1. Room Type:</strong> Tap the button for the room you are currently in.
                         <br><br><strong>2. Room Location:</strong> Tap the button for where this room is located within your *entire* house plan.
                         <br><br><strong>3. Floor:</strong> Type the floor number.
-                        <br><br>The 'Next' button will activate once all three are complete.`;break;case 5:title="Step 5: The 360° Scan";body="You're ready to scan! You've selected the <strong>"+currentRoomTag+"</strong> in the <strong>"+roomLocationInHouse+"</strong> zone.<br><br>When you click 'Start Scan', hold your device steady and turn in a <strong>slow, complete 360-degree circle</strong>.";break;case 6:title="Step 6: Your Report";body="Your scan is complete!<br><br>Click <strong>'Formal Report'</strong> for a detailed analysis or <strong>'Expert Analysis'</strong> for high-level structural advice. You can also use the 'Vastu Chatbot' to ask follow-up questions.";break;default:return}
-tutorialTitle.textContent=title;tutorialBody.innerHTML=body;tutorialOverlay.classList.remove('hidden')}
-function handleOrientation(event){let heading;if(event.webkitCompassHeading){heading=event.webkitCompassHeading}else if(event.alpha!==null){if(event.absolute===!0||typeof event.absolute==='undefined'){heading=(360-event.alpha)%360}else{console.warn("Relative orientation not supported. Using 0.");heading=(360-event.alpha)%360}}else{return}
-if(sensorCheckTimeout){clearTimeout(sensorCheckTimeout);sensorCheckTimeout=null}
-currentHeading=parseFloat(heading.toFixed(1));headingDisplay.textContent=`Heading: ${currentHeading}°`;overlayHeading.textContent=`${currentHeading}°`;compassNeedle.style.transform=`rotate(-${currentHeading}deg)`;overlayZone.textContent=`Zone: ${getVastuZone(currentHeading)}`}
-function requestIOSSensorPermission(navigateToStep){if(typeof DeviceOrientationEvent.requestPermission==='function'){DeviceOrientationEvent.requestPermission().then(permissionState=>{if(permissionState==='granted'){window.addEventListener('deviceorientation',handleOrientation);window.addEventListener('deviceorientationabsolute',handleOrientation);startCompassLogic(navigateToStep)}else{console.warn("Sensor permission denied by user.");startCompassSimulation(navigateToStep)}}).catch(e=>{console.error('Sensor permission error:',e);startCompassSimulation(navigateToStep)})}else{startCompassLogic(navigateToStep)}}
-function startCompassLogic(navigateToStep=null){if(isCompassActive)return;if(window.DeviceOrientationEvent){if(typeof DeviceOrientationEvent.requestPermission!=='function'){window.addEventListener('deviceorientation',handleOrientation);window.addEventListener('deviceorientationabsolute',handleOrientation)}}else{startCompassSimulation(navigateToStep);return}
-sensorCheckTimeout=setTimeout(()=>{if(currentHeading===null){console.warn("No sensor data. Falling back to simulation.");stopCompassLogic();startCompassSimulation(navigateToStep)}},1000);isCompassActive=!0;sensorStatus.textContent='Sensors: Active';compassButton.classList.remove('primary-btn');compassButton.classList.add('bg-gray-400');compassButton.innerHTML='<i class="fas fa-check mr-2"></i>Sensors Active';compassButton.style.boxShadow='none';compassButton.disabled=!0;if(navigateToStep){updateNextStepHighlight(navigateToStep)}}
-function startCompassSimulation(navigateToStep=null){if(isCompassActive)return;isCompassActive=!0;let simHeading=0;sensorStatus.textContent='Sensors: SIMULATION (Not Found)';simulationInterval=setInterval(()=>{simHeading=(simHeading+0.1)%360;currentHeading=parseFloat(simHeading.toFixed(1));headingDisplay.textContent=`Heading: ${currentHeading}° (SIM)`;overlayHeading.textContent=`${currentHeading}° (SIM)`;compassNeedle.style.transform=`rotate(-${currentHeading}deg)`;overlayZone.textContent=`Zone: ${getVastuZone(currentHeading)}`},100);compassButton.classList.remove('primary-btn');compassButton.classList.add('bg-gray-400');compassButton.innerHTML='<i class="fas fa-check mr-2"></i>Simulation Active';compassButton.style.boxShadow='none';compassButton.disabled=!0;if(navigateToStep){updateNextStepHighlight(navigateToStep)}}
-function activateCompass(navigateToStep=null){if(isCompassActive){return}
-if(window.DeviceOrientationEvent&&typeof DeviceOrientationEvent.requestPermission==='function'){requestIOSSensorPermission(navigateToStep)}else if(window.DeviceOrientationEvent){startCompassLogic(navigateToStep)}else{startCompassSimulation(navigateToStep)}}
-function stopVideoStream(){if(!isCameraActive)return;if(videoStream){videoStream.getTracks().forEach(track=>track.stop());videoStream=null}
-isCameraActive=!1;cameraVideo.classList.add('hidden');cameraFallback.classList.remove('hidden');cameraButton.classList.remove('bg-red-500','hover:bg-red-600','bg-gray-400');cameraButton.classList.add('primary-btn');cameraButton.innerHTML=`<i class="fas fa-arrow-right mr-2"></i>Next: Activate Camera`;cameraButton.style.boxShadow='0 4px var(--color-text-dark)';checkStep4Completion()}
-function stopCompassLogic(){if(!isCompassActive)return;isCompassActive=!1;sensorStatus.textContent='Sensors: Inactive';compassButton.classList.remove('bg-red-500','hover:bg-red-600','bg-gray-400');compassButton.classList.add('primary-btn');compassButton.innerHTML='<i class="fas fa-magic mr-2"></i>Activate Sensors';compassButton.style.boxShadow='0 4px var(--color-text-dark)';compassButton.disabled=!1;headingDisplay.textContent='Heading: N/A';overlayHeading.textContent='N/A';compassNeedle.style.transform=`rotate(0deg)`;overlayZone.textContent='Zone: Unknown';window.removeEventListener('deviceorientation',handleOrientation);window.removeEventListener('deviceorientationabsolute',handleOrientation);if(simulationInterval){clearInterval(simulationInterval);simulationInterval=null}
-if(sensorCheckTimeout){clearTimeout(sensorCheckTimeout);sensorCheckTimeout=null}}
-async function activateCamera(){const currentStep=Array.from(stepIndicators).findIndex(s=>s.classList.contains('step-active'))+1;if(currentStep===4){if(!isCompassActive){activateCompass(null)}
-updateNextStepHighlight(5);if(isCameraActive)return;if(isCapturing)return;try{videoStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:320},height:{ideal:320}}});cameraVideo.srcObject=videoStream;cameraVideo.classList.remove('hidden');cameraFallback.classList.add('hidden');await cameraVideo.play();isCameraActive=!0}catch(err){console.error('Camera access error:',err);cameraVideo.classList.add('hidden');cameraFallback.classList.remove('hidden')}}}
-function captureCurrentFrame(){const video=cameraVideo;const canvas=captureCanvas;const context=canvas.getContext('2d');if(!isCameraActive||!currentHeading){console.error("Cannot capture: Camera or compass is inactive.");return null}
-if(video.videoWidth===0||video.videoHeight===0){console.warn("Video dimensions not ready yet. Skipping this frame capture.");return null}
-const size=Math.min(video.videoWidth,video.videoHeight);canvas.width=size;canvas.height=size;const startX=(video.videoWidth-size)/2;const startY=(video.videoHeight-size)/2;context.drawImage(video,startX,startY,size,size,0,0,size,size);const dataUrl=canvas.toDataURL('image/jpeg',0.05);const base64Data=dataUrl.split(',')[1];return{image:base64Data,heading:currentHeading,zone:getVastuZone(currentHeading),timestamp:Date.now()}}
-function startCapture(){if(isCapturing)return;if(!isCompassActive||!isCameraActive){alert("Please ensure sensors and camera are active (Steps 2 & 5).");return}
-if(!floorNumber||floorNumber.length<1){alert("Please go back to Step 4 and enter the 'Floor Number' before scanning.");return}
-isCapturing=!0;capturedFrames=[];captureCountDisplay.textContent=`0/${totalCaptures}`;captureButton.disabled=!0;captureButton.textContent='Scanning... (Hold Steady)';captureProgressContainer.classList.remove('hidden');captureProgress.style.width='0%';analyzeButton.disabled=!0;deepAnalysisButton.disabled=!0;saveReportButton.classList.add('hidden');printReportButton.classList.add('hidden');let capturesTaken=0;const executeCapture=()=>{const frameData=captureCurrentFrame();if(frameData){capturedFrames.push(frameData);capturesTaken++;displayCapturedFrame(frameData,capturesTaken-1);captureCountDisplay.textContent=`${capturesTaken}/${totalCaptures}`;captureProgress.style.width=`${(capturesTaken / totalCaptures) * 100}%`;if(capturesTaken>=totalCaptures){clearInterval(captureInterval);endCapture()}}};executeCapture();captureInterval=setInterval(executeCapture,captureIntervalTime);setTimeout(()=>{if(isCapturing){clearInterval(captureInterval);endCapture()}},captureIntervalTime*totalCaptures+500)}
-function endCapture(){isCapturing=!1;captureProgressContainer.classList.add('hidden');captureButton.textContent='Start 16-Second Vastu Scan';captureButton.disabled=!1;stopVideoStream();stopCompassLogic();if(capturedFrames.length===totalCaptures){updateNextStepHighlight(6);analyzeButton.disabled=!1;deepAnalysisButton.disabled=!1}else{updateNextStepHighlight(6);analyzeButton.disabled=!0;deepAnalysisButton.disabled=!0}}
-function displayCapturedFrame(frame,index){const allSlots=gallery.querySelectorAll('.gallery-slot');if(index>=allSlots.length)return;const slot=allSlots[index];slot.innerHTML='';slot.classList.remove('gallery-slot');slot.classList.add('frame-item');const img=document.createElement('img');img.src=`data:image/jpeg;base64,${frame.image}`;img.alt=`Segment ${index + 1}: ${frame.zone}`;img.title=`Segment ${index + 1}: ${frame.zone} (${frame.heading}°)`;const labelContainer=document.createElement('div');labelContainer.className='frame-data';labelContainer.innerHTML=`<span class="text-xs font-bold text-blue-500">#${index + 1}</span> | ${frame.heading.toFixed(1)}°`;slot.appendChild(img);slot.appendChild(labelContainer)}
-function initializeGallerySlots(){gallery.innerHTML='';for(let i=0;i<totalCaptures;i++){const slot=document.createElement('div');slot.className='gallery-slot';slot.innerHTML=`<i class="far fa-image"></i>`;gallery.appendChild(slot)}}
-async function generateReport(isDeepAnalysis=!1){if(isReportGenerating||capturedFrames.length<totalCaptures){return}
-if(renderApiUrl.includes("YOUR_RENDER_URL_HERE")||renderApiUrl.length<10){reportContent.innerHTML=formatAITextForDisplay(`**Error:** Server not configured. Please paste your Render server's URL into the 'renderApiUrl' variable at the top of the script.`);return}
-isReportGenerating=!0;fullReportMarkdown="";chatContextSummary="";chatHistory=[];reportLoader.classList.remove('hidden');if(isDeepAnalysis){expertReportContent.innerHTML='';switchReportTab('expert')}else{reportContent.innerHTML='';switchReportTab('full')}
-analyzeButton.disabled=!0;deepAnalysisButton.disabled=!0;saveReportButton.classList.add('hidden');printReportButton.classList.add('hidden');chatInput.disabled=!0;sendChatButton.disabled=!0;scanAgainButton.disabled=!0;let holisticIssues="None specified";if(userIssues.length>0){holisticIssues=userIssues.join(', ')}
-let holisticSurroundings="None specified";const surroundingsEntries=Object.entries(propertySurroundings).filter(([key,value])=>value.trim()!=="");if(surroundingsEntries.length>0){holisticSurroundings=surroundingsEntries.map(([key,value])=>`${key}: ${value}`).join('; ')}
-const clientPayload={isDeepAnalysis:isDeepAnalysis,scanData:{capturedFrames:capturedFrames.map(f=>({image:f.image,heading:f.heading,zone:f.zone})),currentRoomTag:currentRoomTag,roomLocationInHouse:roomLocationInHouse,floorNumber:floorNumber,holisticIssues:holisticIssues,holisticSurroundings:holisticSurroundings}};try{const apiUrl=`${renderApiUrl}/api/generateReport`;const response=await fetch(apiUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(clientPayload)});if(!response.ok){const errorData=await response.json();throw new Error(`Server Error: ${response.status} - ${errorData.error || 'Failed to fetch'}`)}
-const result=await response.json();fullReportMarkdown=result.text||"";if(!fullReportMarkdown){throw new Error("API returned an empty response. This is likely due to the API's safety filters (e.g., a blurry/dark image) or a silent timeout. Please try scanning again in a well-lit area.")}
-const summaryEndMarker='**II. Directional Data and Environmental Assessment**';const summaryEndIndex=fullReportMarkdown.indexOf(summaryEndMarker);if(summaryEndIndex!==-1){chatContextSummary=fullReportMarkdown.substring(0,summaryEndIndex).trim()}else{chatContextSummary=fullReportMarkdown.substring(0,500).trim()}
-const formattedHtml=formatAITextForDisplay(fullReportMarkdown)+displayCapturedFrames();if(isDeepAnalysis){expertReportContent.innerHTML=formattedHtml}else{reportContent.innerHTML=formattedHtml}
-saveReportButton.classList.remove('hidden');printReportButton.classList.remove('hidden');chatInput.disabled=!1;sendChatButton.disabled=!1}catch(error){console.error('Report Generation Error:',error);let errorHtml=formatAITextForDisplay(`**I. Executive Summary (Layman's Terms)**\n\nReport generation failed due to an error.`);errorHtml+=`<p class="text-red-600 font-bold mt-4">REPORT GENERATION FAILED</p>
+                        <br><br>The 'Next' button will activate once all three are complete.`;
+                    break;
+                case 5:
+                    title = "Step 5: The 360° Scan";
+                    body = "You're ready to scan! You've selected the <strong>" + currentRoomTag + "</strong> in the <strong>" + roomLocationInHouse + "</strong> zone.<br><br>When you click 'Start Scan', hold your device steady and turn in a <strong>slow, complete 360-degree circle</strong>.";
+                    break;
+                case 6:
+                    title = "Step 6: Your Report";
+                    body = "Your scan is complete!<br><br>Click <strong>'Formal Report'</strong> for a detailed analysis or <strong>'Expert Analysis'</strong> for high-level structural advice. You can now also go to the <strong>Vastu Chatbot</strong> tab to ask specific questions about your report.";
+                    break;
+                default:
+                    return; // Don't show modal for unknown steps
+            }
+
+            // 3. Show the modal with the correct content
+            tutorialTitle.textContent = title;
+            tutorialBody.innerHTML = body; // Use .innerHTML to render the <br> and <strong> tags
+            tutorialOverlay.classList.remove('hidden');
+        }
+
+
+        // ----------------------------------------------------------------------------------
+        // --- STEP 2: COMPASS ACTIVATION (FIXED WITH TIMEOUT FALLBACK) ---
+        // ----------------------------------------------------------------------------------
+        
+        function handleOrientation(event) {
+            let heading;
+if (event.webkitCompassHeading) {
+                heading = event.webkitCompassHeading; // iOS
+} else if (event.alpha !== null) {
+                // Use absolute orientation if available (0 = North)
+                if (event.absolute === true || typeof event.absolute === 'undefined') {
+                     heading = (360 - event.alpha) % 360; 
+                } else {
+                    // Fallback for relative orientation (less reliable)
+                    // We can't be sure where "0" is.
+                    // For this app, absolute is required.
+                    console.warn("Relative orientation not supported. Using 0.");
+                    heading = (360 - event.alpha) % 360; // Assume it's absolute-like
+                }
+} else {
+                return;
+}
+            
+            if (sensorCheckTimeout) {
+                clearTimeout(sensorCheckTimeout);
+sensorCheckTimeout = null;
+            }
+
+            currentHeading = parseFloat(heading.toFixed(1));
+headingDisplay.textContent = `${currentHeading}°`;
+            overlayHeading.textContent = `${currentHeading}°`;
+            compassNeedle.style.transform = `rotate(-${currentHeading}deg)`;
+            overlayZone.textContent = `Zone: ${getVastuZone(currentHeading)}`;
+}
+
+        // Handles permission request on iOS
+        function requestIOSSensorPermission(navigateToStep) {
+             if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission()
+                    .then(permissionState => {
+                      
+  if (permissionState === 'granted') {
+                            // Add listeners *after* permission is granted
+                            window.addEventListener('deviceorientation', handleOrientation);
+                            window.addEventListener('deviceorientationabsolute', handleOrientation);
+                            startCompassLogic(navigateToStep); // Now start the logic
+     
+                   } else {
+                            // Permission denied
+                            console.warn("Sensor permission denied by user.");
+                            startCompassSimulation(navigateToStep);
+        }
+                    })
+                    .catch(e => {
+    console.error('Sensor permission error:', e);
+                        startCompassSimulation(navigateToStep); // Fallback on error
+                    });
+} else {
+                // Not iOS 13+, or not a function
+                startCompassLogic(navigateToStep);
+}
+        }
+
+        // Start logic with original, complex listener attachment check
+        function startCompassLogic(navigateToStep = null) {
+            if (isCompassActive) return;
+            
+            if (window.DeviceOrientationEvent) {
+                // Add listeners (if not already added by iOS permission)
+                // This check avoids duplicate listeners
+                if (typeof DeviceOrientationEvent.requestPermission !== 'function') { 
+                     window.addEventListener('deviceorientation', handleOrientation);
+                     window.addEventListener('deviceorientationabsolute', handleOrientation);
+                }
+            } else {
+                 startCompassSimulation(navigateToStep); // No sensors found
+return;
+            }
+
+            sensorCheckTimeout = setTimeout(() => {
+                if (currentHeading === null) {
+                    // No sensor data received after 1s
+                    console.warn("No sensor data. Falling back to simulation.");
+                    stopCompassLogic(); // Stop listeners
+                    startCompassSimulation(navigateToStep);
+                } 
+            }, 1000); // 1 second timeout
+
+
+            isCompassActive = true;
+sensorStatus.textContent = 'Sensors: Active';
+            // --- BUTTON REVERTED TO SEQUENTIAL ---
+            compassButton.classList.remove('primary-btn');
+            compassButton.classList.add('bg-gray-400');
+            compassButton.innerHTML = '<i class="fas fa-check mr-2"></i>Sensors Active';
+            compassButton.style.boxShadow = 'none';
+            compassButton.disabled = true; // Not a toggle
+            
+            // *** NEW CONDITIONAL NAVIGATION ***
+            if (navigateToStep) {
+                updateNextStepHighlight(navigateToStep);
+            }
+        }
+
+        function startCompassSimulation(navigateToStep = null) {
+            if (isCompassActive) return;
+isCompassActive = true;
+            let simHeading = 0;
+            sensorStatus.textContent = 'Sensors: SIMULATION (Not Found)';
+simulationInterval = setInterval(() => {
+                simHeading = (simHeading + 0.1) % 360; 
+                currentHeading = parseFloat(simHeading.toFixed(1));
+                headingDisplay.textContent = `Heading: ${currentHeading}° (SIM)`;
+                overlayHeading.textContent = `${currentHeading}° (SIM)`;
+                
+
+                compassNeedle.style.transform = `rotate(-${currentHeading}deg)`;
+                overlayZone.textContent = `Zone: ${getVastuZone(currentHeading)}`;
+            }, 100);
+            
+            // --- BUTTON REVERTED TO SEQUENTIAL ---
+            compassButton.classList.remove('primary-btn');
+            compassButton.classList.add('bg-gray-400');
+            compassButton.innerHTML = '<i class="fas fa-check mr-2"></i>Simulation Active';
+            compassButton.style.boxShadow = 'none';
+            compassButton.disabled = true; // Not a toggle
+            
+            // *** NEW CONDITIONAL NAVIGATION ***
+            if (navigateToStep) {
+                updateNextStepHighlight(navigateToStep);
+            }
+        }
+        
+        // --- REFACTORED activateCompass ---
+        function activateCompass(navigateToStep = null) {
+            // --- REVERTED: No longer a toggle ---
+            if (isCompassActive) {
+                return;
+            }
+            
+            // --- NEW PERMISSION-FIRST LOGIC ---
+            if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                // This is iOS 13+. Must request permission.
+                requestIOSSensorPermission(navigateToStep);
+            } 
+            else if (window.DeviceOrientationEvent) {
+                // This is Android or other non-iOS. No permission needed.
+                startCompassLogic(navigateToStep);
+            } 
+            else {
+                // No sensors detected.
+                startCompassSimulation(navigateToStep);
+            }
+        }
+
+
+        function stopVideoStream() {
+            if (!isCameraActive) return; // Already stopped
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+videoStream = null;
+            }
+            isCameraActive = false;
+            cameraVideo.classList.add('hidden');
+            cameraFallback.classList.remove('hidden');
+
+            // Reset button state (back on Step 4)
+            cameraButton.classList.remove('bg-red-500', 'hover:bg-red-600', 'bg-gray-400');
+            cameraButton.classList.add('primary-btn');
+            cameraButton.innerHTML = `<i class="fas fa-arrow-right mr-2"></i>Next: Activate Camera`;
+            cameraButton.style.boxShadow = '0 4px var(--color-text-dark)';
+            checkStep4Completion(); // Re-check if button should be enabled
+        }
+
+        function stopCompassLogic() {
+            if (!isCompassActive) return; // Already stopped
+            isCompassActive = false;
+            sensorStatus.textContent = 'Sensors: Inactive';
+            
+            // Reset button state
+            compassButton.classList.remove('bg-red-500', 'hover:bg-red-600', 'bg-gray-400');
+            compassButton.classList.add('primary-btn');
+            compassButton.innerHTML = '<i class="fas fa-magic mr-2"></i>Activate Sensors';
+            compassButton.style.boxShadow = '0 4px var(--color-text-dark)';
+            compassButton.disabled = false;
+
+            headingDisplay.textContent = 'Heading: N/A';
+            overlayHeading.textContent = 'N/A';
+            compassNeedle.style.transform = `rotate(0deg)`;
+            overlayZone.textContent = 'Zone: Unknown';
+
+            window.removeEventListener('deviceorientation', handleOrientation);
+            window.removeEventListener('deviceorientationabsolute', handleOrientation);
+if (simulationInterval) {
+                clearInterval(simulationInterval);
+simulationInterval = null;
+            }
+            if (sensorCheckTimeout) {
+                clearTimeout(sensorCheckTimeout);
+sensorCheckTimeout = null;
+            }
+}
+
+
+        async function activateCamera() {
+            // This button is now ONLY a "Next" button on Step 4
+            const currentStep = Array.from(stepIndicators).findIndex(s => s.classList.contains('step-active')) + 1;
+
+            if (currentStep === 4) {
+                // We are on the floor plan step. Move to camera step.
+                // We also need to activate the compass FOR the camera step
+                if (!isCompassActive) {
+                    activateCompass(null); // *** FIX: Pass null to prevent navigation ***
+                }
+                updateNextStepHighlight(5); // Go to Step 5
+                
+                // Now, activate the camera
+                if (isCameraActive) return; // Already on
+                if (isCapturing) return; // Don't mess with it
+
+                 try {
+                    videoStream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { 
+                            facingMode: 'environment',
+                            width: { ideal: 320 },
+                            height: { ideal: 320 }
+                        } 
+                    });
+                    cameraVideo.srcObject = videoStream;
+                    cameraVideo.classList.remove('hidden'); 
+                    cameraFallback.classList.add('hidden');
+                    await cameraVideo.play();
+                    isCameraActive = true;
+                } catch (err) {
+                    console.error('Camera access error:', err);
+                    cameraVideo.classList.add('hidden');
+                    cameraFallback.classList.remove('hidden');
+                }
+            }
+        }
+
+        function captureCurrentFrame() {
+            const video = cameraVideo;
+const canvas = captureCanvas;
+            const context = canvas.getContext('2d');
+
+            if (!isCameraActive || !currentHeading) {
+                console.error("Cannot capture: Camera or compass is inactive.");
+return null;
+            }
+            if (video.videoWidth === 0 || video.videoHeight === 0) {
+                console.warn("Video dimensions not ready yet. Skipping this frame capture.");
+return null;
+            }
+            const size = Math.min(video.videoWidth, video.videoHeight);
+canvas.width = size;
+            canvas.height = size;
+            const startX = (video.videoWidth - size) / 2;
+const startY = (video.videoHeight - size) / 2;
+            context.drawImage(video, startX, startY, size, size, 0, 0, size, size);
+            
+            // Payload Size Reduced: 0.1 -> 0.05
+const dataUrl = canvas.toDataURL('image/jpeg', 0.05); 
+            const base64Data = dataUrl.split(',')[1];
+            
+            return {
+                image: base64Data, 
+                heading: currentHeading,
+                zone: getVastuZone(currentHeading),
+                timestamp: Date.now()
+            };
+}
+
+        function startCapture() {
+            if (isCapturing) return;
+
+            if (!isCompassActive || !isCameraActive) {
+                alert("Please ensure sensors and camera are active (Steps 2 & 5).");
+                return;
+            }
+            
+            // Data now comes from the planner, but we still need floor number
+            if (!floorNumber || floorNumber.length < 1) {
+                alert("Please go back to Step 4 and enter the 'Floor Number' before scanning.");
+return;
+            }
+            
+            isCapturing = true;
+capturedFrames = [];
+            captureCountDisplay.textContent = `0/${totalCaptures}`;
+            captureButton.disabled = true;
+            captureButton.textContent = 'Scanning... (Hold Steady)';
+            // gallery.innerHTML = ''; // --- MODIFIED: Don't clear, just let it be overwritten
+            captureProgressContainer.classList.remove('hidden');
+captureProgress.style.width = '0%';
+            analyzeButton.disabled = true;
+            deepAnalysisButton.disabled = true; // Disable new button
+            saveReportButton.classList.add('hidden');
+            printReportButton.classList.add('hidden'); // Hide print button
+let capturesTaken = 0;
+            
+            const executeCapture = () => {
+                const frameData = captureCurrentFrame();
+if (frameData) {
+                    capturedFrames.push(frameData);
+capturesTaken++;
+                    // *** NEW: Call new display function ***
+                    displayCapturedFrame(frameData, capturesTaken - 1);
+                    captureCountDisplay.textContent = `${capturesTaken}/${totalCaptures}`;
+                    captureProgress.style.width = `${(capturesTaken / totalCaptures) * 100}%`;
+if (capturesTaken >= totalCaptures) {
+                        clearInterval(captureInterval);
+endCapture();
+                    }
+                }
+            };
+executeCapture(); 
+            captureInterval = setInterval(executeCapture, captureIntervalTime);
+            
+            setTimeout(() => {
+                if(isCapturing) {
+                    clearInterval(captureInterval);
+                    endCapture(); 
+                }
+            }, captureIntervalTime * totalCaptures + 500);
+}
+
+        function endCapture() {
+            isCapturing = false;
+captureProgressContainer.classList.add('hidden');
+            captureButton.textContent = 'Start 16-Second Vastu Scan';
+            captureButton.disabled = false;
+            
+            stopVideoStream();
+            stopCompassLogic();
+if (capturedFrames.length === totalCaptures) {
+                // IMPROVEMENT: Go to new Step 6 (Report)
+                updateNextStepHighlight(6);
+analyzeButton.disabled = false;
+                deepAnalysisButton.disabled = false; // Enable new button
+            } else {
+                // IMPROVEMENT: Go to new Step 6 (Report)
+                updateNextStepHighlight(6);
+analyzeButton.disabled = true; 
+                deepAnalysisButton.disabled = true; // Keep disabled
+            }
+        }
+
+        // --- *** NEW: Function to fill one gallery slot (Suggestion 5) *** ---
+        function displayCapturedFrame(frame, index) {
+            const allSlots = gallery.querySelectorAll('.gallery-slot');
+            if (index >= allSlots.length) return; // Safety check
+
+            const slot = allSlots[index];
+            slot.innerHTML = ''; // Clear the slot number
+            slot.classList.remove('gallery-slot');
+            slot.classList.add('frame-item');
+
+            const img = document.createElement('img');
+            img.src = `data:image/jpeg;base64,${frame.image}`;
+            img.alt = `Segment ${index + 1}: ${frame.zone}`;
+            img.title = `Segment ${index + 1}: ${frame.zone} (${frame.heading}°)`;
+            
+            const labelContainer = document.createElement('div');
+            labelContainer.className = 'frame-data';
+            labelContainer.innerHTML = `<span class="text-xs font-bold text-blue-500">#${index + 1}</span> | ${frame.heading.toFixed(1)}°`;
+
+            slot.appendChild(img);
+            slot.appendChild(labelContainer);
+        }
+
+        // --- *** NEW: Function to create empty gallery slots (Suggestion 5) *** ---
+        function initializeGallerySlots() {
+            gallery.innerHTML = ''; // Clear previous images
+            for (let i = 0; i < totalCaptures; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'gallery-slot';
+                slot.innerHTML = `<i class="far fa-image"></i>`;
+                gallery.appendChild(slot);
+            }
+        }
+        
+        // --- STEP 6: REPORT GENERATION (SYNCHRONOUS) ---
+
+        // IMPROVEMENT: Added isDeepAnalysis flag
+        async function generateReport(isDeepAnalysis = false) {
+            if (isReportGenerating || capturedFrames.length < totalCaptures) {
+return;
+            }
+            
+            // SERVER-CLIENT CHANGE: Check for Render URL
+            if (renderApiUrl.includes("YOUR_RENDER_URL_HERE") || renderApiUrl.length < 10) {
+reportContent.innerHTML = formatAITextForDisplay(`**Error:** Server not configured. Please paste your Render server's URL into the 'renderApiUrl' variable at the top of the script.`);
+return;
+            }
+
+            isReportGenerating = true;
+            // *** MODIFIED: Clear specific report variables ***
+            if (isDeepAnalysis) {
+                expertReportMarkdown = "";
+            } else {
+                fullReportMarkdown = "";
+            }
+            chatContextSummary = ""; // Reset summary
+            // chatHistory = []; // --- MODIFIED: Don't reset history
+            // *** NEW: Show loader, switch tab ***
+            reportLoader.classList.remove('hidden');
+            if (isDeepAnalysis) {
+                expertReportContent.innerHTML = '';
+                switchReportTab('expert');
+            } else {
+                reportContent.innerHTML = '';
+                switchReportTab('full');
+            }
+
+            analyzeButton.disabled = true;
+            deepAnalysisButton.disabled = true; // Disable new button
+            saveReportButton.classList.add('hidden');
+            printReportButton.classList.add('hidden'); // Hide print button
+            chatInput.disabled = true; // Chat is disabled during generation
+            sendChatButton.disabled = true;
+            // scanAgainButton.disabled = true; // <-- MODIFIED: This is now REMOVED to keep "New Scan" active
+
+            // Format holistic context for the prompt
+            let holisticIssues = "None specified";
+            if (userIssues.length > 0) {
+                holisticIssues = userIssues.join(', ');
+            }
+            
+            let holisticSurroundings = "None specified";
+            const surroundingsEntries = Object.entries(propertySurroundings).filter(([key, value]) => value.trim() !== "");
+            if (surroundingsEntries.length > 0) {
+                holisticSurroundings = surroundingsEntries.map(([key, value]) => `${key}: ${value}`).join('; ');
+            }
+
+            // SERVER-CLIENT CHANGE: Create the payload for our *own* server
+            const clientPayload = {
+                isDeepAnalysis: isDeepAnalysis,
+                scanData: {
+                    capturedFrames: capturedFrames.map(f => ({ 
+                        image: f.image, 
+                        heading: f.heading, 
+                        zone: f.zone 
+                    })),
+                    // --- UPDATED CONTEXT ---
+                    currentRoomTag: currentRoomTag,
+                    roomLocationInHouse: roomLocationInHouse,
+                    floorNumber: floorNumber,
+                    // --- END UPDATED CONTEXT ---
+                    holisticIssues: holisticIssues,
+                    holisticSurroundings: holisticSurroundings
+                }
+            };
+            
+            // --- NEW: Client-side Timeout (Fixes "forever" & "keeps generating") ---
+            const controller = new AbortController();
+            const timeoutDuration = 180000; // 3 minutes (180,000 ms)
+            const timeoutId = setTimeout(() => {
+                console.warn("Client-side timeout reached. Aborting fetch.");
+                controller.abort();
+            }, timeoutDuration);
+            // --- END: Client-side Timeout ---
+
+try {
+                // SERVER-CLIENT CHANGE: Call our Render server, not Google
+                const apiUrl = `${renderApiUrl}/api/generateReport`;
+const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(clientPayload),
+                    signal: controller.signal // <-- Add signal
+                });
+
+                clearTimeout(timeoutId); // <-- Clear timeout if fetch succeeds
+
+if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Server Error: ${response.status} - ${errorData.error || 'Failed to fetch'}`);
+}
+                
+                const result = await response.json();
+                const reportText = result.text || ""; // Get the raw text
+                
+                if (!reportText) {
+                    throw new Error("API returned an empty response. This is likely due to the API's safety filters (e.g., a blurry/dark image) or a silent timeout. Please try scanning again in a well-lit area.");
+}
+
+                // IMPROVEMENT: Always update chat context
+                const summaryEndMarker = '**II. Directional Data and Environmental Assessment**'; 
+                const summaryEndIndex = reportText.indexOf(summaryEndMarker);
+
+                if (summaryEndIndex !== -1) { // It's a Formal Report, grab the summary
+                    chatContextSummary = reportText.substring(0, summaryEndIndex).trim();
+} else { // It's an Expert Analysis, just grab the first 500 chars for context
+                    chatContextSummary = reportText.substring(0, 500).trim();
+}
+                
+                // *** NEW: Populate correct view and variable ***
+                const formattedHtml = formatAITextForDisplay(reportText) + displayCapturedFrames();
+                if (isDeepAnalysis) {
+                    expertReportMarkdown = reportText; // Save to correct variable
+                    expertReportContent.innerHTML = formattedHtml;
+                } else {
+                    fullReportMarkdown = reportText; // Save to correct variable
+                    reportContent.innerHTML = formattedHtml;
+                }
+
+                saveReportButton.classList.remove('hidden');
+                printReportButton.classList.remove('hidden'); // Show print button
+chatInput.disabled = false; // Re-enable chat
+                sendChatButton.disabled = false;
+} catch (error) {
+                clearTimeout(timeoutId); // <-- Clear timeout if fetch fails
+                console.error('Report Generation Error:', error);
+
+                let specificErrorMessage = error.message;
+                if (error.name === 'AbortError') {
+                    specificErrorMessage = "The request took too long and was timed out by the app (3-minute limit). This can happen if the AI server is very busy or slow to start. Please try again.";
+                }
+
+let errorHtml = formatAITextForDisplay(`**I. Executive Summary (Layman's Terms)**\n\nReport generation failed due to an error.`);
+errorHtml += `<p class="text-red-600 font-bold mt-4">REPORT GENERATION FAILED</p>
                               <p class="mt-2 text-sm">A critical API error occurred.
 Please try running the scan again.</p>
-                              <p class="mt-2 text-xs text-gray-400">Error Details: ${error.message}</p>`;if(isDeepAnalysis){expertReportContent.innerHTML=errorHtml+displayCapturedFrames()}else{reportContent.innerHTML=errorHtml+displayCapturedFrames()}}finally{isReportGenerating=!1;reportLoader.classList.add('hidden');analyzeButton.disabled=!1;deepAnalysisButton.disabled=!1;scanAgainButton.disabled=!1}}
-function exportReportAsTxt(){if(!fullReportMarkdown){return}
-saveReportButton.disabled=!0;const header=`
+                              <p class="mt-2 text-xs text-gray-400">Error Details: ${error.message}</p>`;
+                
+                // *** NEW: Populate correct view with error ***
+                if (isDeepAnalysis) {
+                    expertReportContent.innerHTML = errorHtml + displayCapturedFrames();
+                } else {
+                    reportContent.innerHTML = errorHtml + displayCapturedFrames();
+                }
+            } finally {
+                isReportGenerating = false;
+reportLoader.classList.add('hidden');
+                analyzeButton.disabled = false;
+                deepAnalysisButton.disabled = false; // Re-enable
+                // scanAgainButton.disabled = false; // <-- MODIFIED: This is now REMOVED
+            }
+        }
+
+        // --- TEXT EXPORT LOGIC ---
+        function exportReportAsTxt() {
+            // *** NEW: Check which report is active ***
+            let reportToExport = "";
+            if (fullReportTab.classList.contains('active')) {
+                reportToExport = fullReportMarkdown;
+            } else if (expertReportTab.classList.contains('active')) {
+                reportToExport = expertReportMarkdown;
+            }
+
+            if (!reportToExport) {
+                alert("Please generate a report first.");
+                return;
+            }
+            
+saveReportButton.disabled = true;
+
+            // IMPROVEMENT: Removed timestamp and heading
+            const header = `
 *** Vastu Pro Analyzer Formal AI Report ***
 Scan Area: ${currentRoomTag} 
 Location in House (C-Point): ${roomLocationInHouse ||
 'N/A'}
 Floor: ${floorNumber || 'N/A'}
 ----------------------------------------------------------------------------------------------------------------------
-\n`;const formattedBody=formatAITextForTxtExport(fullReportMarkdown);const footer=`
+\n`;
+            
+            const formattedBody = formatAITextForTxtExport(reportToExport);
+const footer = `
 \n----------------------------------------------------------------------------------------------------------------------
 *** Captured Visual Data Segments (Images are NOT included in this text file) ***
-${capturedFrames.map((f, i) => `#${i+1}:${f.heading.toFixed(1)}degrees(${f.zone})`).join(' | ')}
+${capturedFrames.map((f, i) => `#${i + 1}: ${f.heading.toFixed(1)} degrees (${f.zone})`).join(' | ')}
 ----------------------------------------------------------------------------------------------------------------------
 This file contains the full Vastu analysis.
-\n`;const fullTextContent=header+formattedBody+footer;const blob=new Blob([fullTextContent],{type:'text/plain'});const a=document.createElement('a');a.download=`Vastu_Report_${Date.now()}.txt`;a.href=URL.createObjectURL(blob);document.body.appendChild(a);a.click();document.body.removeChild(a);saveReportButton.disabled=!1}
-function appendMessage(text,sender){const msgDiv=document.createElement('div');msgDiv.className=`chat-message ${sender}-message`;if(sender==='ai'){let formattedText=text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');formattedText=formattedText.replace(/\n/g,'<br>');msgDiv.innerHTML=`<i class="fas fa-robot mr-1 text-blue-500"></i> ${formattedText}`}else{msgDiv.textContent=text}
-chatMessages.appendChild(msgDiv);chatMessages.scrollTop=chatMessages.scrollHeight}
-async function handleChat(){const userText=chatInput.value.trim();if(!userText||isChatGenerating)return;if(renderApiUrl.includes("YOUR_RENDER_URL_HERE")||renderApiUrl.length<10){appendMessage("Error: Chat server not configured.",'ai');return}
-appendMessage(userText,'user');chatInput.value='';isChatGenerating=!0;chatInput.disabled=!0;sendChatButton.disabled=!0;chatHistory.push({role:"user",parts:[{text:userText}]});const chatHistoryToSend=chatHistory.slice(-3);const clientPayload={chatHistory:chatHistoryToSend,chatContextSummary:chatContextSummary};try{const apiUrl=`${renderApiUrl}/api/handleChat`;const response=await fetch(apiUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(clientPayload)});if(!response.ok){const errorData=await response.json();throw new Error(`Server Error: ${response.status} - ${errorData.error || 'Failed to fetch'}`)}
-const result=await response.json();const aiResponse=result.text||"Sorry, I couldn't process that query.";appendMessage(aiResponse,'ai');chatHistory.push({role:"model",parts:[{text:aiResponse}]})}catch(error){console.error('Chatbot Error:',error);appendMessage(`I apologize, I encountered an error: ${error.message}. Please try again.`,'ai')}finally{isChatGenerating=!1;chatInput.disabled=!1;sendChatButton.disabled=chatInput.value.trim()===''||isChatGenerating;chatInput.focus()}}
-document.addEventListener('DOMContentLoaded',()=>{stepContents=[1,2,3,4,5,6].map(i=>document.getElementById(`stepContent${i}`));stepIndicators=[1,2,3,4,5,6].map(i=>document.getElementById(`step${i}`));tipsNextButton=document.getElementById('tipsNextButton');compassButton=document.getElementById('compassButton');holisticNextButton=document.getElementById('holisticNextButton');cameraButton=document.getElementById('cameraButton');captureButton=document.getElementById('captureButton');analyzeButton=document.getElementById('analyzeButton');deepAnalysisButton=document.getElementById('deepAnalysisButton');saveReportButton=document.getElementById('saveReportButton');printReportButton=document.getElementById('printReportButton');scanAgainButton=document.getElementById('scanAgainButton');actionFooter=document.getElementById('actionFooter');footerStepWrappers=[document.getElementById('footerStep1'),document.getElementById('footerStep2'),document.getElementById('footerStep3'),document.getElementById('footerStep4'),document.getElementById('footerStep5'),document.getElementById('footerStep6')];headingDisplay=document.getElementById('headingDisplay');sensorStatus=document.getElementById('sensorStatus');compassNeedle=document.getElementById('compassNeedle');captureCanvas=document.getElementById('captureCanvas');cameraVideo=document.getElementById('cameraVideo');cameraFallback=document.getElementById('cameraFallback');overlayHeading=document.getElementById('overlayHeading');overlayZone=document.getElementById('overlayZone');gallery=document.getElementById('gallery');captureCountDisplay=document.getElementById('captureCount');captureProgressContainer=document.getElementById('captureProgressContainer');captureProgress=document.getElementById('captureProgress');reportContent=document.getElementById('reportContent');reportLoader=document.getElementById('reportLoader');chatInput=document.getElementById('chatInput');sendChatButton=document.getElementById('sendChatButton');currentRoomDisplay=document.getElementById('currentRoomDisplay');floorNumberInput=document.getElementById('floorNumberInput');roomTypeGrid=document.getElementById('roomTypeGrid');roomLocationGrid=document.getElementById('roomLocationGrid');step4Checklist=document.getElementById('step4Checklist');checklistRoom=document.getElementById('checklistRoom');checklistLocation=document.getElementById('checklistLocation');checklistFloor=document.getElementById('checklistFloor');holisticNextButton=document.getElementById('holisticNextButton');userConcernsContainer=document.getElementById('userConcernsContainer');surroundingsWater=document.getElementById('surroundingsWater');surroundingsHills=document.getElementById('surroundingsHills');fullReportTab=document.getElementById('fullReportTab');expertReportTab=document.getElementById('expertReportTab');chatTab=document.getElementById('chatTab');fullReportView=document.getElementById('fullReportView');expertReportView=document.getElementById('expertReportView');chatView=document.getElementById('chatView');expertReportContent=document.getElementById('expertReportContent');tutorialOverlay=document.getElementById('tutorialOverlay');tutorialTitle=document.getElementById('tutorialTitle');tutorialBody=document.getElementById('tutorialBody');tutorialCloseButton=document.getElementById('tutorialCloseButton');tutorialSkipAllButton=document.getElementById('tutorialSkipAllButton');initializeStep4Grids();updateNextStepHighlight();switchReportTab('full');tipsNextButton.addEventListener('click',()=>updateNextStepHighlight(2));holisticNextButton.addEventListener('click',()=>updateNextStepHighlight(4));compassButton.addEventListener('click',()=>activateCompass(3));cameraButton.addEventListener('click',activateCamera);captureButton.addEventListener('click',startCapture);analyzeButton.addEventListener('click',()=>generateReport(!1));deepAnalysisButton.addEventListener('click',()=>generateReport(!0));saveReportButton.addEventListener('click',exportReportAsTxt);printReportButton.addEventListener('click',()=>window.print());tutorialCloseButton.addEventListener('click',()=>{tutorialOverlay.classList.add('hidden')});tutorialSkipAllButton.addEventListener('click',()=>{let userIsSure=!1;try{userIsSure=confirm("Are you sure you want to skip all tutorials? This is permanent.")}catch(e){console.warn("`confirm()` dialog might be blocked. Skipping tutorial for this session only.")}
-if(userIsSure){localStorage.setItem('vastuAppTutorialsSkipped','true');tutorialOverlay.classList.add('hidden')}else if(!userIsSure){tutorialOverlay.classList.add('hidden')}});scanAgainButton.addEventListener('click',()=>{currentRoomTag=null;roomLocationInHouse=null;floorNumber="";capturedFrames=[];fullReportMarkdown="";chatContextSummary="";chatHistory=[];userIssues=[];propertySurroundings={};floorNumberInput.value="";initializeStep4Grids();initializeGallerySlots();reportContent.innerHTML="Click 'Formal Report' below to generate.";expertReportContent.innerHTML="Click 'Expert Analysis' below to generate.";document.querySelectorAll('.concern-checkbox').forEach(cb=>cb.checked=!1);surroundingsWater.value="";surroundingsHills.value="";updateNextStepHighlight(1)});userConcernsContainer.addEventListener('change',(e)=>{if(e.target.type==='checkbox'){userIssues=Array.from(userConcernsContainer.querySelectorAll('input:checked')).map(cb=>cb.value)}});surroundingsWater.addEventListener('input',()=>{propertySurroundings[surroundingsWater.dataset.key]=surroundingsWater.value});surroundingsHills.addEventListener('input',()=>{propertySurroundings[surroundingsHills.dataset.key]=surroundingsHills.value});floorNumberInput.addEventListener('input',()=>{floorNumber=floorNumberInput.value.trim();checkStep4Completion()});fullReportTab.addEventListener('click',()=>switchReportTab('full'));expertReportTab.addEventListener('click',()=>switchReportTab('expert'));chatTab.addEventListener('click',()=>{if(fullReportMarkdown){switchReportTab('chat')}else{}});sendChatButton.addEventListener('click',handleChat);chatInput.addEventListener('keypress',(e)=>{if(e.key==='Enter'){handleChat()}});chatInput.addEventListener('input',()=>{sendChatButton.disabled=chatInput.value.trim()===''||isChatGenerating})})
+\n`;
+
+            const fullTextContent = header + formattedBody + footer;
+
+            const blob = new Blob([fullTextContent], { type: 'text/plain' });
+const a = document.createElement('a');
+            a.download = `Vastu_Report_${Date.now()}.txt`;
+            a.href = URL.createObjectURL(blob);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            saveReportButton.disabled = false;
+}
+
+
+        // --- CHATBOT LOGIC ---
+
+        // IMPROVEMENT: Re-enabled bolding
+        function appendMessage(text, sender) {
+            const msgDiv = document.createElement('div');
+msgDiv.className = `chat-message ${sender}-message`;
+
+            if (sender === 'ai') {
+                // Format AI text: Convert markdown bold to <strong> and newlines to <br>
+                let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                formattedText = formattedText.replace(/\n/g, '<br>');
+                // *** NEW: Add feedback icons ***
+                msgDiv.innerHTML = `<i class="fas fa-robot mr-1 text-blue-500"></i> ${formattedText}
+                    <div class="feedback-icons text-xs">
+                        <i class="far fa-thumbs-up"></i>
+                        <i class="far fa-thumbs-down"></i>
+                    </div>`;
+} else {
+                // User text is plain
+                msgDiv.textContent = text;
+}
+            
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+        async function handleChat() {
+            const userText = chatInput.value.trim();
+if (!userText || isChatGenerating) return;
+
+            // SERVER-CLIENT CHANGE: Check for Render URL
+            if (renderApiUrl.includes("YOUR_RENDER_URL_HERE") || renderApiUrl.length < 10) {
+    appendMessage("Error: Chat server not configured.", 'ai');
+                 return;
+            }
+            
+            appendMessage(userText, 'user');
+chatInput.value = '';
+            
+            isChatGenerating = true;
+            chatInput.disabled = true;
+            sendChatButton.disabled = true;
+chatHistory.push({ role: "user", parts: [{ text: userText }] });
+            
+            const chatHistoryToSend = chatHistory.slice(-3);
+
+            // SERVER-CLIENT CHANGE: Create payload for our *own* server
+            const clientPayload = {
+                chatHistory: chatHistoryToSend,
+                chatContextSummary: chatContextSummary // *** This is the "magic" context ***
+            };
+
+            try {
+                // SERVER-CLIENT CHANGE: Call our Render server, not Google
+                const apiUrl = `${renderApiUrl}/api/handleChat`;
+const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(clientPayload)
+                });
+if (!response.ok) {
+                    const errorData = await response.json();
+throw new Error(`Server Error: ${response.status} - ${errorData.error || 'Failed to fetch'}`);
+                }
+
+                const result = await response.json();
+const aiResponse = result.text || "Sorry, I couldn't process that query.";
+
+                appendMessage(aiResponse, 'ai');
+chatHistory.push({ role: "model", parts: [{ text: aiResponse }] });
+} catch (error) {
+                console.error('Chatbot Error:', error);
+appendMessage(`I apologize, I encountered an error: ${error.message}. Please try again.`, 'ai');
+} finally {
+                isChatGenerating = false;
+chatInput.disabled = false;
+                sendChatButton.disabled = chatInput.value.trim() === '' || isChatGenerating;
+                chatInput.focus();
+}
+        }
+
+        // ----------------------------------------------------------------------------------
+        // --- REMOVED: FLOOR PLANNER FUNCTIONS ---
+        // ----------------------------------------------------------------------------------
+        
+
+        // --- Event Listeners and Initialization ---
+        // IMPROVEMENT: All listeners are now wrapped in DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- IMPROVEMENT: ALL DOM ELEMENT GRABBERS MOVED HERE ---
+            stepContents = [1, 2, 3, 4, 5, 6].map(i => document.getElementById(`stepContent${i}`));
+            stepIndicators = [1, 2, 3, 4, 5, 6].map(i => document.getElementById(`step${i}`));
+            
+            // --- Buttons are now in the footer ---
+            tipsNextButton = document.getElementById('tipsNextButton');
+            compassButton = document.getElementById('compassButton');
+            holisticNextButton = document.getElementById('holisticNextButton');
+            cameraButton = document.getElementById('cameraButton');
+            captureButton = document.getElementById('captureButton');
+            analyzeButton = document.getElementById('analyzeButton');
+            deepAnalysisButton = document.getElementById('deepAnalysisButton');
+            saveReportButton = document.getElementById('saveReportButton');
+            printReportButton = document.getElementById('printReportButton');
+            scanAgainButton = document.getElementById('scanAgainButton'); // *** NEW ***
+
+            // --- Sticky Footer Wrappers ---
+            actionFooter = document.getElementById('actionFooter');
+            footerStepWrappers = [
+                document.getElementById('footerStep1'),
+                document.getElementById('footerStep2'),
+                document.getElementById('footerStep3'),
+                document.getElementById('footerStep4'),
+                document.getElementById('footerStep5'),
+                document.getElementById('footerStep6')
+            ];
+            stepIndicatorWrapper = document.getElementById('stepIndicatorWrapper'); // *** NEW ***
+
+            // --- Other UI Elements ---
+            headingDisplay = document.getElementById('headingDisplay');
+            sensorStatus = document.getElementById('sensorStatus');
+            compassNeedle = document.getElementById('compassNeedle');
+            captureCanvas = document.getElementById('captureCanvas');
+            cameraVideo = document.getElementById('cameraVideo');
+            cameraFallback = document.getElementById('cameraFallback');
+            overlayHeading = document.getElementById('overlayHeading');
+            overlayZone = document.getElementById('overlayZone');
+            gallery = document.getElementById('gallery');
+            captureCountDisplay = document.getElementById('captureCount');
+            captureProgressContainer = document.getElementById('captureProgressContainer');
+            captureProgress = document.getElementById('captureProgress');
+            reportContent = document.getElementById('reportContent');
+            reportLoader = document.getElementById('reportLoader');
+            
+            // --- UPDATED STEP 4 GRABBERS ---
+            currentRoomDisplay = document.getElementById('currentRoomDisplay'); 
+            floorNumberInput = document.getElementById('floorNumberInput'); 
+            roomTypeGrid = document.getElementById('roomTypeGrid');
+            roomLocationGrid = document.getElementById('roomLocationGrid');
+            step4Checklist = document.getElementById('step4Checklist');
+            checklistRoom = document.getElementById('checklistRoom');
+            checklistLocation = document.getElementById('checklistLocation');
+            checklistFloor = document.getElementById('checklistFloor');
+
+
+            holisticNextButton = document.getElementById('holisticNextButton');
+            userConcernsContainer = document.getElementById('userConcernsContainer');
+            surroundingsWater = document.getElementById('surroundingsWater');
+            surroundingsHills = document.getElementById('surroundingsHills');
+
+            // --- NEW: Step 6 Tab/View Grabbers (MODIFIED) ---
+            fullReportTab = document.getElementById('fullReportTab');
+            expertReportTab = document.getElementById('expertReportTab');
+            
+            fullReportView = document.getElementById('fullReportView');
+            expertReportView = document.getElementById('expertReportView');
+            
+            expertReportContent = document.getElementById('expertReportContent');
+            
+            // --- NEW: Top-Level Tab Grabbers ---
+            analyzerTab = document.getElementById('analyzerTab');
+            chatbotTab = document.getElementById('chatbotTab');
+            analyzerWrapper = document.getElementById('analyzerWrapper');
+            chatView = document.getElementById('chatView');
+            chatMessages = document.getElementById('chatMessages');
+            chatInput = document.getElementById('chatInput');
+            sendChatButton = document.getElementById('sendChatButton');
+            
+            
+            // --- ADD THESE 5 LINES (for the tutorial modal) ---
+            tutorialOverlay = document.getElementById('tutorialOverlay');
+            tutorialTitle = document.getElementById('tutorialTitle');
+            tutorialBody = document.getElementById('tutorialBody');
+            tutorialCloseButton = document.getElementById('tutorialCloseButton');
+            tutorialSkipAllButton = document.getElementById('tutorialSkipAllButton');
+            // --- END OF DOM ELEMENT GRABBERS ---
+
+            // Initial setup
+            initializeStep4Grids(); // *** NEW ***
+            updateNextStepHighlight(); // Defaults to step 1 (Tips)
+            switchReportTab('full'); // Default to full report tab
+            switchMainTab('analyzer'); // Default to analyzer view
+        
+            // Listener for the new Step 1 button
+            tipsNextButton.addEventListener('click', () => updateNextStepHighlight(2));
+            
+            // Listener for the new Step 3 button
+            holisticNextButton.addEventListener('click', () => updateNextStepHighlight(4));
+            
+            // *** FIX: Pass navigation step to compass ***
+            compassButton.addEventListener('click', () => activateCompass(3));
+            
+            // cameraButton now serves 2 purposes
+            cameraButton.addEventListener('click', activateCamera);
+            
+    captureButton.addEventListener('click', startCapture);
+            analyzeButton.addEventListener('click', () => generateReport(false)); // Standard report
+            deepAnalysisButton.addEventListener('click', () => generateReport(true)); // Deep analysis report
+            saveReportButton.addEventListener('click', exportReportAsTxt);
+            
+            // --- *** NEW: Print Button Logic *** ---
+            printReportButton.addEventListener('click', () => {
+                let activeReportView;
+                if (fullReportTab.classList.contains('active')) {
+                    activeReportView = fullReportView;
+                } else if (expertReportTab.classList.contains('active')) {
+                    activeReportView = expertReportView;
+                } else {
+                    // Default to printing the full report if no report tab is active
+                    activeReportView = fullReportView;
+                    switchReportTab('full'); // Switch to it
+                }
+
+                // Add print-this class to the active view
+                activeReportView.classList.add('print-this');
+                window.print();
+                // Clean up class after print dialog is closed
+                activeReportView.classList.remove('print-this');
+            });
+            
+            // ====================================================================
+            // START: NEW TUTORIAL & NAVIGATION LISTENERS (Add this section)
+            // ====================================================================
+
+            // --- 1. Tutorial Modal Button Listeners ---
+            tutorialCloseButton.addEventListener('click', () => {
+                tutorialOverlay.classList.add('hidden');
+            });
+
+            tutorialSkipAllButton.addEventListener('click', () => {
+                let userIsSure = false;
+                try {
+                   userIsSure = confirm("Are you sure you want to skip all tutorials? This is permanent.");
+                } catch (e) {
+                   console.warn("`confirm()` dialog might be blocked. Skipping tutorial for this session only.");
+                }
+
+                if (userIsSure) {
+                    localStorage.setItem('vastuAppTutorialsSkipped', 'true');
+                    tutorialOverlay.classList.add('hidden');
+                } else if (!userIsSure) {
+                    tutorialOverlay.classList.add('hidden');
+                }
+            });
+
+            // --- 2. Free Step Navigation (REMOVED) ---
+
+            // --- 3. Scan Again Button (Suggestion 3) ---
+            scanAgainButton.addEventListener('click', () => {
+                // Reset all state variables
+                currentRoomTag = null;
+                roomLocationInHouse = null;
+                floorNumber = "";
+                capturedFrames = [];
+                fullReportMarkdown = "";
+                expertReportMarkdown = ""; // *** NEW ***
+                // chatContextSummary = ""; // --- MODIFIED: Keep context for chat
+                // chatHistory = []; // --- MODIFIED: Keep history for chat
+                userIssues = [];
+                propertySurroundings = {};
+
+                // Reset UI elements
+                floorNumberInput.value = "";
+                initializeStep4Grids(); // Resets grids and checklist
+                initializeGallerySlots(); // Resets gallery to empty slots
+                reportContent.innerHTML = "Click 'Formal Report' below to generate.";
+                expertReportContent.innerHTML = "Click 'Expert Analysis' below to generate.";
+                document.querySelectorAll('.concern-checkbox').forEach(cb => cb.checked = false);
+                surroundingsWater.value = "";
+                surroundingsHills.value = "";
+
+                // Go back to Step 1
+                updateNextStepHighlight(1);
+            });
+
+            // ====================================================================
+            // END: NEW TUTORIAL & NAVIGATION LISTENERS
+            // ====================================================================
+
+            // --- NEW: Main Tab Listeners ---
+            analyzerTab.addEventListener('click', () => switchMainTab('analyzer'));
+            chatbotTab.addEventListener('click', () => switchMainTab('chatbot'));
+            
+            // Listeners for new Step 3 inputs
+            userConcernsContainer.addEventListener('change', (e) => {
+                if (e.target.type === 'checkbox') {
+                    userIssues = Array.from(userConcernsContainer.querySelectorAll('input:checked')).map(cb => cb.value);
+                }
+            });
+            surroundingsWater.addEventListener('input', () => {
+                propertySurroundings[surroundingsWater.dataset.key] = surroundingsWater.value;
+            });
+            surroundingsHills.addEventListener('input', () => {
+                propertySurroundings[surroundingsHills.dataset.key] = surroundingsHills.value;
+            });
+
+            // Listeners for Step 4 inputs
+            floorNumberInput.addEventListener('input', () => {
+                 floorNumber = floorNumberInput.value.trim();
+                 checkStep4Completion(); // Check if next button should be enabled
+            });
+
+            // Listeners for Step 6
+            fullReportTab.addEventListener('click', () => switchReportTab('full'));
+            expertReportTab.addEventListener('click', () => switchReportTab('expert'));
+            
+            sendChatButton.addEventListener('click', handleChat);
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleChat();
+                }
+            });
+            chatInput.addEventListener('input', () => {
+                sendChatButton.disabled = chatInput.value.trim() === '' || isChatGenerating;
+            });
+
+            // --- NEW: Chat Feedback Listener ---
+            chatMessages.addEventListener('click', (e) => {
+                if (e.target.classList.contains('fa-thumbs-up')) {
+                    e.target.classList.toggle('selected');
+                    e.target.parentElement.querySelector('.fa-thumbs-down').classList.remove('selected');
+                } else if (e.target.classList.contains('fa-thumbs-down')) {
+                    e.target.classList.toggle('selected');
+                    e.target.parentElement.querySelector('.fa-thumbs-up').classList.remove('selected');
+                }
+            });
+        
+        });
 </script>
 </body>
 </html>
+
+
 
