@@ -7,6 +7,8 @@
 AI Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- NEW: Fabric.js library for 2D drawing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
@@ -62,7 +64,7 @@ border-bottom: 2px solid var(--color-primary);
         .primary-btn {
             background-color: var(--color-primary);
 color: white;
-            transition: background-color 0.2s;
+            transition: background-color: 0.2s;
             box-shadow: 0 4px var(--color-text-dark);
         }
         .primary-btn:hover:not(:disabled) {
@@ -79,6 +81,23 @@ box-shadow: 0 2px var(--color-text-dark);
             cursor: not-allowed;
             box-shadow: none;
 }
+        /* NEW: Secondary button style for planner tools */
+        .secondary-btn {
+            background-color: #fff;
+            color: var(--color-text-dark);
+            border: 1px solid var(--color-primary);
+            transition: all 0.2s;
+            box-shadow: 0 2px var(--color-secondary);
+        }
+        .secondary-btn:hover:not(:disabled) {
+            background-color: #eff6ff;
+/* Blue 50 */
+            box-shadow: 0 2px var(--color-primary);
+        }
+        .secondary-btn:active:not(:disabled) {
+            transform: translateY(1px);
+            box-shadow: 0 1px var(--color-primary);
+        }
         
         /* Checkbox Styles for new step */
         .concern-checkbox:checked {
@@ -249,6 +268,69 @@ align-self: flex-start;
         ======================================================================
         */
 
+        /* ======================================================================
+        START: FLOOR PLANNER STYLES (NEW)
+        ======================================================================
+        */
+        #plannerContainer {
+            position: relative;
+            width: 100%;
+            /* 1:1 Aspect Ratio */
+            padding-top: 100%; 
+            background-color: #fff;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        #directionGrid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .grid-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--color-secondary);
+            border: 1px dashed var(--color-secondary);
+            opacity: 0.7;
+        }
+
+        /* Place text in the correct cells */
+        .grid-cell:nth-child(1) { align-items: flex-start; justify-content: flex-start; padding: 4px; } /* NW */
+        .grid-cell:nth-child(2) { align-items: flex-start; } /* N */
+        .grid-cell:nth-child(3) { align-items: flex-start; justify-content: flex-end; padding: 4px; } /* NE */
+        .grid-cell:nth-child(4) { justify-content: flex-start; } /* W */
+        .grid-cell:nth-child(5) { 
+            font-size: 1rem;
+            color: var(--color-primary);
+        } /* Center */
+        .grid-cell:nth-child(6) { justify-content: flex-end; } /* E */
+        .grid-cell:nth-child(7) { align-items: flex-end; justify-content: flex-start; padding: 4px; } /* SW */
+        .grid-cell:nth-child(8) { align-items: flex-end; } /* S */
+        .grid-cell:nth-child(9) { align-items: flex-end; justify-content: flex-end; padding: 4px; } /* SE */
+
+        #floorPlanCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+        }
+        /* ====================================================================
+        END: FLOOR PLANNER STYLES
+        ======================================================================
+        */
+
     </style>
 </head>
 <body class="p-4 sm:p-8">
@@ -258,13 +340,14 @@ align-self: flex-start;
 AI Edition</h1>
         <p class="text-xs text-center text-gray-500 no-print">Generate a Vastu Shastra report using your device's sensors.</p>
 
+        <!-- STEP INDICATORS: Renamed Step 4 -->
         <div class="flex flex-wrap justify-center text-center text-sm border-b pb-2 border-gray-200 no-print">
             <div id="step1" class="step-indicator m-1 min-w-[60px]">1. FAQ</div>
             <div id="step2" class="step-indicator m-1 min-w-[60px]">2.
 Sensors</div>
             <div id="step3" class="step-indicator m-1 min-w-[60px]">3. Context</div>
             <div id="step4" class="step-indicator m-1 min-w-[60px]">4.
-Location</div>
+Floor Plan</div>
             <div id="step5" class="step-indicator m-1 min-w-[60px]">5.
 Scan</div>
             <div id="step6" class="step-indicator m-1 min-w-[60px]">6.
@@ -283,9 +366,14 @@ Report & Chat</div>
                         <p class="font-bold text-blue-700">Q: What is the "Holistic Context" in Step 3?</p>
                         <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This is an optional but powerful step. By telling the AI your concerns (e.g., "Financial", "Health"), it can tailor the Vastu remedies specifically to help you with those problems.</p>
                     </div>
+                    <!-- UPDATED FAQ for Step 4 -->
                     <div>
-                        <p class="font-bold text-blue-700">Q: What is the "Location" in Step 4?</p>
-                        <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This is the most critical step for an accurate report. The AI needs to know *where the room is located* within the whole house. For example, a "Kitchen" (Step 4a) located in the "South-East" (Step 4b) is a very different Vastu analysis than a "Kitchen" in the "North-East".</p>
+                        <p class="font-bold text-blue-700">Q: What is the "Floor Plan" in Step 4?</p>
+                        <p class="mt-1 pl-2 border-l-2 border-blue-200"><strong>A:</strong> This is the most critical step. Use the tools to draw a simple block plan of your house.<br>
+                        1. Add blocks and arrange them to match your layout.<br>
+                        2. Select the *outer wall* blocks and click "Set Outer Wall". This finds the center (Brahmasthan).<br>
+                        3. Add blocks for your rooms. Click a room, label it, and the app will auto-find its Vastu zone.<br>
+                        4. This selection is used as the context for your scan in Step 5.</p>
                     </div>
                     <div>
                         <p class="font-bold text-blue-700">Q: What's the difference between the two report buttons?</p>
@@ -364,45 +452,66 @@ class="fas fa-arrow-up absolute text-red-500 text-3xl transition-transform" styl
             </div>
 
             <button id="holisticNextButton" class="primary-btn w-full p-3 rounded-lg font-bold mt-6">
-                Next: Specify Location <i class="fas fa-arrow-right ml-2"></i>
+                Next: Floor Plan <i class="fas fa-arrow-right ml-2"></i>
             </button>
         </div>
+        
+        <!-- ======================================================================
+        START: STEP 4 (NEW FLOOR PLANNER)
+        ======================================================================
+        -->
         <div id="stepContent4" class="step-content hidden no-print">
-            <p class="text-sm text-center text-gray-600 mb-4">This step is **required** for an accurate report. The AI needs this context.</p>
-            <p class="text-center text-sm text-gray-500 mb-4 font-bold">
-                Step 4a: Select the area you are currently in.
-            </p>
-      
- 
-            <div id="roomSelectionContainer" class="flex flex-wrap justify-center gap-3 p-4 glass-card mb-4">
-            </div>
-            <p class="text-center text-xs text-gray-500 mb-4" id="currentRoomDisplay">Current Area: General Property Scan (Central/General Area)</p>
-
-            <div class="mb-6 p-4 glass-card">
-                <label for="roomLocationInput" class="block text-sm font-bold text-gray-700 mb-2">
-       
-              Step 4b: Where is this area located within the whole property (The C-Point Context)?
-</label>
-                <input type="text" id="roomLocationInput" placeholder="E.g., North-East, South-West, Center (Required)" 
-                       class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500">
-                <p class="text-xs text-gray-500 mt-1">This context is critical for zone compliance analysis (e.g., "The Kitchen is in the South-East zone of the house").</p>
-         
-   </div>
+            <p class="text-sm text-center text-gray-600 mb-2">Draw your floor plan to find the center and auto-select zones.</p>
             
-            <div class="mb-6 p-4 glass-card">
+            <!-- Planner Toolbar -->
+            <div class="flex flex-wrap gap-2 mb-2">
+                <button id="addRoomButton" class="secondary-btn text-xs py-2 px-3 rounded-lg font-semibold flex-1"><i class="fas fa-plus mr-1"></i> Add Room</button>
+                <button id="setOuterWallButton" class="secondary-btn text-xs py-2 px-3 rounded-lg font-semibold flex-1 bg-blue-100"><i class="fas fa-vector-square mr-1"></i> Set Outer Wall</button>
+                <button id="labelRoomButton" class="secondary-btn text-xs py-2 px-3 rounded-lg font-semibold flex-1"><i class="fas fa-tag mr-1"></i> Label Selected</button>
+                <button id="deleteRoomButton" class="secondary-btn text-xs py-2 px-3 rounded-lg font-semibold flex-1 bg-red-100 text-red-700 border-red-300"><i class="fas fa-trash mr-1"></i> Delete</button>
+            </div>
+
+            <!-- Planner Canvas Container -->
+            <div id="plannerContainer" class="glass-card">
+                <!-- Directional Grid (CSS Background) -->
+                <div id="directionGrid">
+                    <div class="grid-cell">NW</div>
+                    <div class="grid-cell">N</div>
+                    <div class="grid-cell">NE</div>
+                    <div class="grid-cell">W</div>
+                    <div class="grid-cell"><i class="fas fa-dot-circle"></i></div>
+                    <div class="grid-cell">E</div>
+                    <div class="grid-cell">SW</div>
+                    <div class="grid-cell">S</div>
+                    <div class="grid-cell">SE</div>
+                </div>
+                <!-- Fabric.js Canvas -->
+                <canvas id="floorPlanCanvas"></canvas>
+            </div>
+            
+            <p class="text-center text-xs text-gray-500 my-2 p-2 glass-card" id="currentRoomDisplay">
+                Selected for Scan: <strong>General Property Scan</strong> (in <strong>Center</strong>)
+            </p>
+
+            <!-- Re-purposed floorNumberInput -->
+            <div class="mt-4 p-4 glass-card">
                 <label for="floorNumberInput" class="block text-sm font-bold text-gray-700 mb-2">
-                    Step 4c: Which floor is this area located on?
-</label>
+                    Which floor is this plan for?
+                </label>
                 <input type="text" id="floorNumberInput" placeholder="E.g., 1st Floor, 2nd Floor, Ground Floor (Required)" 
                        class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500">
-                <p class="text-xs text-gray-500 mt-1">This context is relevant for Vastu energy flow (e.g., lower floors have stronger earth elements).</p>
-          
-  </div>
-            
-            <button id="cameraButton" class="primary-btn w-full p-3 rounded-lg font-bold" disabled>
-                <i class="fas fa-camera mr-2"></i>Activate Camera for: General Property Scan
+            </div>
+
+            <!-- Re-purposed cameraButton -->
+            <button id="cameraButton" class="primary-btn w-full p-3 rounded-lg font-bold mt-4">
+                <i class="fas fa-arrow-right mr-2"></i>Next: Activate Camera
             </button>
         </div>
+        <!-- ====================================================================
+        END: STEP 4
+        ======================================================================
+        -->
+
 
         <div id="stepContent5" class="step-content hidden no-print">
             
@@ -576,9 +685,19 @@ const captureIntervalTime = 2000; // 2 seconds
 // 16 seconds
 
         // --- GLOBAL STATE FOR ROOM CONTEXT ---
-        let currentRoomTag = "General Property Scan (Central/General Area)";
-let roomLocationInHouse = ""; 
+        let currentRoomTag = "General Property Scan"; // Default
+let roomLocationInHouse = "Center"; // Default
         let floorNumber = "";
+
+        // --- NEW: FLOOR PLANNER GLOBALS ---
+        let fabricCanvas = null;
+        let brahmaCenter = null; // Will store { x, y }
+        let brahmaDot = null; // The visual circle
+        const VASTU_ZONES_16 = [
+            "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
+            "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"
+        ];
+
 
         // --- IMPROVEMENT: GLOBAL STATE FOR HOLISTIC CONTEXT ---
         let userIssues = [];
@@ -596,22 +715,36 @@ let roomLocationInHouse = "";
             roomLocationInput, floorNumberInput, holisticNextButton,
             userConcernsContainer, surroundingsWater, surroundingsHills;
 
+        // --- NEW: FLOOR PLANNER DOM ELEMENTS ---
+        let plannerContainer, addRoomButton, setOuterWallButton, labelRoomButton, deleteRoomButton;
+
+
         // --- TUTORIAL MODAL ELEMENTS (Add these lines) ---
         let tutorialOverlay, tutorialTitle, tutorialBody, tutorialCloseButton, tutorialSkipAllButton;
 
 
         // --- UTILITY FUNCTIONS ---
         function getVastuZone(degrees) {
-            const ZONE_NAMES = [
-                "N (North)", "NNE (North-North-East)", "NE (North-East)", "ENE (East-North-East)",
-                "E (East)", "ESE (East-South-East)", "SE (South-East)", "SSE (South-South-East)",
-                "S (South)", "SSW (South-South-West)", "SW (South-West)", "WSW (West-South-West)",
-                "W (West)", "WNW (West-North-West)", "NW (North-West)", "NNW (North-North-West)"
-            ];
-const offset = 11.25;
+            // This function is for the COMPASS (0 = North)
+            const offset = 11.25;
             let index = Math.floor(((degrees + offset) % 360) / 22.5);
-            return ZONE_NAMES[index % 16];
+            return VASTU_ZONES_16[index % 16];
 }
+
+        // --- NEW: Planner Zone Calculation ---
+        function getVastuZoneFromAngle(angle) {
+            // This function is for the CANVAS (0 = East)
+            // 1. Convert Fabric.js angle (0=East) to Compass angle (0=North)
+            // Fabric: 0=E, 90=S, 180=W, 270=N
+            // Compass: 0=N, 90=E, 180=S, 270=W
+            let compassAngle = (360 - angle + 90) % 360;
+            
+            // 2. Use the same logic as getVastuZone
+            const offset = 11.25; // 22.5 / 2
+            let index = Math.floor(((compassAngle + offset) % 360) / 22.5);
+            return VASTU_ZONES_16[index % 16];
+        }
+
 
         // IMPROVEMENT: RE-ENABLED asterisk-to-strong conversion
         function formatAITextForDisplay(rawText) {
@@ -675,7 +808,8 @@ formattedText = formattedText.replace(/\n\n/g, '\n\n');
             if (currentStep !== 5 && isCameraActive) {
                 stopVideoStream();
             }
-            if (currentStep !== 2 && currentStep !== 4 && currentStep !== 5 && isCompassActive) {
+            // Stop compass if not on step 2 (activate) or 5 (scan)
+            if (currentStep !== 2 && currentStep !== 5 && isCompassActive) {
                 stopCompassLogic();
             }
             // --- END NEW LOGIC ---
@@ -692,78 +826,34 @@ formattedText = formattedText.replace(/\n\n/g, '\n\n');
                 }
             });
 
-if (currentStep === 4) { // Location Step
-cameraButton.disabled = false;
-} else if (currentStep === 5) { // Scan Step
+            if (currentStep === 4) { // Location Step
+                // This button now just goes to the next step
+                cameraButton.disabled = false;
+                cameraButton.innerHTML = `<i class="fas fa-arrow-right mr-2"></i>Next: Activate Camera`;
+                // Initialize planner if it hasn't been
+                if (!fabricCanvas) {
+                    initializePlanner();
+                }
+            } else if (currentStep === 5) { // Scan Step
                 captureButton.disabled = isCapturing || capturedFrames.length >= totalCaptures;
-} else if (currentStep === 6) { // Report Step
+            } else if (currentStep === 6) { // Report Step
                 analyzeButton.disabled = isReportGenerating || capturedFrames.length < totalCaptures;
                 deepAnalysisButton.disabled = isReportGenerating || capturedFrames.length < totalCaptures; 
                 chatInput.disabled = !fullReportMarkdown; // Enable chat
                 sendChatButton.disabled = !fullReportMarkdown; // Enable chat
-}
+            }
 
             // --- ADD THIS LINE ---
             // Call the tutorial modal for the new step
             showTutorial(currentStep);
         }
 
-        function initializeRoomSelection() {
-            // UPDATED ROOM LIST
-            const ROOM_TYPES = [
-                "Master Bedroom", "Kitchen", "Living Room", "Pooja Room",
-                "Toilet/Bath", "Main Entrance", "Central Bhramsthan (Center of the Property)", "General Property Scan (Central/General Area)"
- 
-           ];
+        // --- REMOVED initializeRoomSelection() ---
+        // This is now handled by the new Floor Planner
 
-            roomSelectionContainer.innerHTML = '';
-// Clear previous buttons
-            ROOM_TYPES.forEach(room => {
-                const btn = document.createElement('button');
-                // Display the name without the text in parenthesis for the button itself
-                btn.textContent = room.replace(/\s*\(.*\)/, "");
-                btn.className 
-= 'room-select-btn p-2 text-xs rounded-full border border-gray-400 bg-white hover:bg-blue-100 transition-colors';
-                btn.dataset.room = room;
-                btn.onclick = () => selectRoom(room, false);
-                roomSelectionContainer.appendChild(btn);
-            });
-selectRoom(currentRoomTag, false);
-            // Initialize input values
-            roomLocationInput.value = roomLocationInHouse;
-floorNumberInput.value = floorNumber;
-        }
+        // --- REMOVED selectRoom() ---
+        // This is now handled by the new Floor Planner
 
-        function selectRoom(roomName, shouldActivateCamera = true) {
-            currentRoomTag = roomName;
-currentRoomDisplay.textContent = `Current Area: ${roomName}`;
-            
-            // Update camera button text *even if not activating*
-            // This ensures the button text is correct if the user just changes the room
-            if (!isCameraActive) {
-                 cameraButton.innerHTML = `<i class="fas fa-camera mr-2"></i>Activate Camera for: ${roomName.replace(/\s*\(.*\)/, "")}`;
-            }
-
-            cameraButton.disabled = false;
-document.querySelectorAll('.room-select-btn').forEach(btn => {
-                btn.classList.remove('selected');
-                if (btn.dataset.room === roomName) {
-                    btn.classList.add('selected');
-                }
-            });
-if (roomName.includes("Central Bhramsthan")) {
-                roomLocationInput.value = "Center";
-roomLocationInHouse = "Center";
-            } else if (roomLocationInput.value === "Center" || roomLocationInput.value.includes("N/A") || roomLocationInput.value === "") {
-                roomLocationInput.value = "";
-roomLocationInHouse = "";
-                roomLocationInput.placeholder = "E.g., North-East, South-West, Center (Required)";
-}
-
-            if (shouldActivateCamera && currentRoomTag) {
-                activateCamera();
-}
-        }
         
         // IMPROVEMENT: RE-ADDED switchReportTab function
         function switchReportTab(target) {
@@ -818,12 +908,12 @@ chatView.classList.remove('hidden');
                     body = "This step is optional but highly recommended.<br><br>Telling the AI your personal concerns (like 'Financial' or 'Health') helps it create remedies that are specifically tailored to your goals.";
                     break;
                 case 4:
-                    title = "Step 4: Location Context (Required)";
-                    body = "This is the <strong>most critical step</strong> for an accurate report.<br><br>The AI must know what room you are scanning (e.g., 'Kitchen') AND where it is in the house (e.g., 'South-East'). Please fill in all 3 parts.";
+                    title = "Step 4: Floor Plan (Required)";
+                    body = "This is the <strong>most critical step</strong>.<br><br>1. Use 'Add Room' to draw your layout.<br>2. Select the *outer* blocks and press 'Set Outer Wall' to find the center (Brahmasthan).<br>3. Add more blocks for rooms, select one, and press 'Label Selected'.<br>4. Tapping a room will now select it for the scan.";
                     break;
                 case 5:
                     title = "Step 5: The 360° Scan";
-                    body = "You're ready to scan. When you click 'Start Scan', hold your device steady and turn in a <strong>slow, complete 360-degree circle</strong>.<br><br>The scan takes about 16 seconds and will capture all 8 Vastu zones.";
+                    body = "You're ready to scan! You've selected the <strong>" + currentRoomTag + "</strong> in the <strong>" + roomLocationInHouse + "</strong> zone.<br><br>When you click 'Start Scan', hold your device steady and turn in a <strong>slow, complete 360-degree circle</strong>.";
                     break;
                 case 6:
                     title = "Step 6: Your Report";
@@ -847,9 +937,18 @@ chatView.classList.remove('hidden');
         function handleOrientation(event) {
             let heading;
 if (event.webkitCompassHeading) {
-                heading = event.webkitCompassHeading;
+                heading = event.webkitCompassHeading; // iOS
 } else if (event.alpha !== null) {
-                heading = (360 - event.alpha + 360) % 360;
+                // Use absolute orientation if available (0 = North)
+                if (event.absolute === true || typeof event.absolute === 'undefined') {
+                     heading = (360 - event.alpha) % 360; 
+                } else {
+                    // Fallback for relative orientation (less reliable)
+                    // We can't be sure where "0" is.
+                    // For this app, absolute is required.
+                    console.warn("Relative orientation not supported. Using 0.");
+                    heading = (360 - event.alpha) % 360; // Assume it's absolute-like
+                }
 } else {
                 return;
 }
@@ -868,24 +967,28 @@ headingDisplay.textContent = `Heading: ${currentHeading}°`;
 
         // Handles permission request on iOS
         function requestIOSSensorPermission() {
-            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+             if (typeof DeviceOrientationEvent.requestPermission === 'function') {
                 DeviceOrientationEvent.requestPermission()
                     .then(permissionState => {
                       
   if (permissionState === 'granted') {
+                            // Add listeners *after* permission is granted
                             window.addEventListener('deviceorientation', handleOrientation);
                             window.addEventListener('deviceorientationabsolute', handleOrientation);
-                            startCompassLogic();
+                            startCompassLogic(); // Now start the logic
      
                    } else {
+                            // Permission denied
+                            console.warn("Sensor permission denied by user.");
                             startCompassSimulation();
         }
                     })
                     .catch(e => {
     console.error('Sensor permission error:', e);
-                        startCompassSimulation();
+                        startCompassSimulation(); // Fallback on error
                     });
 } else {
+                // Not iOS 13+, or not a function
                 startCompassLogic();
 }
         }
@@ -893,22 +996,27 @@ headingDisplay.textContent = `Heading: ${currentHeading}°`;
         // Start logic with original, complex listener attachment check
         function startCompassLogic() {
             if (isCompassActive) return;
-if (window.DeviceOrientationEvent) {
-                if (typeof DeviceOrientationEvent.requestPermission !== 'function' || isCompassActive === false) { 
+            
+            if (window.DeviceOrientationEvent) {
+                // Add listeners (if not already added by iOS permission)
+                // This check avoids duplicate listeners
+                if (typeof DeviceOrientationEvent.requestPermission !== 'function') { 
                      window.addEventListener('deviceorientation', handleOrientation);
-window.addEventListener('deviceorientationabsolute', handleOrientation);
+                     window.addEventListener('deviceorientationabsolute', handleOrientation);
                 }
             } else {
-                 startCompassSimulation();
+                 startCompassSimulation(); // No sensors found
 return;
             }
 
             sensorCheckTimeout = setTimeout(() => {
                 if (currentHeading === null) {
-          stopCompassLogic(); 
+                    // No sensor data received after 1s
+                    console.warn("No sensor data. Falling back to simulation.");
+                    stopCompassLogic(); // Stop listeners
                     startCompassSimulation();
                 } 
-            }, 1000);
+            }, 1000); // 1 second timeout
 
 
             isCompassActive = true;
@@ -951,23 +1059,27 @@ simulationInterval = setInterval(() => {
             updateNextStepHighlight(3);
 }
         
+        // --- REFACTORED activateCompass ---
         function activateCompass() {
             // --- NEW TOGGLE LOGIC ---
             if (isCompassActive) {
                 stopCompassLogic(); // This will stop sensors and reset the button
                 return;
             }
-            // --- END TOGGLE LOGIC ---
-
+            
+            // --- NEW PERMISSION-FIRST LOGIC ---
             if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                // This is iOS 13+. Must request permission.
                 requestIOSSensorPermission();
-} 
+            } 
             else if (window.DeviceOrientationEvent) {
+                // This is Android or other non-iOS. No permission needed.
                 startCompassLogic();
-} 
+            } 
             else {
+                // No sensors detected.
                 startCompassSimulation();
-}
+            }
         }
 
 
@@ -981,10 +1093,10 @@ videoStream = null;
             cameraVideo.classList.add('hidden');
             cameraFallback.classList.remove('hidden');
 
-            // Reset button state
+            // Reset button state (back on Step 4)
             cameraButton.classList.remove('bg-red-500', 'hover:bg-red-600', 'bg-gray-400');
             cameraButton.classList.add('primary-btn');
-            cameraButton.innerHTML = `<i class="fas fa-camera mr-2"></i>Activate Camera for: ${currentRoomTag.replace(/\s*\(.*\)/, "")}`;
+            cameraButton.innerHTML = `<i class="fas fa-arrow-right mr-2"></i>Next: Activate Camera`;
             cameraButton.style.boxShadow = '0 4px var(--color-text-dark)';
             cameraButton.disabled = false;
         }
@@ -1021,48 +1133,43 @@ sensorCheckTimeout = null;
 
         async function activateCamera() {
             // --- NEW TOGGLE LOGIC ---
-            if (isCameraActive) {
-                stopVideoStream(); // This will stop video and reset the button
-                updateNextStepHighlight(4); // Stay on step 4
-                return;
-            }
-            // --- END TOGGLE LOGIC ---
+            // This button now has two roles:
+            // 1. On Step 4: It's a "Next" button.
+            // 2. On Step 5: It will be a "Deactivate" toggle (in future)
+            // For now, it just moves to Step 5
+            
+            const currentStep = Array.from(stepIndicators).findIndex(s => s.classList.contains('step-active')) + 1;
 
-            if (!currentRoomTag) {
-return;
-            }
+            if (currentStep === 4) {
+                // We are on the floor plan step. Move to camera step.
+                // We also need to activate the compass FOR the camera step
+                if (!isCompassActive) {
+                    activateCompass();
+                }
+                updateNextStepHighlight(5); // Go to Step 5
+                
+                // Now, activate the camera
+                if (isCameraActive) return; // Already on
+                if (isCapturing) return; // Don't mess with it
 
-            try {
-                // IMPROVEMENT: Reduced resolution from 480 to 320 to prevent 503 errors
-                videoStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { 
-                        facingMode: 'environment',
-                   
-     width: { ideal: 320 },
-                        height: { ideal: 320 }
-                    } 
-                });
-cameraVideo.srcObject = videoStream;
-                
-                cameraVideo.classList.remove('hidden'); 
-                cameraFallback.classList.add('hidden');
-                
-                await cameraVideo.play();
-
-                isCameraActive = true;
-                // --- BUTTON TOGGLE (NOW RED) ---
-                cameraButton.classList.remove('primary-btn');
-                cameraButton.classList.add('bg-red-500', 'hover:bg-red-600', 'primary-btn'); // Red toggle
-                cameraButton.innerHTML = `<i class="fas fa-times mr-2"></i>Deactivate Camera`;
-                cameraButton.style.boxShadow = '0 4px #b91c1c';
-                cameraButton.disabled = false; // It's a toggle
-                
-                // IMPROVEMENT: Go to new Step 5 (Scan)
-                updateNextStepHighlight(5);
-} catch (err) {
-console.error('Camera access error:', err);
-                cameraVideo.classList.add('hidden');
-                cameraFallback.classList.remove('hidden');
+                 try {
+                    videoStream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { 
+                            facingMode: 'environment',
+                            width: { ideal: 320 },
+                            height: { ideal: 320 }
+                        } 
+                    });
+                    cameraVideo.srcObject = videoStream;
+                    cameraVideo.classList.remove('hidden'); 
+                    cameraFallback.classList.add('hidden');
+                    await cameraVideo.play();
+                    isCameraActive = true;
+                } catch (err) {
+                    console.error('Camera access error:', err);
+                    cameraVideo.classList.add('hidden');
+                    cameraFallback.classList.remove('hidden');
+                }
             }
         }
 
@@ -1099,19 +1206,16 @@ const dataUrl = canvas.toDataURL('image/jpeg', 0.05);
 }
 
         function startCapture() {
-            if (isCapturing || !isCompassActive || !isCameraActive) {
-                // This alert should not be needed if buttons are disabled correctly, but as a fallback.
-                alert("Please ensure sensors and camera are active (Steps 2 & 4).");
+            if (isCapturing) return;
+
+            if (!isCompassActive || !isCameraActive) {
+                alert("Please ensure sensors and camera are active (Steps 2 & 5).");
                 return;
             }
-if (!roomLocationInHouse || roomLocationInput.value.includes("N/A") || roomLocationInHouse.length < 2) {
-                // IMPROVEMENT: Added user-friendly alert
-                alert("Please complete Step 4b: 'Where is this area located?' before scanning.");
-return;
-            }
+            
+            // Data now comes from the planner, but we still need floor number
             if (!floorNumber || floorNumber.length < 1) {
-                // IMPROVEMENT: Added user-friendly alert
-                alert("Please complete Step 4c: 'Which floor is this area located on?' before scanning.");
+                alert("Please go back to Step 4 and enter the 'Floor Number' before scanning.");
 return;
             }
             
@@ -1246,9 +1350,11 @@ reportContent.innerHTML = displayCapturedFrames();
                         heading: f.heading, 
                         zone: f.zone 
                     })),
+                    // --- UPDATED CONTEXT ---
                     currentRoomTag: currentRoomTag,
                     roomLocationInHouse: roomLocationInHouse,
                     floorNumber: floorNumber,
+                    // --- END UPDATED CONTEXT ---
                     holisticIssues: holisticIssues,
                     holisticSurroundings: holisticSurroundings
                 }
@@ -1421,6 +1527,166 @@ chatInput.disabled = false;
 }
         }
 
+        // ----------------------------------------------------------------------------------
+        // --- NEW: FLOOR PLANNER FUNCTIONS ---
+        // ----------------------------------------------------------------------------------
+
+        function initializePlanner() {
+            if (fabricCanvas) return; // Already initialized
+
+            plannerContainer = document.getElementById('plannerContainer');
+            const canvasEl = document.getElementById('floorPlanCanvas');
+
+            // Resize canvas to fit the container
+            const containerWidth = plannerContainer.clientWidth;
+            const containerHeight = plannerContainer.clientHeight;
+            canvasEl.width = containerWidth;
+            canvasEl.height = containerHeight;
+
+            fabricCanvas = new fabric.Canvas('floorPlanCanvas', {
+                width: containerWidth,
+                height: containerHeight,
+                backgroundColor: 'rgba(0,0,0,0)', // Transparent
+            });
+
+            // Add tool listeners
+            addRoomButton.addEventListener('click', () => {
+                const room = new fabric.Rect({
+                    left: fabricCanvas.width / 2 - 25,
+                    top: fabricCanvas.height / 2 - 25,
+                    fill: 'rgba(255, 255, 255, 0.7)',
+                    width: 50,
+                    height: 50,
+                    stroke: 'var(--color-primary)',
+                    strokeWidth: 2,
+                    data: { type: 'room', label: 'Unlabeled' } // Custom data
+                });
+                fabricCanvas.add(room);
+            });
+
+            deleteRoomButton.addEventListener('click', () => {
+                fabricCanvas.getActiveObjects().forEach(obj => {
+                    fabricCanvas.remove(obj);
+                });
+                fabricCanvas.discardActiveObject().renderAll();
+            });
+
+            labelRoomButton.addEventListener('click', () => {
+                const activeObj = fabricCanvas.getActiveObject();
+                if (!activeObj) {
+                    alert("Please select a room block first."); // Simple feedback
+                    return;
+                }
+                const label = prompt("Enter a label for this room (e.g., Kitchen):", activeObj.data.label);
+                if (label) {
+                    activeObj.set('data', { ...activeObj.data, label: label });
+                    // Update selection if this is the currently selected room
+                    if (activeObj.data.type === 'room') {
+                        selectRoomForScan(activeObj);
+                    }
+                }
+            });
+
+            setOuterWallButton.addEventListener('click', () => {
+                const activeObjects = fabricCanvas.getActiveObjects();
+                if (activeObjects.length === 0) {
+                     alert("Please select one or more blocks that make up your outer wall.");
+                    return;
+                }
+                
+                // Reset old walls
+                fabricCanvas.forEachObject(obj => {
+                    if (obj.data.type === 'wall') {
+                        obj.set('data', { ...obj.data, type: 'room' });
+                        obj.set('fill', 'rgba(255, 255, 255, 0.7)');
+                    }
+                });
+
+                // Create a group from selection to find its center
+                const wallGroup = new fabric.Group(activeObjects, {
+                    // We don't add this to canvas, just use it for calculation
+                });
+
+                brahmaCenter = wallGroup.getCenterPoint();
+
+                // Set new walls
+                activeObjects.forEach(obj => {
+                    obj.set('data', { ...obj.data, type: 'wall' });
+                    obj.set('fill', 'rgba(191, 219, 254, 0.7)'); // Blue-200
+                });
+
+                // Remove old dot
+                if (brahmaDot) {
+                    fabricCanvas.remove(brahmaDot);
+                }
+
+                // Add new dot
+                brahmaDot = new fabric.Circle({
+                    left: brahmaCenter.x - 5,
+                    top: brahmaCenter.y - 5,
+                    radius: 5,
+                    fill: 'var(--color-primary)',
+                    stroke: 'white',
+                    strokeWidth: 2,
+                    selectable: false,
+                    evented: false,
+                });
+                fabricCanvas.add(brahmaDot);
+                fabricCanvas.renderAll();
+                
+                // Set default scan context
+                currentRoomTag = "Central Bhramsthan";
+                roomLocationInHouse = "Center";
+                currentRoomDisplay.innerHTML = `Selected for Scan: <strong>${currentRoomTag}</strong> (in <strong>${roomLocationInHouse}</strong> zone)`;
+            });
+
+            // Canvas event: Handle room selection
+            fabricCanvas.on('mouse:down', (options) => {
+                if (options.target) {
+                    const obj = options.target;
+                    // Only select rooms, not walls or the dot
+                    if (obj.data && obj.data.type === 'room') {
+                        selectRoomForScan(obj);
+                    }
+                }
+            });
+        }
+
+        function selectRoomForScan(roomObject) {
+            if (!brahmaCenter) {
+                alert("Please set your outer wall first to find the Brahmasthan (center).");
+                return;
+            }
+
+            const roomCenter = roomObject.getCenterPoint();
+            
+            // Calculate angle from Brahmasthan to room center
+            // 0 degrees is East in this calculation
+            const angleDeg = Math.atan2(
+                roomCenter.y - brahmaCenter.y, 
+                roomCenter.x - brahmaCenter.x
+            ) * 180 / Math.PI;
+
+            const zone = getVastuZoneFromAngle(angleDeg);
+            const label = roomObject.data.label;
+
+            // Set global state
+            currentRoomTag = label;
+            roomLocationInHouse = zone;
+
+            // Update UI
+            currentRoomDisplay.innerHTML = `Selected for Scan: <strong>${label}</strong> (in <strong>${zone}</strong> zone)`;
+            
+            // Visual feedback
+            fabricCanvas.forEachObject(obj => {
+                 if (obj.data && obj.data.type === 'room') {
+                     obj.set('stroke', 'var(--color-primary)'); // Reset others
+                 }
+            });
+            roomObject.set('stroke', '#f97316'); // Highlight selected in orange
+            fabricCanvas.renderAll();
+        }
+
 
         // --- Event Listeners and Initialization ---
         // IMPROVEMENT: All listeners are now wrapped in DOMContentLoaded
@@ -1458,10 +1724,20 @@ chatInput.disabled = false;
             chatMessages = document.getElementById('chatMessages');
             chatInput = document.getElementById('chatInput');
             sendChatButton = document.getElementById('sendChatButton');
-            roomSelectionContainer = document.getElementById('roomSelectionContainer');
-            currentRoomDisplay = document.getElementById('currentRoomDisplay');
-            roomLocationInput = document.getElementById('roomLocationInput');
-            floorNumberInput = document.getElementById('floorNumberInput');
+            
+            // --- OLD STEP 4 (REMOVED/RE-PURPOSED) ---
+            // roomSelectionContainer = document.getElementById('roomSelectionContainer'); // REMOVED
+            currentRoomDisplay = document.getElementById('currentRoomDisplay'); // RE-PURPOSED
+            // roomLocationInput = document.getElementById('roomLocationInput'); // REMOVED
+            floorNumberInput = document.getElementById('floorNumberInput'); // RE-PURPOSED
+            
+            // --- NEW STEP 4 GRABBERS ---
+            addRoomButton = document.getElementById('addRoomButton');
+            setOuterWallButton = document.getElementById('setOuterWallButton');
+            labelRoomButton = document.getElementById('labelRoomButton');
+            deleteRoomButton = document.getElementById('deleteRoomButton');
+
+
             holisticNextButton = document.getElementById('holisticNextButton');
             userConcernsContainer = document.getElementById('userConcernsContainer');
             surroundingsWater = document.getElementById('surroundingsWater');
@@ -1476,7 +1752,8 @@ chatInput.disabled = false;
             // --- END OF DOM ELEMENT GRABBERS ---
 
             // Initial setup
-            initializeRoomSelection();
+            // initializeRoomSelection(); // REMOVED
+            currentRoomDisplay.innerHTML = `Selected for Scan: <strong>${currentRoomTag}</strong> (in <strong>${roomLocationInHouse}</strong> zone)`;
             updateNextStepHighlight(); // Defaults to step 1 (Tips)
             switchReportTab('report'); // Default to report tab
         
@@ -1487,11 +1764,10 @@ chatInput.disabled = false;
             holisticNextButton.addEventListener('click', () => updateNextStepHighlight(4));
             
             compassButton.addEventListener('click', activateCompass);
-    cameraButton.addEventListener('click', () => {
-                 // OLD: if (document.getElementById('stepContent4').classList.contains('hidden')) return; 
-                 // NEW: No check needed, activateCamera is now a self-contained toggle.
-                 selectRoom(currentRoomTag, true);
-            });
+            
+            // cameraButton now serves 2 purposes
+            cameraButton.addEventListener('click', activateCamera);
+            
     captureButton.addEventListener('click', startCapture);
             analyzeButton.addEventListener('click', () => generateReport(false)); // Standard report
             deepAnalysisButton.addEventListener('click', () => generateReport(true)); // Deep analysis report
@@ -1508,9 +1784,6 @@ chatInput.disabled = false;
             });
 
             tutorialSkipAllButton.addEventListener('click', () => {
-                // Use a standard confirm dialog. Note: `alert()` is blocked, but `confirm()` is often allowed.
-                // If `confirm()` is also blocked in your environment, this will default to 'false' and just close the modal.
-                // For a more robust solution, a custom modal would be needed, but this is the simplest JS-native way.
                 let userIsSure = false;
                 try {
                    userIsSure = confirm("Are you sure you want to skip all tutorials? This is permanent.");
@@ -1522,7 +1795,6 @@ chatInput.disabled = false;
                     localStorage.setItem('vastuAppTutorialsSkipped', 'true');
                     tutorialOverlay.classList.add('hidden');
                 } else if (!userIsSure) {
-                    // If user clicked cancel, or if confirm() failed, just close the modal.
                     tutorialOverlay.classList.add('hidden');
                 }
             });
@@ -1558,9 +1830,9 @@ chatInput.disabled = false;
             });
 
             // Listeners for Step 4 inputs
-            roomLocationInput.addEventListener('input', () => {
-                 roomLocationInHouse = roomLocationInput.value.trim();
-            });
+            // roomLocationInput.addEventListener('input', () => { // REMOVED
+            //      roomLocationInHouse = roomLocationInput.value.trim();
+            // });
     // Update floorNumber on input change
             floorNumberInput.addEventListener('input', () => {
                  floorNumber = floorNumberInput.value.trim();
