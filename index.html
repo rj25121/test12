@@ -1539,7 +1539,10 @@ chatInput.disabled = false;
 
             // Resize canvas to fit the container
             const containerWidth = plannerContainer.clientWidth;
-            const containerHeight = plannerContainer.clientHeight;
+            // --- *** FIX IS HERE *** ---
+            // The container's height is set by padding-top: 100%, so clientHeight will be 0.
+            // We must use clientWidth for both dimensions to respect the 1:1 ratio.
+            const containerHeight = containerWidth; 
             canvasEl.width = containerWidth;
             canvasEl.height = containerHeight;
 
@@ -1831,7 +1834,7 @@ chatInput.disabled = false;
 
             // Listeners for Step 4 inputs
             // roomLocationInput.addEventListener('input', () => { // REMOVED
-            //      roomLocationInHouse = roomLocationInput.value.trim();
+            //      roomLocationInHouse = roomLocationInHouse.value.trim();
             // });
     // Update floorNumber on input change
             floorNumberInput.addEventListener('input', () => {
