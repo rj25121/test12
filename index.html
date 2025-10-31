@@ -1676,7 +1676,7 @@ simulationInterval = setInterval(() => {
             if (!isCameraActive) return; // Already stopped
             if (videoStream) {
                 videoStream.getTracks().forEach(track => track.stop());
-videoStream = null;
+                videoStream = null;
             }
             isCameraActive = false;
             cameraVideo.classList.add('hidden');
@@ -2335,7 +2335,7 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
             roomTypeGrid = document.getElementById('roomTypeGrid');
             roomLocationGrid = document.getElementById('roomLocationGrid');
             step4CompassNeedle = document.getElementById('step4CompassNeedle'); // *** NEW ***
-            step4Checklist = document.getElementById('checklistRoom');
+            checklistRoom = document.getElementById('checklistRoom');
             checklistLocation = document.getElementById('checklistLocation');
             checklistFloor = document.getElementById('checklistFloor');
 
@@ -2442,12 +2442,11 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
                 
                 // --- FIX: Reverted to synchronous call. The @media print CSS will handle the blank page. ---
                 // We use a small, reliable 1ms delay inside the click context to ensure the CSS renders before print.
-                setTimeout(() => {
-                    window.print(); 
-                    // Clean up immediately after print dialog is called
-                    fullReportView.classList.remove('print-this');
-                    document.title = originalTitle; // Restore original title
-                }, 1); 
+                window.print(); // **SYNCHRONOUS CALL**
+           
+                // Clean up immediately after print dialog is called
+                fullReportView.classList.remove('print-this');
+                document.title = originalTitle; // Restore original title
             });
 
             // ====================================================================
@@ -2578,10 +2577,9 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
             fullReportTab.addEventListener('click', () => switchReportTab('full'));
             expertReportTab.addEventListener('click', () => switchReportTab('expert'));
             
-            if (sendChatButton) { // FIX: added check
-                sendChatButton.addEventListener('click', handleChat);
-            }
-            if (chatInput) { // *** FIX: Added check to prevent error on load ***
+            // *** FIX: Moved event listeners out of conditional blocks to resolve load error ***
+            if (sendChatButton) sendChatButton.addEventListener('click', handleChat);
+            if (chatInput) {
                 chatInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') {
                         handleChat();
@@ -2593,7 +2591,7 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
             }
 
             // --- NEW: Chat Feedback Listener ---
-            if (chatMessages) { // *** FIX: Added check to prevent error on load ***
+            if (chatMessages) {
                 chatMessages.addEventListener('click', (e) => {
                     if (e.target.classList.contains('fa-thumbs-up')) {
                         e.target.classList.toggle('selected');
@@ -2629,9 +2627,6 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
                     alert("Failed to copy. Please copy manually.");
                 }
             });
-
-            // --- NEW: Attach debug function to window for console access ---
-            window.__debug_skipToStep6 = __debug_skipToStep6;
         
         });
 </script>
