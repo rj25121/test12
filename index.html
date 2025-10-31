@@ -114,7 +114,7 @@ box-shadow: 0 2px var(--color-text-dark);
 }
 
         /* --- Report Formatting --- */
-        #reportContent strong {
+        #reportContent strong, #expertReportContent strong {
             /* Targeted styles for the AI's section titles (e.g., **II. Assessment**) */
             display: block;
 margin-top: 1.5rem;
@@ -127,9 +127,9 @@ margin-top: 1.5rem;
 /* Light Blue border */
             padding-bottom: 0.25rem;
 }
-        #reportContent {
+        #reportContent, #expertReportContent {
             line-height: 1.6;
-}
+        }
         .report-section p {
             margin-bottom: 1em;
 /* Ensures clear paragraph separation */
@@ -199,32 +199,43 @@ align-self: flex-start;
 
         /* --- PRINT-FRIENDLY STYLES --- */
         @media print {
-            /* Hide all .no-print elements */
-            .no-print {
-                display: none !important;
-            }
-            
-            /* Reset body for printing */
             body {
                 padding: 0;
                 margin: 0;
                 background-color: #fff;
             }
+            /* Hide all .no-print elements */
+            .no-print {
+                display: none !important;
+            }
 
-            /* Make the report view fill the page */
-            #reportView {
-                visibility: visible;
+            /* Expand all containers */
+            #appContainer, #mainContentArea {
+                max-height: none;
+                overflow: visible;
                 display: block;
-                width: 100%;
-                position: relative;
+                box-shadow: none;
+                border: none;
+            }
+            
+            /* Ensure the correct report view is visible */
+            .tab-content {
+                display: none; /* Hide all tabs by default */
+            }
+            #fullReportView, #expertReportView {
+                display: block !important; /* Show both report tabs */
+                visibility: visible;
+            }
+            #chatView {
+                display: none !important; /* Hide chat */
             }
 
             /* Make the report content visible and printable */
-            #reportContent {
+            #reportContent, #expertReportContent {
                 visibility: visible;
                 display: block;
                 width: 100%;
-                height: auto;
+                height: auto; /* Let content determine height */
                 overflow-y: visible; /* Show all content */
                 background: #fff;
                 border: none;
@@ -238,7 +249,7 @@ align-self: flex-start;
             }
             
             /* Ensure report titles print well */
-            #reportContent strong {
+            #reportContent strong, #expertReportContent strong {
                 /* REMOVED color: #000; to allow orange to print */
                 border-bottom: 2px solid #ccc;
                 page-break-after: avoid;
@@ -343,6 +354,8 @@ align-self: flex-start;
             flex-grow: 1;
             /* Add padding to content area */
             padding: 0.25rem;
+            /* *** FIX: Ensure it can shrink on small screens *** */
+            min-height: 200px;
         }
         #actionFooter {
             border-top: 1px solid rgba(255, 255, 255, 0.3);
@@ -375,6 +388,22 @@ align-self: flex-start;
         .step-content {
             animation: fadeIn 0.3s ease-out;
         }
+
+        /* --- 1. Larger Reading Area (Step 6) --- */
+        #reportContent, #expertReportContent, #chatMessages {
+            /* REMOVED h-96 */
+            /* NEW: Let flex-grow handle the height */
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+        #chatView {
+            /* Make chat view a flex column to fill space */
+            display: flex;
+            flex-direction: column;
+            /* Give it a min-height to push footer down */
+            min-height: 400px; 
+        }
+        /* --- End Larger Reading Area --- */
 
         /* ====================================================================
         END: NEW UI/UX ENHANCEMENT STYLES
@@ -592,35 +621,48 @@ align-self: flex-start;
                 <!-- Button moved to footer -->
             </div>
 
-            <div id="stepContent6" class="step-content hidden">
+            <!-- *** STEP 6: Modified for Tabs and Flex *** -->
+            <div id="stepContent6" class="step-content hidden h-full flex flex-col">
                 
                 <div id="reportLoader" 
     class="text-center py-8 hidden no-print">
                     <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
-                    <p class="mt-4 font-semibold text-gray-600">Generating Formal Report...</p>
+                    <p class="mt-4 font-semibold text-gray-600">Generating Report...</p>
                     <p class="text-xs text-gray-500 mt-2">The process may take a few seconds.</p>
                 </div>
 
                
-     <div class="flex border-b border-gray-200 mb-4 no-print">
-                    <button id="reportTab" class="py-2 px-4 text-sm font-bold text-gray-600 border-b-2 border-transparent transition-colors hover:bg-gray-50 active-tab-style">
+                 <!-- *** NEW 3-TAB SYSTEM *** -->
+                 <div class="flex border-b border-gray-200 mb-4 no-print flex-shrink-0">
+                    <button id="fullReportTab" class="py-2 px-4 text-xs sm:text-sm font-bold text-gray-600 border-b-2 border-transparent transition-colors hover:bg-gray-50">
                         <i class="fas fa-file-alt mr-1"></i> Full Report
                     </button>
-                    <button id="chatTab" class="py-2 px-4 text-sm font-bold text-gray-600 border-b-2 border-transparent transition-colors 
+                    <button id="expertReportTab" class="py-2 px-4 text-xs sm:text-sm font-bold text-gray-600 border-b-2 border-transparent transition-colors hover:bg-gray-50">
+                        <i class="fas fa-exclamation-triangle mr-1"></i> Expert Analysis
+                    </button>
+                    <button id="chatTab" class="py-2 px-4 text-xs sm:text-sm font-bold text-gray-600 border-b-2 border-transparent transition-colors 
     hover:bg-gray-50">
                         <i class="fas fa-comment-dots mr-1"></i> Vastu Chatbot
                     </button>
                 </div>
 
-
-                <div id="reportView" class="tab-content">
-                    <div id="reportContent" class="glass-card p-4 h-96 overflow-y-auto text-sm report-section">
-              Awaiting Scan Data.
-    </div>
+                <!-- Tab Content: Full Report -->
+                <div id="fullReportView" class="tab-content">
+                    <div id="reportContent" class="glass-card p-4 text-sm report-section">
+                        Click "Formal Report" below to generate.
+                    </div>
                 </div>
                 
-                <div id="chatView" class="tab-content hidden no-print">
-                    <div id="chatMessages" class="glass-card p-4 h-96 overflow-y-auto text-sm flex flex-col space-y-2">
+                <!-- Tab Content: Expert Report -->
+                <div id="expertReportView" class="tab-content hidden">
+                    <div id="expertReportContent" class="glass-card p-4 text-sm report-section">
+                        Click "Expert Analysis" below to generate.
+                    </div>
+                </div>
+                
+                <!-- Tab Content: Chat -->
+                <div id="chatView" class="tab-content hidden no-print flex-grow">
+                    <div id="chatMessages" class="glass-card p-4 text-sm flex flex-col space-y-2">
                         <div class="ai-message chat-message text-gray-700">
                <i class="fas fa-robot mr-1 text-blue-500"></i>
                             Hello!
@@ -673,26 +715,25 @@ align-self: flex-start;
             </div>
             <!-- Step 6 Buttons -->
             <div id="footerStep6" class="footer-step-wrapper">
-                <div class="flex flex-wrap -mx-1 no-print">
-                    <button id="deepAnalysisButton" class="primary-btn p-3 rounded-lg font-bold bg-blue-500 hover:bg-blue-600 w-full sm:w-auto sm:flex-1 m-1" style="box-shadow: 0 4px #1d4ed8;" disabled>
-                        <i class="fas fa-exclamation-triangle mr-2"></i>Expert Analysis
-                    </button>
-                   
-                     <button id="analyzeButton" class="primary-btn p-3 rounded-lg font-bold w-full sm:w-auto sm:flex-1 m-1" disabled>
+                <!-- *** MODIFIED: Smaller, more compact buttons *** -->
+                <div class="flex flex-wrap gap-2 no-print">
+                    <button id="analyzeButton" class="primary-btn p-3 rounded-lg font-bold flex-1" disabled>
                         <i class="fas fa-chart-area mr-2"></i>Formal Report
                      </button>
+                    <button id="deepAnalysisButton" class="primary-btn p-3 rounded-lg font-bold bg-blue-500 hover:bg-blue-600 flex-1" style="box-shadow: 0 4px #1d4ed8;" disabled>
+                        <i class="fas fa-exclamation-triangle mr-2"></i>Expert Analysis
+                    </button>
                 </div>
-                <div class="flex flex-wrap -mx-1 no-print mt-2">
+                <div class="flex flex-wrap gap-2 no-print mt-2">
                     <!-- *** SUGGESTION 3: Scan Again Button *** -->
-                    <button id="scanAgainButton" class="secondary-btn p-3 rounded-lg font-bold w-[calc(50%-0.5rem)] sm:w-auto sm:flex-1 m-1">
-                        <i class="fas fa-redo mr-2"></i>New Scan
+                    <button id="scanAgainButton" class="secondary-btn p-2 text-sm rounded-lg font-bold flex-1">
+                        <i class="fas fa-redo mr-1"></i>New Scan
                     </button>
-                    <button id="saveReportButton" class="primary-btn p-3 rounded-lg font-bold bg-green-500 hover:bg-green-600 w-[calc(50%-0.5rem)] sm:w-auto sm:flex-1 m-1 hidden" style="box-shadow: 0 4px #047857;">
-                        <i class="fas 
-        fa-file-export mr-2"></i>Export .txt
+                    <button id="saveReportButton" class="secondary-btn p-2 text-sm rounded-lg font-bold flex-1 hidden">
+                        <i class="fas fa-file-export mr-1"></i>Export .txt
                     </button>
-                    <button id="printReportButton" class="primary-btn p-3 rounded-lg font-bold bg-gray-500 hover:bg-gray-600 w-full sm:w-auto sm:flex-1 m-1 mt-2 sm:mt-0 hidden" style="box-shadow: 0 4px #4b5563;">
-                        <i class="fas fa-print mr-2"></i>Print/Save PDF
+                    <button id="printReportButton" class="secondary-btn p-2 text-sm rounded-lg font-bold flex-1 hidden">
+                        <i class="fas fa-print mr-1"></i>Print/Save PDF
                     </button>
                 </div>
             </div>
@@ -791,7 +832,7 @@ let roomLocationInHouse = null; // Default
             cameraFallback, overlayHeading, overlayZone, gallery, captureButton,
             captureCountDisplay, captureProgressContainer, captureProgress, analyzeButton,
             deepAnalysisButton, saveReportButton, printReportButton, reportContent,
-            reportLoader, reportTab, chatTab, reportView, chatView, chatMessages,
+            reportLoader, 
             chatInput, sendChatButton, currentRoomDisplay,
             floorNumberInput, holisticNextButton,
             userConcernsContainer, surroundingsWater, surroundingsHills;
@@ -807,6 +848,11 @@ let roomLocationInHouse = null; // Default
 
         // --- NEW: SCAN AGAIN BUTTON ---
         let scanAgainButton;
+        
+        // --- NEW: STEP 6 TABS AND VIEWS ---
+        let fullReportTab, expertReportTab, chatTab,
+            fullReportView, expertReportView, chatView,
+            expertReportContent;
 
 
         // --- TUTORIAL MODAL ELEMENTS (Add these lines) ---
@@ -1022,27 +1068,33 @@ formattedText = formattedText.replace(/\n\n/g, '\n\n');
         // --- *** END: Step 4 Grid Logic *** ---
 
         
-        // IMPROVEMENT: RE-ADDED switchReportTab function
+        // --- *** MODIFIED: For 3 Tabs *** ---
         function switchReportTab(target) {
-            // Reset both tabs to inactive state
-            reportTab.classList.remove('border-blue-500', 'border-b-2', 'text-blue-800');
-chatTab.classList.remove('border-blue-500', 'border-b-2', 'text-blue-800');
-            reportTab.classList.add('border-transparent', 'text-gray-600');
+            // Reset all tabs to inactive state
+            fullReportTab.classList.remove('border-blue-500', 'border-b-2', 'text-blue-800');
+            expertReportTab.classList.remove('border-blue-500', 'border-b-2', 'text-blue-800');
+            chatTab.classList.remove('border-blue-500', 'border-b-2', 'text-blue-800');
+            fullReportTab.classList.add('border-transparent', 'text-gray-600');
+            expertReportTab.classList.add('border-transparent', 'text-gray-600');
             chatTab.classList.add('border-transparent', 'text-gray-600');
 
-            reportView.classList.add('hidden');
+            // Hide all views
+            fullReportView.classList.add('hidden');
+            expertReportView.classList.add('hidden');
             chatView.classList.add('hidden');
 
-            if (target === 'report') {
-                // Activate Report Tab: remove inactive styles, add active styles
-                reportTab.classList.remove('border-transparent', 'text-gray-600');
-                reportTab.classList.add('border-blue-500', 'border-b-2', 'text-blue-800');
-reportView.classList.remove('hidden');
+            if (target === 'full') {
+                fullReportTab.classList.remove('border-transparent', 'text-gray-600');
+                fullReportTab.classList.add('border-blue-500', 'border-b-2', 'text-blue-800');
+                fullReportView.classList.remove('hidden');
+            } else if (target === 'expert') {
+                expertReportTab.classList.remove('border-transparent', 'text-gray-600');
+                expertReportTab.classList.add('border-blue-500', 'border-b-2', 'text-blue-800');
+                expertReportView.classList.remove('hidden');
             } else if (target === 'chat') {
-                // Activate Chat Tab: remove inactive styles, add active styles
                 chatTab.classList.remove('border-transparent', 'text-gray-600');
                 chatTab.classList.add('border-blue-500', 'border-b-2', 'text-blue-800');
-chatView.classList.remove('hidden');
+                chatView.classList.remove('hidden');
                 setTimeout(() => chatMessages.scrollTop = chatMessages.scrollHeight, 10);
             }
         }
@@ -1502,8 +1554,16 @@ return;
             fullReportMarkdown = "";
 chatContextSummary = ""; // Reset summary
             chatHistory = [];
-reportContent.innerHTML = displayCapturedFrames();
+            // *** NEW: Show loader, switch tab ***
             reportLoader.classList.remove('hidden');
+            if (isDeepAnalysis) {
+                expertReportContent.innerHTML = '';
+                switchReportTab('expert');
+            } else {
+                reportContent.innerHTML = '';
+                switchReportTab('full');
+            }
+
             analyzeButton.disabled = true;
             deepAnalysisButton.disabled = true; // Disable new button
             saveReportButton.classList.add('hidden');
@@ -1557,7 +1617,7 @@ if (!response.ok) {
 }
                 
                 const result = await response.json();
-fullReportMarkdown = result.text || "";
+fullReportMarkdown = result.text || ""; // Still store in one var, but display in two places
                 
                 if (!fullReportMarkdown) {
                     throw new Error("API returned an empty response. This is likely due to the API's safety filters (e.g., a blurry/dark image) or a silent timeout. Please try scanning again in a well-lit area.");
@@ -1573,7 +1633,14 @@ fullReportMarkdown = result.text || "";
                     chatContextSummary = fullReportMarkdown.substring(0, 500).trim();
 }
                 
-                reportContent.innerHTML = formatAITextForDisplay(fullReportMarkdown) + displayCapturedFrames();
+                // *** NEW: Populate correct view ***
+                const formattedHtml = formatAITextForDisplay(fullReportMarkdown) + displayCapturedFrames();
+                if (isDeepAnalysis) {
+                    expertReportContent.innerHTML = formattedHtml;
+                } else {
+                    reportContent.innerHTML = formattedHtml;
+                }
+
                 saveReportButton.classList.remove('hidden');
                 printReportButton.classList.remove('hidden'); // Show print button
 chatInput.disabled = false;
@@ -1585,7 +1652,13 @@ errorHtml += `<p class="text-red-600 font-bold mt-4">REPORT GENERATION FAILED</p
                               <p class="mt-2 text-sm">A critical API error occurred.
 Please try running the scan again.</p>
                               <p class="mt-2 text-xs text-gray-400">Error Details: ${error.message}</p>`;
-reportContent.innerHTML = errorHtml + displayCapturedFrames();
+                
+                // *** NEW: Populate correct view with error ***
+                if (isDeepAnalysis) {
+                    expertReportContent.innerHTML = errorHtml + displayCapturedFrames();
+                } else {
+                    reportContent.innerHTML = errorHtml + displayCapturedFrames();
+                }
             } finally {
                 isReportGenerating = false;
 reportLoader.classList.add('hidden');
@@ -1762,11 +1835,7 @@ chatInput.disabled = false;
             captureProgress = document.getElementById('captureProgress');
             reportContent = document.getElementById('reportContent');
             reportLoader = document.getElementById('reportLoader');
-            reportTab = document.getElementById('reportTab');
-            chatTab = document.getElementById('chatTab');
-            reportView = document.getElementById('reportView');
-            chatView = document.getElementById('chatView');
-            chatMessages = document.getElementById('chatMessages');
+            
             chatInput = document.getElementById('chatInput');
             sendChatButton = document.getElementById('sendChatButton');
             
@@ -1785,6 +1854,15 @@ chatInput.disabled = false;
             userConcernsContainer = document.getElementById('userConcernsContainer');
             surroundingsWater = document.getElementById('surroundingsWater');
             surroundingsHills = document.getElementById('surroundingsHills');
+
+            // --- NEW: Step 6 Tab/View Grabbers ---
+            fullReportTab = document.getElementById('fullReportTab');
+            expertReportTab = document.getElementById('expertReportTab');
+            chatTab = document.getElementById('chatTab');
+            fullReportView = document.getElementById('fullReportView');
+            expertReportView = document.getElementById('expertReportView');
+            chatView = document.getElementById('chatView');
+            expertReportContent = document.getElementById('expertReportContent');
             
             // --- ADD THESE 5 LINES (for the tutorial modal) ---
             tutorialOverlay = document.getElementById('tutorialOverlay');
@@ -1797,7 +1875,7 @@ chatInput.disabled = false;
             // Initial setup
             initializeStep4Grids(); // *** NEW ***
             updateNextStepHighlight(); // Defaults to step 1 (Tips)
-            switchReportTab('report'); // Default to report tab
+            switchReportTab('full'); // Default to full report tab
         
             // Listener for the new Step 1 button
             tipsNextButton.addEventListener('click', () => updateNextStepHighlight(2));
@@ -1861,7 +1939,8 @@ chatInput.disabled = false;
                 floorNumberInput.value = "";
                 initializeStep4Grids(); // Resets grids and checklist
                 initializeGallerySlots(); // Resets gallery to empty slots
-                reportContent.innerHTML = "Awaiting Scan Data.";
+                reportContent.innerHTML = "Click 'Formal Report' below to generate.";
+                expertReportContent.innerHTML = "Click 'Expert Analysis' below to generate.";
                 document.querySelectorAll('.concern-checkbox').forEach(cb => cb.checked = false);
                 surroundingsWater.value = "";
                 surroundingsHills.value = "";
@@ -1894,12 +1973,13 @@ chatInput.disabled = false;
             });
 
             // Listeners for Step 6
-            reportTab.addEventListener('click', () => switchReportTab('report'));
+            fullReportTab.addEventListener('click', () => switchReportTab('full'));
+            expertReportTab.addEventListener('click', () => switchReportTab('expert'));
             chatTab.addEventListener('click', () => {
                 if (fullReportMarkdown) {
                     switchReportTab('chat');
                 } else {
-                    switchReportTab('report');
+                    // Optionally alert user to generate a report first
                 }
             });
             
