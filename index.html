@@ -1281,11 +1281,11 @@ This file contains the full Vastu analysis.
 
         // --- *** NEW: Step 4 Grid Logic *** ---
         function initializeStep4Grids() {
-            // *** MODIFIED: Added Garden and Utility Room ***
+            // *** MODIFIED: Added Garage, Utility Room, Garden ***
             const ROOM_TYPES = [
                 'Living Room', 'Kitchen', 'Master Bed',
                 'Bedroom', 'Pooja Room', 'Toilet/Bath',
-                'Main Entrance', 'Study Room', 'Garden/Lawn', 'Utility Room' 
+                'Main Entrance', 'Study Room', 'Garden/Lawn', 'Utility Room', 'Garage'
             ];
 
             const LOCATIONS = [
@@ -1334,6 +1334,8 @@ This file contains the full Vastu analysis.
                         nextTip = "Since this is the **Main Entrance**, stand at the center of the doorway for the most accurate reading. Then select the location below.";
                     } else if (currentRoomTag === 'Garden/Lawn') {
                         nextTip = "For the **Garden**, stand at the center-most part of the open area. Then select the location below.";
+                    } else if (currentRoomTag === 'Garage') {
+                         nextTip = "Since this is the **Garage**, stand at the center of the entire structure or the entrance. Then select the location below.";
                     }
                     showTutorialTip(step4CompassNeedle, `1. Use the compass to find North. 2. ${nextTip}`, 'right');
                     clearTimeout(tutorialTimeout);
@@ -2197,11 +2199,11 @@ if (!userText || isChatGenerating) return;
             }
             
             appendMessage(userText, 'user');
-chatInput.value = '';
+if (chatInput) chatInput.value = '';
             
             isChatGenerating = true;
-            chatInput.disabled = true;
-            sendChatButton.disabled = true;
+            if (chatInput) chatInput.disabled = true;
+            if (sendChatButton) sendChatButton.disabled = true;
 chatHistory.push({ role: "user", parts: [{ text: userText }] });
             
             const chatHistoryToSend = chatHistory.slice(-3);
@@ -2220,6 +2222,9 @@ const response = await fetch(apiUrl, {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(clientPayload)
                 });
+
+                clearTimeout(timeoutId); // <-- Clear timeout if fetch fails
+
 if (!response.ok) {
                     const errorData = await response.json();
 throw new Error(`Server Error: ${response.status} - ${errorData.error || 'Failed to fetch'}`);
@@ -2236,9 +2241,9 @@ chatHistory.push({ role: "model", parts: [{ text: aiResponse }] });
 appendMessage(`I apologize, I encountered an error: ${error.message}. Please try again.`, 'ai');
 } finally {
                 isChatGenerating = false;
-chatInput.disabled = false;
-                sendChatButton.disabled = chatInput.value.trim() === '' || isChatGenerating;
-                chatInput.focus();
+                if (chatInput) chatInput.disabled = false;
+                if (sendChatButton) sendChatButton.disabled = chatInput.value.trim() === '' || isChatGenerating;
+                if (chatInput) chatInput.focus();
 }
         }
 
