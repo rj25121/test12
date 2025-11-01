@@ -18,7 +18,7 @@ AI Edition</title>
 /* Blue 300 - Light Accent */
             --color-background: #f0f8ff;
 /* Alice Blue / Lightest Pastel */
-            --color-surface-base: rgba(255, 255, 255, 0.6);
+            --color-surface-base: rgba(255, 255, 255, 0.7); /* Slightly lighter glass */
 /* Semi-transparent White for Glass */
             --color-text-dark: #1e3a8a;
 /* Blue 800 - Deep Blue Text */
@@ -1792,8 +1792,9 @@ sensorCheckTimeout = null;
                     videoStream = await navigator.mediaDevices.getUserMedia({ 
                         video: { 
                             facingMode: 'environment',
-                            width: { ideal: 320 },
-                            height: { ideal: 320 }
+                            // *** FIX: Request higher res/wider view ***
+                            width: { ideal: 1280, min: 640 },
+                            height: { ideal: 720, min: 480 }
                         } 
                     });
                     cameraVideo.srcObject = videoStream;
@@ -2487,11 +2488,15 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
                 
                 // --- FIX: Reverted to synchronous call. The @media print CSS will handle the blank page. ---
                 // We use a small, reliable 1ms delay inside the click context to ensure the CSS renders before print.
-                window.print(); // **SYNCHRONOUS CALL**
-           
-                // Clean up immediately after print dialog is called
-                fullReportView.classList.remove('print-this');
-                document.title = originalTitle; // Restore original title
+                
+                // CRITICAL FIX: Use setTimeout (even with 1ms) inside the click handler to allow CSS repaint
+                // This is the common Safari/iOS fix for the blank page.
+                setTimeout(() => {
+                    window.print(); 
+                    // Clean up immediately after print dialog is called
+                    fullReportView.classList.remove('print-this');
+                    document.title = originalTitle; // Restore original title
+                }, 1); 
             });
 
             // ====================================================================
