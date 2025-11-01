@@ -1663,8 +1663,8 @@ simulationInterval = setInterval(() => {
                 
 
                 if (compassNeedle) compassNeedle.style.transform = `rotate(-${currentHeading}deg)`;
-                if (overlayZone) overlayZone.textContent = `Zone: ${getVastuZone(currentHeading)}`;
-                
+                if (overlayZone) overlayZone.textContent = 'Zone: Unknown';
+
                 // *** NEW: Update Step 4 compass needle ***
                 if (step4CompassNeedle) {
                     step4CompassNeedle.style.transform = `rotate(-${currentHeading}deg)`;
@@ -2471,6 +2471,12 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
             
             // --- *** (REVERTED) Print Button Logic (Formal Report Only) *** ---
             printReportButton.addEventListener('click', () => {
+                // *** NEW: Check for content before printing ***
+                if (!getCombinedReportText(false)) {
+                    alert("Please generate a report first.");
+                    return;
+                }
+
                 // --- NEW: DYNAMIC FILENAME ---
                 const originalTitle = document.title;
                 const newTitle = `${currentRoomTag || 'Vastu'}-${roomLocationInHouse || 'Report'}-Report`;
@@ -2666,6 +2672,9 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
                     alert("Failed to copy. Please copy manually.");
                 }
             });
+            
+            // --- NEW: Attach debug function to window for console access ---
+            window.__debug_skipToStep6 = __debug_skipToStep6;
         
         });
 </script>
