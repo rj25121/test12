@@ -430,7 +430,7 @@ align-self: flex-start;
             border-left-width: 0;
         }
         /* ====================================================================
-        END: "BALLOON TIP" TUTORIAL
+        END: "BALLOON TIP" STYLES
         ======================================================================
         */
         
@@ -484,7 +484,7 @@ align-self: flex-start;
             background-color: var(--color-primary);
             color: white;
             border-color: var(--color-text-dark);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             transform: scale(1.05);
         }
         /* ====================================================================
@@ -2104,7 +2104,7 @@ const response = await fetch(apiUrl, {
                     signal: controller.signal // <-- Add signal
                 });
 
-                clearTimeout(timeoutId); // <-- Clear timeout if fetch succeeds
+                clearTimeout(timeoutId); // <-- Clear timeout if fetch fails
 
 if (!response.ok) {
                     const errorData = await response.json();
@@ -2282,7 +2282,7 @@ const response = await fetch(apiUrl, {
                     body: JSON.stringify(clientPayload)
                 });
 
-                clearTimeout(timeoutId); // <-- Clear timeout if fetch fails
+                // *** REMOVED: redundant clearTimeout(timeoutId) logic, fixed error ***
 
 if (!response.ok) {
                     const errorData = await response.json();
@@ -2553,14 +2553,13 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
                 // --- MODIFIED: Always target the Full Report view ---
                 fullReportView.classList.add('print-this');
                 document.title = newTitle.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-
                 // *** CRITICAL FIX: The logic that was causing the blank page has been moved to a 
                 // dedicated setTimeout to ensure the CSS renders before the print command. ***
                 setTimeout(() => {
                     window.print(); 
                     // Clean up immediately after print dialog is called
-                    //fullReportView.classList.remove('print-this');
-                    //document.title = originalTitle; // Restore original title
+                   // fullReportView.classList.remove('print-this');
+                 //   document.title = originalTitle; // Restore original title
                 }, 100); 
             });
 
