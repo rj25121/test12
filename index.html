@@ -430,7 +430,7 @@ align-self: flex-start;
             border-left-width: 0;
         }
         /* ====================================================================
-        END: "BALLOON TIP" STYLES
+        END: "BALLOON TIP" TUTORIAL
         ======================================================================
         */
         
@@ -710,11 +710,11 @@ align-self: flex-start;
                         </label>
                         <div class="space-y-2">
                             <input type="text" id="surroundingsWater" placeholder="E.g., River in North, Lake in East"
-                                   class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500" data-key="Water Body">
+                                   class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500">
                             <p class="text-xs text-gray-500 mt-1">Water body (lake, river, etc.) and its direction?</p>
                             
                             <input type="text" id="surroundingsHills" placeholder="E.g., Mountain in South-West"
-                                   class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500" data-key="Hills">
+                                   class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500">
                             <p class="text-xs text-gray-500 mt-1">Hills or large structures and their direction?</p>
                         </div>
                     </div>
@@ -1529,11 +1529,13 @@ This file contains the full Vastu analysis.
 
             // Check Top/Bottom
             if (position === 'top') {
-                if (targetRect.top - topOffset - tipHeight - gap < 0) { // Not enough space at top
+                // If top edge is less than 0 (off the top), flip to bottom
+                if (targetRect.top - tipHeight - gap < 0) { 
                     finalPosition = 'bottom';
                 }
             } else if (position === 'bottom') {
-                if (targetRect.bottom - topOffset + tipHeight + gap > appRect.height) { // Not enough space at bottom
+                 // If bottom edge is beyond app container height, flip to top
+                if (targetRect.bottom + tipHeight + gap > appRect.bottom) { 
                     finalPosition = 'top';
                 }
             }
@@ -2302,7 +2304,7 @@ chatHistory.push({ role: "model", parts: [{ text: aiResponse }] });
                 if (processingMessage.parentNode) {
                     processingMessage.parentNode.removeChild(processingMessage);
                 }
-                clearTimeout(timeoutId); // <-- Clear timeout if fetch fails
+               // clearTimeout(timeoutId); // <-- Clear timeout if fetch fails
                 console.error('Chatbot Error:', error);
 appendMessage(`I apologize, I encountered an error: ${error.message}. Please try again.`, 'ai');
 } finally {
@@ -2546,7 +2548,8 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
                 // --- NEW: DYNAMIC FILENAME ---
                 const originalTitle = document.title;
                 const newTitle = `${currentRoomTag || 'Vastu'}-${roomLocationInHouse || 'Report'}-Report`;
-                
+                document.title = newTitle.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+
                 // --- MODIFIED: Always target the Full Report view ---
                 fullReportView.classList.add('print-this');
                 document.title = newTitle.replace(/[^a-z0-9]/gi, '-').toLowerCase();
@@ -2556,8 +2559,8 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
                 setTimeout(() => {
                     window.print(); 
                     // Clean up immediately after print dialog is called
-                   // fullReportView.classList.remove('print-this');
-                   // document.title = originalTitle; // Restore original title
+                    //fullReportView.classList.remove('print-this');
+                    //document.title = originalTitle; // Restore original title
                 }, 100); 
             });
 
