@@ -2104,7 +2104,7 @@ const response = await fetch(apiUrl, {
                     signal: controller.signal // <-- Add signal
                 });
 
-                clearTimeout(timeoutId); // <-- Clear timeout if fetch fails
+                clearTimeout(timeoutId); // <-- Clear timeout if fetch succeeds
 
 if (!response.ok) {
                     const errorData = await response.json();
@@ -2540,9 +2540,9 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
             // --- *** (REVERTED) Print Button Logic (Formal Report Only) *** ---
             printReportButton.addEventListener('click', () => {
                 // *** NEW: Check for content before printing ***
-                if (!getCombinedReportText(false)) {
-                    alert("Please generate a report first.");
-                    return;
+              //  if (!getCombinedReportText(false)) {
+                //    alert("Please generate a report first.");
+                  //  return;
                 }
 
                 // --- NEW: DYNAMIC FILENAME ---
@@ -2552,14 +2552,15 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
 
                 // --- MODIFIED: Always target the Full Report view ---
                 fullReportView.classList.add('print-this');
-                document.title = newTitle.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+                
                 // *** CRITICAL FIX: The logic that was causing the blank page has been moved to a 
                 // dedicated setTimeout to ensure the CSS renders before the print command. ***
                 setTimeout(() => {
                     window.print(); 
                     // Clean up immediately after print dialog is called
                    // fullReportView.classList.remove('print-this');
-                 //   document.title = originalTitle; // Restore original title
+                    document.title = newTitle.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+
                 }, 100); 
             });
 
@@ -2746,6 +2747,3 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
             window.__debug_skipToStep6 = __debug_skipToStep6;
         
         });
-</script>
-</body>
-</html>
