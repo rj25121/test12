@@ -10,13 +10,6 @@ AI Edition</title>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
-/* *** CRITICAL MOBILE TOUCH FIXES *** */
-html, body {
-    height: 100%; /* FIX: Ensures height is calculated against viewport */
-    touch-action: pan-y; /* FIX: Allows vertical scrolling and prevents touch freezing */
-    -webkit-tap-highlight-color: transparent; /* Optional: improves responsiveness feel */
-}
-
 :root {
             /* Pastel Blue & White Theme */
             --color-primary: #60a5fa;
@@ -25,7 +18,7 @@ html, body {
 /* Blue 300 - Light Accent */
             --color-background: #f0f8ff;
 /* Alice Blue / Lightest Pastel */
-            --color-surface-base: rgba(255, 255, 255, 0.7); /* Slightly lighter glass */
+            --color-surface-base: rgba(255, 255, 255, 0.6);
 /* Semi-transparent White for Glass */
             --color-text-dark: #1e3a8a;
 /* Blue 800 - Deep Blue Text */
@@ -236,6 +229,26 @@ align-self: flex-start;
              opacity: 1;
              color: var(--color-primary);
         }
+        
+        /* --- NEW: Hide Header for Full-Screen Scan --- */
+        .scan-mode .header-main { 
+            display: none !important;
+        }
+        .scan-mode #stepIndicatorWrapper {
+            display: none !important;
+        }
+        .scan-mode #mainContentArea {
+            /* Adjust negative margin to pull the content up */
+            padding-top: 0;
+            padding-bottom: 0;
+            margin-top: -1rem;
+            margin-bottom: 0.5rem;
+        }
+        .scan-mode #analyzerWrapper {
+            margin-top: -1rem;
+            margin-bottom: -1rem;
+        }
+
 
         /* --- PRINT-FRIENDLY STYLES --- */
         @media print {
@@ -317,47 +330,8 @@ align-self: flex-start;
                 -webkit-print-color-adjust: exact;
                 color-adjust: exact;
             }
-            /* --- *** END PRINT FIX *** */
+            /* --- *** END PRINT FIX *** --- */
         }
-
-        /* --- NEW FIX: Maximize Camera Viewport in Step 5 --- */
-        /* Hides elements that take up space when the user is scanning */
-        .step-5-active #mainHeader,
-        .step-5-active #stepIndicatorWrapper {
-            display: none;
-        }
-
-        .step-5-active #appContainer {
-            /* Allow the app container to take full height of the viewport */
-            max-height: 100vh; 
-            /* This is the key scroll fix */
-            overflow: hidden !important; 
-        }
-
-        .step-5-active #mainContentArea {
-            /* Expand main content area to use all available space */
-            flex-grow: 1;
-            height: 100%;
-            overflow: hidden;
-            padding-top: 0;
-            padding-bottom: 0;
-        }
-        .step-5-active #cameraContainer {
-            /* Force camera container to take up maximum space */
-            height: 80vh; 
-            /* Remove margins that cause scrolling */
-            margin-bottom: 0 !important;
-        }
-        .step-5-active #cameraVideo {
-            /* Make video fill the container */
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        /* ====================================================================
-        END: CAMERA VIEW FIX
-        ======================================================================
-        */
         
         /* ======================================================================
         START: NEW "BALLOON TIP" TUTORIAL STYLES
@@ -491,7 +465,7 @@ align-self: flex-start;
             background-color: var(--color-primary);
             color: white;
             border-color: var(--color-text-dark);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             transform: scale(1.05);
         }
         /* ====================================================================
@@ -601,7 +575,7 @@ align-self: flex-start;
     <div id="appContainer" class="glass-card w-full max-w-sm sm:max-w-xl md:max-w-2xl p-6 flex flex-col max-h-[90vh] relative"> <!-- NEW: Added relative -->
 
         <!-- === HEADER (Non-scrolling) === -->
-        <div class="flex-shrink-0" id="mainHeader">
+        <div class="flex-shrink-0 header-main"> <!-- *** ADDED: header-main class for scan mode hiding *** -->
             <h1 class="text-xl sm:text-2xl font-extrabold text-center no-print">Vastu Pro Analyzer |
     AI Edition</h1>
             
@@ -717,11 +691,11 @@ align-self: flex-start;
                         </label>
                         <div class="space-y-2">
                             <input type="text" id="surroundingsWater" placeholder="E.g., River in North, Lake in East"
-                                   class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500">
+                                   class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500" data-key="Water Body">
                             <p class="text-xs text-gray-500 mt-1">Water body (lake, river, etc.) and its direction?</p>
                             
                             <input type="text" id="surroundingsHills" placeholder="E.g., Mountain in South-West"
-                                   class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500">
+                                   class="w-full p-3 border border-gray-300 rounded-lg text-gray-800 focus:ring-blue-500 focus:border-blue-500" data-key="Hills">
                             <p class="text-xs text-gray-500 mt-1">Hills or large structures and their direction?</p>
                         </div>
                     </div>
@@ -1272,14 +1246,14 @@ This file contains the full Vastu analysis.
         // IMPROVEMENT: Updated for 6 steps
         function updateNextStepHighlight(currentStep = 1) {
             
-            // --- REMOVED: Tutorial logic from here ---
-
-            // *** FIX: Apply class to body for Step 5 to hide headers/lock scroll ***
+            // --- NEW: Toggle Scan Mode Class (Full-Screen Camera Fix) ---
             if (currentStep === 5) {
-                document.body.classList.add('step-5-active');
+                appContainer.classList.add('scan-mode');
             } else {
-                document.body.classList.remove('step-5-active');
+                appContainer.classList.remove('scan-mode');
             }
+            
+            // --- REMOVED: Tutorial logic from here ---
 
             stepContents.forEach((content, index) => {
                 const stepNum = index + 1;
@@ -1306,7 +1280,7 @@ This file contains the full Vastu analysis.
             // --- NEW: Hide/Show Step Indicators ---
             if (currentStep === 6) {
                 stepIndicatorWrapper.classList.add('hidden');
-            } else {
+            } else if (currentStep !== 5) { // Keep hidden in scan mode too
                 stepIndicatorWrapper.classList.remove('hidden');
             }
             // --- END ---
@@ -1392,11 +1366,9 @@ This file contains the full Vastu analysis.
                     }
                     showTutorialTip(step4CompassNeedle, `1. Use the compass to find North. 2. ${nextTip}`, 'right');
                     clearTimeout(tutorialTimeout);
-                    // *** FIX: Autoscroll and re-show tip *after* scroll ***
-                    mainContentArea.scrollTo({ top: 0, behavior: 'smooth' });
                     tutorialTimeout = setTimeout(() => {
                         showTutorialTip(roomLocationGrid, `2. Now tap the <strong>Room's Location</strong> in your house.`, 'bottom');
-                    }, 350); // Short delay to let autoscroll finish
+                    }, 3500); // Show next tip after 3.5s
                 }
 
             } else if (type === 'location') {
@@ -1536,13 +1508,11 @@ This file contains the full Vastu analysis.
 
             // Check Top/Bottom
             if (position === 'top') {
-                // If top edge is less than 0 (off the top), flip to bottom
-                if (targetRect.top - tipHeight - gap < 0) { 
+                if (targetRect.top - topOffset - tipHeight - gap < 0) { // Not enough space at top
                     finalPosition = 'bottom';
                 }
             } else if (position === 'bottom') {
-                 // If bottom edge is beyond app container height, flip to top
-                if (targetRect.bottom + tipHeight + gap > appRect.bottom) { 
+                if (targetRect.bottom - topOffset + tipHeight + gap > appRect.height) { // Not enough space at bottom
                     finalPosition = 'top';
                 }
             }
@@ -1720,8 +1690,8 @@ simulationInterval = setInterval(() => {
                 
 
                 if (compassNeedle) compassNeedle.style.transform = `rotate(-${currentHeading}deg)`;
-                if (overlayZone) overlayZone.textContent = 'Zone: Unknown';
-
+                if (overlayZone) overlayZone.textContent = `Zone: ${getVastuZone(currentHeading)}`;
+                
                 // *** NEW: Update Step 4 compass needle ***
                 if (step4CompassNeedle) {
                     step4CompassNeedle.style.transform = `rotate(-${currentHeading}deg)`;
@@ -1849,9 +1819,10 @@ sensorCheckTimeout = null;
                     videoStream = await navigator.mediaDevices.getUserMedia({ 
                         video: { 
                             facingMode: 'environment',
-                            // *** FIX: Request higher res/wider view ***
-                            width: { ideal: 1280, min: 640 },
-                            height: { ideal: 720, min: 480 }
+                            // *** MODIFIED: Request higher resolution for wider angle/less zoom ***
+                            width: { ideal: 1280 }, 
+                            height: { ideal: 720 }
+                            // *** END MODIFIED ***
                         } 
                     });
                     cameraVideo.srcObject = videoStream;
@@ -2094,7 +2065,8 @@ return;
             
             // --- NEW: Client-side Timeout (Fixes "forever" & "keeps generating") ---
             const controller = new AbortController();
-            let timeoutId = setTimeout(() => { // **FIX: Defined timeoutId with let**
+            const timeoutDuration = 180000; // 3 minutes (180,000 ms)
+            const timeoutId = setTimeout(() => {
                 console.warn("Client-side timeout reached. Aborting fetch.");
                 controller.abort();
             }, timeoutDuration);
@@ -2116,7 +2088,7 @@ if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(`Server Error: ${response.status} - ${errorData.error || 'Failed to fetch'}`);
 }
-
+                
                 const result = await response.json();
                 const reportText = result.text || ""; // Get the raw text
                 
@@ -2221,6 +2193,19 @@ reportLoader.classList.add('hidden');
 
         // --- CHATBOT LOGIC ---
 
+        // *** NEW FUNCTION: Add a thinking loader message ***
+        function appendLoader() {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `chat-message ai-message`;
+            msgDiv.id = 'chatLoader';
+            msgDiv.innerHTML = `<i class="fas fa-spinner fa-spin mr-1 text-blue-500"></i> Thinking...`;
+            
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return msgDiv;
+        }
+
+
         // IMPROVEMENT: Re-enabled bolding
         function appendMessage(text, sender) {
             const msgDiv = document.createElement('div');
@@ -2251,24 +2236,20 @@ if (!userText || isChatGenerating) return;
 
             // SERVER-CLIENT CHANGE: Check for Render URL
             if (renderApiUrl.includes("YOUR_RENDER_URL_HERE") || renderApiUrl.length < 10) {
-    appendMessage("Error: Chat server not configured.", 'ai');
+    appendMessage("Error: Chat server not configured. Please check your renderApiUrl setting.", 'ai');
                  return;
             }
             
             appendMessage(userText, 'user');
 if (chatInput) chatInput.value = '';
             
+            // *** NEW: Show Loader ***
+            const loaderMessageDiv = appendLoader();
+            // ************************
+            
             isChatGenerating = true;
             if (chatInput) chatInput.disabled = true;
             if (sendChatButton) sendChatButton.disabled = true;
-            
-            // *** NEW: Append temporary processing message ***
-            const processingMessage = document.createElement('div');
-            processingMessage.className = 'ai-message chat-message text-gray-700 opacity-70';
-            processingMessage.innerHTML = '<i class="fas fa-spinner fa-spin mr-1 text-blue-500"></i> Thinking...';
-            chatMessages.appendChild(processingMessage);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-
 chatHistory.push({ role: "user", parts: [{ text: userText }] });
             
             const chatHistoryToSend = chatHistory.slice(-3);
@@ -2279,15 +2260,26 @@ chatHistory.push({ role: "user", parts: [{ text: userText }] });
                 chatContextSummary: chatContextSummary // *** This is the "magic" context ***
             };
 
+            // --- NEW: Client-side Timeout for Chat (60 seconds) ---
+            const controller = new AbortController();
+            const timeoutDuration = 60000; // 60 seconds
+            const timeoutId = setTimeout(() => {
+                console.warn("Chat client-side timeout reached. Aborting fetch.");
+                controller.abort();
+            }, timeoutDuration);
+            // --- END: Client-side Timeout ---
+
             try {
                 // SERVER-CLIENT CHANGE: Call our Render server, not Google
                 const apiUrl = `${renderApiUrl}/api/handleChat`;
-const response = await fetch(apiUrl, {
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(clientPayload)
+                    body: JSON.stringify(clientPayload),
+                    signal: controller.signal // Add signal to abort controller
                 });
-
+                
+                clearTimeout(timeoutId); // Clear timeout if fetch completes successfully
 
 if (!response.ok) {
                     const errorData = await response.json();
@@ -2297,22 +2289,31 @@ throw new Error(`Server Error: ${response.status} - ${errorData.error || 'Failed
                 const result = await response.json();
 const aiResponse = result.text || "Sorry, I couldn't process that.";
 
-                // *** NEW: Remove processing message before appending actual response ***
-                if (processingMessage.parentNode) {
-                    processingMessage.parentNode.removeChild(processingMessage);
-                }
-
+                // *** CLEANUP: Remove loader before appending final message ***
+                if (loaderMessageDiv) chatMessages.removeChild(loaderMessageDiv);
+                
                 appendMessage(aiResponse, 'ai');
 chatHistory.push({ role: "model", parts: [{ text: aiResponse }] });
 } catch (error) {
-                // *** NEW: Remove processing message on error ***
-                if (processingMessage.parentNode) {
-                    processingMessage.parentNode.removeChild(processingMessage);
-                }
-               
+                // *** CLEANUP: Remove loader on error ***
+                if (loaderMessageDiv) chatMessages.removeChild(loaderMessageDiv);
+                
+                clearTimeout(timeoutId); // Ensure timeout is cleared
                 console.error('Chatbot Error:', error);
-appendMessage(`I apologize, I encountered an error: ${error.message}. Please try again.`, 'ai');
+
+                let errorMessage = `A network or server error occurred. Please try again.`;
+                if (error.name === 'AbortError') {
+                    errorMessage = `The request timed out (60 seconds limit). The AI server may be slow to respond.`;
+                } else if (error.message.includes('Failed to fetch')) {
+                    errorMessage = `Connection failed. Check your network or the server URL.`;
+                } else {
+                    errorMessage = `An API error occurred: ${error.message}`;
+                }
+
+                // Providing user feedback about the failure
+                appendMessage(`I apologize, I encountered an error: ${errorMessage}`, 'ai');
 } finally {
+                // *** GUARANTEED CLEANUP ***
                 isChatGenerating = false;
                 if (chatInput) chatInput.disabled = false;
                 if (sendChatButton) sendChatButton.disabled = chatInput.value.trim() === '' || isChatGenerating;
@@ -2544,12 +2545,6 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
             
             // --- *** (REVERTED) Print Button Logic (Formal Report Only) *** ---
             printReportButton.addEventListener('click', () => {
-                // *** NEW: Check for content before printing ***
-                if (!getCombinedReportText(false)) {
-                    alert("Please generate a report first.");
-                    return;
-                }
-
                 // --- NEW: DYNAMIC FILENAME ---
                 const originalTitle = document.title;
                 const newTitle = `${currentRoomTag || 'Vastu'}-${roomLocationInHouse || 'Report'}-Report`;
@@ -2558,14 +2553,13 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
                 // --- MODIFIED: Always target the Full Report view ---
                 fullReportView.classList.add('print-this');
                 
-                // *** CRITICAL FIX: The logic that was causing the blank page has been moved to a 
-                // dedicated setTimeout to ensure the CSS renders before the print command. ***
-                setTimeout(() => {
-                    window.print(); 
-                    // Clean up immediately after print dialog is called
-                   // fullReportView.classList.remove('print-this');
-                    document.title = newTitle.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-                }, 100); 
+                // --- FIX: Reverted to synchronous call. The @media print CSS will handle the blank page. ---
+                // We use a small, reliable 1ms delay inside the click context to ensure the CSS renders before print.
+                window.print(); // **SYNCHRONOUS CALL**
+           
+                // Clean up immediately after print dialog is called
+              //  fullReportView.classList.remove('print-this');
+                document.title = newTitle.replace(/[^a-z0-9]/gi, '-').toLowerCase();
             });
 
             // ====================================================================
@@ -2629,6 +2623,9 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
                     while (chatMessages.children.length > 1) {
                         chatMessages.removeChild(chatMessages.lastChild);
                     }
+                    // Remove the loader if it's somehow still there
+                    const loader = document.getElementById('chatLoader');
+                    if (loader) chatMessages.removeChild(loader);
                 }
                 if (chatInput) chatInput.value = "";
 
@@ -2746,8 +2743,8 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
                     alert("Failed to copy. Please copy manually.");
                 }
             });
-            
-            // --- NEW: Attach debug function to window for console access ---
-            window.__debug_skipToStep6 = __debug_skipToStep6;
         
         });
+</script>
+</body>
+</html>
