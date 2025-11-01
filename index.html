@@ -310,7 +310,7 @@ align-self: flex-start;
                 -webkit-print-color-adjust: exact;
                 color-adjust: exact;
             }
-            /* --- *** END PRINT FIX *** --- */
+            /* --- *** END PRINT FIX *** */
         }
         
         /* ======================================================================
@@ -2486,11 +2486,10 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
                 // --- MODIFIED: Always target the Full Report view ---
                 fullReportView.classList.add('print-this');
                 
-                // --- FIX: Reverted to synchronous call. The @media print CSS will handle the blank page. ---
-                // We use a small, reliable 1ms delay inside the click context to ensure the CSS renders before print.
-                
-                // CRITICAL FIX: Use setTimeout (even with 1ms) inside the click handler to allow CSS repaint
-                // This is the common Safari/iOS fix for the blank page.
+                // --- FIX: Final synchronous call workaround ---
+                // We use a tiny delay (1ms) inside the click handler to give the browser time to
+                // apply the CSS change before the print dialog opens, which is the necessary fix 
+                // for mobile Safari/Firefox blank print issues.
                 setTimeout(() => {
                     window.print(); 
                     // Clean up immediately after print dialog is called
