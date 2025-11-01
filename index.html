@@ -2253,6 +2253,14 @@ if (chatInput) chatInput.value = '';
             isChatGenerating = true;
             if (chatInput) chatInput.disabled = true;
             if (sendChatButton) sendChatButton.disabled = true;
+            
+            // *** NEW: Append temporary processing message ***
+            const processingMessage = document.createElement('div');
+            processingMessage.className = 'ai-message chat-message text-gray-700 opacity-70';
+            processingMessage.innerHTML = '<i class="fas fa-spinner fa-spin mr-1 text-blue-500"></i> Thinking...';
+            chatMessages.appendChild(processingMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
 chatHistory.push({ role: "user", parts: [{ text: userText }] });
             
             const chatHistoryToSend = chatHistory.slice(-3);
@@ -2282,9 +2290,18 @@ throw new Error(`Server Error: ${response.status} - ${errorData.error || 'Failed
                 const result = await response.json();
 const aiResponse = result.text || "Sorry, I couldn't process that.";
 
+                // *** NEW: Remove processing message before appending actual response ***
+                if (processingMessage.parentNode) {
+                    processingMessage.parentNode.removeChild(processingMessage);
+                }
+
                 appendMessage(aiResponse, 'ai');
 chatHistory.push({ role: "model", parts: [{ text: aiResponse }] });
 } catch (error) {
+                // *** NEW: Remove processing message on error ***
+                if (processingMessage.parentNode) {
+                    processingMessage.parentNode.removeChild(processingMessage);
+                }
                 clearTimeout(timeoutId); // <-- Clear timeout if fetch fails
                 console.error('Chatbot Error:', error);
 appendMessage(`I apologize, I encountered an error: ${error.message}. Please try again.`, 'ai');
@@ -2529,18 +2546,18 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
                 // --- NEW: DYNAMIC FILENAME ---
                 const originalTitle = document.title;
                 const newTitle = `${currentRoomTag || 'Vastu'}-${roomLocationInHouse || 'Report'}-Report`;
-                document.title = newTitle.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-
+                
                 // --- MODIFIED: Always target the Full Report view ---
                 fullReportView.classList.add('print-this');
-                
+                document.title = newTitle.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+
                 // *** CRITICAL FIX: The logic that was causing the blank page has been moved to a 
                 // dedicated setTimeout to ensure the CSS renders before the print command. ***
                 setTimeout(() => {
                     window.print(); 
                     // Clean up immediately after print dialog is called
-                    //fullReportView.classList.remove('print-this');
-                  //  document.title = originalTitle; // Restore original title
+                   // fullReportView.classList.remove('print-this');
+                   // document.title = originalTitle; // Restore original title
                 }, 100); 
             });
 
