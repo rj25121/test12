@@ -312,6 +312,45 @@ align-self: flex-start;
             }
             /* --- *** END PRINT FIX *** */
         }
+
+        /* --- NEW FIX: Maximize Camera Viewport in Step 5 --- */
+        /* Hides elements that take up space when the user is scanning */
+        .step-5-active #mainHeader,
+        .step-5-active #stepIndicatorWrapper {
+            display: none;
+        }
+
+        .step-5-active #appContainer {
+            /* Allow the app container to take full height of the viewport */
+            max-height: 100vh; 
+            /* This is the key scroll fix */
+            overflow: hidden !important; 
+        }
+
+        .step-5-active #mainContentArea {
+            /* Expand main content area to use all available space */
+            flex-grow: 1;
+            height: 100%;
+            overflow: hidden;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        .step-5-active #cameraContainer {
+            /* Force camera container to take up maximum space */
+            height: 80vh; 
+            /* Remove margins that cause scrolling */
+            margin-bottom: 0 !important;
+        }
+        .step-5-active #cameraVideo {
+            /* Make video fill the container */
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        /* ====================================================================
+        END: CAMERA VIEW FIX
+        ======================================================================
+        */
         
         /* ======================================================================
         START: NEW "BALLOON TIP" TUTORIAL STYLES
@@ -555,7 +594,7 @@ align-self: flex-start;
     <div id="appContainer" class="glass-card w-full max-w-sm sm:max-w-xl md:max-w-2xl p-6 flex flex-col max-h-[90vh] relative"> <!-- NEW: Added relative -->
 
         <!-- === HEADER (Non-scrolling) === -->
-        <div class="flex-shrink-0">
+        <div class="flex-shrink-0" id="mainHeader">
             <h1 class="text-xl sm:text-2xl font-extrabold text-center no-print">Vastu Pro Analyzer |
     AI Edition</h1>
             
@@ -1228,6 +1267,13 @@ This file contains the full Vastu analysis.
             
             // --- REMOVED: Tutorial logic from here ---
 
+            // *** FIX: Apply class to body for Step 5 to hide headers/lock scroll ***
+            if (currentStep === 5) {
+                document.body.classList.add('step-5-active');
+            } else {
+                document.body.classList.remove('step-5-active');
+            }
+
             stepContents.forEach((content, index) => {
                 const stepNum = index + 1;
                 stepIndicators[index].classList.remove('step-active');
@@ -1339,9 +1385,11 @@ This file contains the full Vastu analysis.
                     }
                     showTutorialTip(step4CompassNeedle, `1. Use the compass to find North. 2. ${nextTip}`, 'right');
                     clearTimeout(tutorialTimeout);
+                    // *** FIX: Autoscroll and re-show tip *after* scroll ***
+                    mainContentArea.scrollTo({ top: 0, behavior: 'smooth' });
                     tutorialTimeout = setTimeout(() => {
                         showTutorialTip(roomLocationGrid, `2. Now tap the <strong>Room's Location</strong> in your house.`, 'bottom');
-                    }, 3500); // Show next tip after 3.5s
+                    }, 350); // Short delay to let autoscroll finish
                 }
 
             } else if (type === 'location') {
