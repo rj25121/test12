@@ -2060,7 +2060,7 @@ if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(`Server Error: ${response.status} - ${errorData.error || 'Failed to fetch'}`);
 }
-                
+
                 const result = await response.json();
                 const reportText = result.text || ""; // Get the raw text
                 
@@ -2486,14 +2486,14 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
                 // --- MODIFIED: Always target the Full Report view ---
                 fullReportView.classList.add('print-this');
                 
-                // *** FIX: Final synchronous call workaround ***
-                // This is the simplest logic, allowing the browser's own CSS engine and print queue 
-                // to take over. Any extra delay here gets blocked by security.
-                window.print(); 
-           
-                // Clean up immediately after print dialog is called
-                //fullReportView.classList.remove('print-this');
-                document.title = originalTitle; // Restore original title
+                // *** CRITICAL FIX: The logic that was causing the blank page has been moved to a 
+                // dedicated setTimeout to ensure the CSS renders before the print command. ***
+                setTimeout(() => {
+                    window.print(); 
+                    // Clean up immediately after print dialog is called
+                   // fullReportView.classList.remove('print-this');
+                   // document.title = originalTitle; // Restore original title
+                }, 100); 
             });
 
             // ====================================================================
