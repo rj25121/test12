@@ -10,6 +10,13 @@ AI Edition</title>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+/* *** CRITICAL MOBILE TOUCH FIXES *** */
+html, body {
+    height: 100%; /* FIX: Ensures height is calculated against viewport */
+    touch-action: pan-y; /* FIX: Allows vertical scrolling and prevents touch freezing */
+    -webkit-tap-highlight-color: transparent; /* Optional: improves responsiveness feel */
+}
+
 :root {
             /* Pastel Blue & White Theme */
             --color-primary: #60a5fa;
@@ -430,7 +437,7 @@ align-self: flex-start;
             border-left-width: 0;
         }
         /* ====================================================================
-        END: "BALLOON TIP" STYLES
+        END: "BALLOON TIP" TUTORIAL
         ======================================================================
         */
         
@@ -2540,9 +2547,9 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
             // --- *** (REVERTED) Print Button Logic (Formal Report Only) *** ---
             printReportButton.addEventListener('click', () => {
                 // *** NEW: Check for content before printing ***
-              //  if (!getCombinedReportText(false)) {
-                //    alert("Please generate a report first.");
-                  //  return;
+                if (!getCombinedReportText(false)) {
+                    alert("Please generate a report first.");
+                    return;
                 }
 
                 // --- NEW: DYNAMIC FILENAME ---
@@ -2560,7 +2567,6 @@ You can now test the 'Formal Report', 'Expert Analysis', 'Export .txt', and 'Pri
                     // Clean up immediately after print dialog is called
                    // fullReportView.classList.remove('print-this');
                     document.title = newTitle.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-
                 }, 100); 
             });
 
